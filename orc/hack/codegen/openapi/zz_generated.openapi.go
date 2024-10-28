@@ -46,6 +46,15 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatus":                schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatusExtra":           schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatusExtra(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions":             schema_k_orc_openstack_resource_controller_api_v1alpha1_ManagedOptions(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Network":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_Network(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkFilter":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkImport":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkList":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec":        schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment":             schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSegment(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                    schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AppArmorProfile":                             schema_k8sio_api_core_v1_AppArmorProfile(ref),
@@ -967,6 +976,648 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_ManagedOptions(ref 
 				},
 			},
 		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_Network(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Network is the Schema for an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkFilter defines an existing resource by its properties",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"Description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"External": {
+						SchemaProps: spec.SchemaProps{
+							Description: "External indicates whether the network has an external routing facility that’s not managed by the networking service.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkImport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkImport specifies an existing resource which will be imported instead of creating a new one",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID contains the unique identifier of an existing OpenStack resource. Note that when specifying an import by ID, the resource MUST already exist. The ORC object will enter an error state if the resource does not exist.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"filter": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Filter contains a resource query which is expected to return a single result. The controller will continue to retry if filter returns no results. If filter returns multiple results the controller will set an error state and will not continue to retry.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkFilter"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkFilter"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkList contains a list of Network.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.Network"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Network", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkResourceSpec contains the desired state of a network",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name will be the name of the created resource. If not specified, the name of the ORC object will be used.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"adminStateUp": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"dnsDomain": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"mtu": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MTU is the the maximum transmission unit value to address fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"portSecurityEnabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PortSecurityEnabled is the port security status of the network. Valid values are enabled (true) and disabled (false). This value is used as the default value of port_security_enabled field of a newly created port.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"qosPolicyID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "QoSPolicyID is the ID of the QoS policy associated with the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"external": {
+						SchemaProps: spec.SchemaProps{
+							Description: "External indicates whether the network has an external routing facility that’s not managed by the networking service.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"shared": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Shared indicates whether this resource is shared across all projects. By default, only administrative users can change this value.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"vlanTransparent": {
+						SchemaProps: spec.SchemaProps{
+							Description: "VLANTransparent indicates the VLAN transparency mode of the network, which is VLAN transparent (true) or not VLAN transparent (false).",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"availabilityZoneHints": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkResourceStatus represents the observed state of the resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"adminStateUp": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AdminStateUp is the administrative state of the network, which is up (true) or down (false).",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"availabilityZoneHints": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"availabilityZones": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Availability is the availability zone for the network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CreatedAt contains the timestamp of when the resource was created.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"dnsDomain": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UUID for the network",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ipv4AddressScope": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IPV4AddressScope is the ID of the IPv4 address scope that the network is associated with.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ipv6AddressScope": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IPV6AddressScope is the ID of the IPv6 address scope that the network is associated with.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"l2Adjacency": {
+						SchemaProps: spec.SchemaProps{
+							Description: "L2Adjacency indicates whether L2 connectivity is available throughout the network.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"mtu": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MTU is the the maximum transmission unit value to address fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Human-readable name for the network. Might not be unique.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"portSecurityEnabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PortSecurityEnabled is the port security status of the network. Valid values are enabled (true) and disabled (false). This value is used as the default value of port_security_enabled field of a newly created port.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID is the project owner of the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"providerNetworkType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderNetworkType is the type of physical network that this network should be mapped to. For example, flat, vlan, vxlan, or gre. Valid values depend on a networking back-end.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"providerPhysicalNetwork": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderPhysicalNetwork is the physical network where this network should be implemented. The Networking API v2.0 does not provide a way to list available physical networks. For example, the Open vSwitch plug-in configuration file defines a symbolic name that maps to specific bridges on each compute host.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"providerSegmentationID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderSegmentationID is the ID of the isolated segment on the physical network. The network_type attribute defines the segmentation model. For example, if the network_type value is vlan, this ID is a vlan identifier. If the network_type value is gre, this ID is a gre key.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"qosPolicyID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "QoSPolicyID is the ID of the QoS policy associated with the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"revisionNumber": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RevisionNumber is the revision number of the resource.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"external": {
+						SchemaProps: spec.SchemaProps{
+							Description: "External defines whether the network may be used for creation of floating IPs. Only networks with this flag may be an external gateway for routers. The network must have an external routing facility that is not managed by the networking service. If the network is updated from external to internal the unused floating IPs of this network are automatically deleted when extension floatingip-autodelete-internal is present.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"segments": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Segment is a list of provider segment objects.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment"),
+									},
+								},
+							},
+						},
+					},
+					"shared": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Specifies whether the network resource can be accessed by any tenant.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Indicates whether network is currently operational. Possible values include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional values.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"subnets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Subnets associated with this network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"tenantID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TenantID is the project owner of the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UpdatedAt contains the timestamp of when the resource was last changed.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"vlanTransparent": {
+						SchemaProps: spec.SchemaProps{
+							Description: "VLANTransparent indicates the VLAN transparency mode of the network, which is VLAN transparent (true) or not VLAN transparent (false).",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description is a human-readable description for the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"isDefault": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"tags": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is the list of tags on the resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSegment(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkSegment contains provider-network properties. Currently only available in status.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"providerNetworkType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderNetworkType is the type of physical network that this network should be mapped to. For example, flat, vlan, vxlan, or gre. Valid values depend on a networking back-end.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"providerPhysicalNetwork": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderPhysicalNetwork is the physical network where this network should be implemented. The Networking API v2.0 does not provide a way to list available physical networks. For example, the Open vSwitch plug-in configuration file defines a symbolic name that maps to specific bridges on each compute host.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"providerSegmentationID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderSegmentationID is the ID of the isolated segment on the physical network. The network_type attribute defines the segmentation model. For example, if the network_type value is vlan, this ID is a vlan identifier. If the network_type value is gre, this ID is a gre key.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkSpec defines the desired state of an ORC object.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"import": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Import refers to an existing OpenStack resource which will be imported instead of creating a new one.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkImport"),
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource specifies the desired state of the resource.\n\nResource may not be specified if the management policy is `unmanaged`.\n\nResource must be specified if the management policy is `managed`.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec"),
+						},
+					},
+					"managementPolicy": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagementPolicy defines how ORC will treat the object. Valid values are `managed`: ORC will create, update, and delete the resource; `unmanaged`: ORC will import an existing resource, and will not apply updates to it or delete it.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"managedOptions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagedOptions specifies options which may be applied to managed objects.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions"),
+						},
+					},
+					"cloudCredentialsRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CloudCredentialsRef points to a secret containing OpenStack credentials",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference"),
+						},
+					},
+				},
+				Required: []string{"cloudCredentialsRef"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkImport", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NetworkStatus defines the observed state of an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-map-keys": []interface{}{
+									"type",
+								},
+								"x-kubernetes-list-type":       "map",
+								"x-kubernetes-patch-merge-key": "type",
+								"x-kubernetes-patch-strategy":  "merge",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represents the observed status of the object. Known .status.conditions.type are: \"Available\", \"Progressing\"\n\nAvailable represents the availability of the OpenStack resource. If it is true then the resource is ready for use.\n\nProgressing indicates whether the controller is still attempting to reconcile the current state of the OpenStack resource to the desired state. Progressing will be False either because the desired state has been achieved, or because some terminal error prevents it from ever being achieved and the controller is no longer attempting to reconcile. If Progressing is True, an observer waiting on the resource should continue to wait.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the unique identifier of the OpenStack resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource contains the observed state of the OpenStack resource.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
 	}
 }
 

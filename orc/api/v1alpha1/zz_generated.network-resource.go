@@ -33,7 +33,7 @@ type NetworkImport struct {
 	// +kubebuilder:validation:Format:=uuid
 	ID *string `json:"id,omitempty"`
 
-	// Filter contains an resource query which is expected to return a single
+	// Filter contains a resource query which is expected to return a single
 	// result. The controller will continue to retry if filter returns no
 	// results. If filter returns multiple results the controller will set an
 	// error state and will not continue to retry.
@@ -41,14 +41,15 @@ type NetworkImport struct {
 	Filter *NetworkFilter `json:"filter,omitempty"`
 }
 
-// NetworkSpec defines the desired state of a ORC object.
+// NetworkSpec defines the desired state of an ORC object.
 // +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'managed' ? has(self.resource) : true",message="resource must be specified when policy is managed"
 // +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'managed' ? !has(self.__import__) : true",message="import may not be specified when policy is managed"
 // +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'unmanaged' ? !has(self.resource) : true",message="resource may not be specified when policy is unmanaged"
 // +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'unmanaged' ? has(self.__import__) : true",message="import must be specified when policy is unmanaged"
-// +kubebuilder:validation:XValidation:rule="has(self.managedOptions) ? self.managementPolicy == 'managed' : true",message="managedOptions may only be provided when policy is managed"type NetworkSpec struct {
-	// Import refers to an existing ORC object which will be imported instead of
-	// creating a new resource.
+// +kubebuilder:validation:XValidation:rule="has(self.managedOptions) ? self.managementPolicy == 'managed' : true",message="managedOptions may only be provided when policy is managed"
+type NetworkSpec struct {
+	// Import refers to an existing OpenStack resource which will be imported instead of
+	// creating a new one.
 	// +optional
 	Import *NetworkImport `json:"import,omitempty"`
 
@@ -56,7 +57,7 @@ type NetworkImport struct {
 	//
 	// Resource may not be specified if the management policy is `unmanaged`.
 	//
-	// Resource must be specified when the management policy is `managed`.
+	// Resource must be specified if the management policy is `managed`.
 	// +optional
 	Resource *NetworkResourceSpec `json:"resource,omitempty"`
 
@@ -86,11 +87,13 @@ type NetworkStatus struct {
 	// Available represents the availability of the OpenStack resource. If it is
 	// true then the resource is ready for use.
 	//
-	// Progressing indicates the state of the OpenStack resource not currently
-	// reflect the desired state, but that reconciliation is progressing.
-	// Progressing will be False either because the desired state has been
-	// achieved, or some terminal error prevents it from being achieved and the
-	// controller is no longer attempting to reconcile.
+	// Progressing indicates whether the controller is still attempting to
+	// reconcile the current state of the OpenStack resource to the desired
+	// state. Progressing will be False either because the desired state has
+	// been achieved, or because some terminal error prevents it from ever being
+	// achieved and the controller is no longer attempting to reconcile. If
+	// Progressing is True, an observer waiting on the resource should continue
+	// to wait.
 	//
 	// +patchMergeKey=type
 	// +patchStrategy=merge
