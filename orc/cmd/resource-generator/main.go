@@ -41,6 +41,10 @@ var allResources []templateFields = []templateFields{
 		},
 		StatusExtraType: "ImageStatusExtra",
 	},
+	{
+		Name:       "Network",
+		APIVersion: "v1alpha1",
+	},
 }
 
 func main() {
