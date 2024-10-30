@@ -25,6 +25,7 @@ type templateFields struct {
 	APIVersion           string
 	Year                 string
 	Name                 string
+	SpecExtraType        string
 	StatusExtraType      string
 	SpecExtraValidations []specExtraValidation
 }

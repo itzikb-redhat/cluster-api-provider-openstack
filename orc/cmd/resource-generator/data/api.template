@@ -50,6 +50,9 @@ type {{ .Name }}Import struct {
 // +kubebuilder:validation:XValidation:rule="{{ .Rule }}",message="{{ .Message }}"
 {{ end -}}
 type {{ .Name }}Spec struct {
+{{- if .SpecExtraType }}
+	{{ .SpecExtraType }} `json:",inline"`
+{{ end }}
 	// Import refers to an existing OpenStack resource which will be imported instead of
 	// creating a new one.
 	// +optional
