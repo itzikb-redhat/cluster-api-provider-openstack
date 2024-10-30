@@ -8,6 +8,7 @@ rules:
   - openstack.k-orc.cloud
   resources:
   - images
+  - subnets
   verbs:
   - create
   - delete
@@ -20,6 +21,7 @@ rules:
   - openstack.k-orc.cloud
   resources:
   - images/status
+  - subnets/status
   verbs:
   - get
   - patch

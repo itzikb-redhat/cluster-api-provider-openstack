@@ -48,6 +48,8 @@ type SubnetImport struct {
 // +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'unmanaged' ? has(self.__import__) : true",message="import must be specified when policy is unmanaged"
 // +kubebuilder:validation:XValidation:rule="has(self.managedOptions) ? self.managementPolicy == 'managed' : true",message="managedOptions may only be provided when policy is managed"
 type SubnetSpec struct {
+	SubnetRefs `json:",inline"`
+
 	// Import refers to an existing OpenStack resource which will be imported instead of
 	// creating a new one.
 	// +optional
@@ -108,6 +110,8 @@ type SubnetStatus struct {
 	// Resource contains the observed state of the OpenStack resource.
 	// +optional
 	Resource *SubnetResourceStatus `json:"resource,omitempty"`
+
+	SubnetStatusExtra `json:",inline"`
 }
 
 var _ ObjectWithConditions = &Subnet{}

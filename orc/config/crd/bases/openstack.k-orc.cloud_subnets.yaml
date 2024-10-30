@@ -240,6 +240,12 @@ spec:
                 x-kubernetes-validations:
                 - message: managementPolicy is immutable
                   rule: self == oldSelf
+              networkRef:
+                description: NetworkRef is a reference to the ORC Network which this
+                  subnet is associated with.
+                maxLength: 253
+                minLength: 1
+                type: string
               resource:
                 description: |-
                   Resource specifies the desired state of the resource.
@@ -385,12 +391,6 @@ spec:
                     maxLength: 1024
                     minLength: 1
                     type: string
-                  networkRef:
-                    description: NetworkRef is a reference to the ORC Network which
-                      this subnet is associated with.
-                    maxLength: 253
-                    minLength: 1
-                    type: string
                   projectID:
                     description: |-
                       ProjectID is the unique ID of the project which owns the Subnet. Only
@@ -415,10 +415,10 @@ spec:
                 required:
                 - cidr
                 - ipVersion
-                - networkRef
                 type: object
             required:
             - cloudCredentialsRef
+            - networkRef
             type: object
             x-kubernetes-validations:
             - message: resource must be specified when policy is managed
@@ -513,6 +513,11 @@ spec:
                 x-kubernetes-list-type: map
               id:
                 description: ID is the unique identifier of the OpenStack resource.
+                type: string
+              networkID:
+                description: NetworkID is the UUID of the parent network.
+                format: uuid
+                maxLength: 36
                 type: string
               resource:
                 description: Resource contains the observed state of the OpenStack
@@ -626,11 +631,6 @@ spec:
                     maxLength: 1024
                     minLength: 1
                     type: string
-                  networkID:
-                    description: UUID of the parent network.
-                    format: uuid
-                    maxLength: 36
-                    type: string
                   projectID:
                     description: ProjectID is the project owner of the subnet.
                     format: uuid
@@ -667,7 +667,6 @@ spec:
                 - enableDHCP
                 - ipVersion
                 - name
-                - networkID
                 - projectID
                 type: object
             type: object

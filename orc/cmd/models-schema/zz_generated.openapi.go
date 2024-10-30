@@ -65,10 +65,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetGateway":              schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetGateway(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetImport(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetRefs":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetRefs(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetSpec":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatusExtra":          schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatusExtra(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                    schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AppArmorProfile":                             schema_k8sio_api_core_v1_AppArmorProfile(ref),
@@ -2156,7 +2158,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetList(ref comm
 	}
 }
 
-func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetRefs(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2170,6 +2172,19 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(
 							Format:      "",
 						},
 					},
+				},
+				Required: []string{"networkRef"},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Name is a human-readable name of the subnet. If not set, the object's name will be used.",
@@ -2312,7 +2327,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(
 						},
 					},
 				},
-				Required: []string{"networkRef", "ipVersion", "cidr"},
+				Required: []string{"ipVersion", "cidr"},
 			},
 		},
 		Dependencies: []string{
@@ -2326,14 +2341,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"networkID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "UUID of the parent network.",
-							Default:     "",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Name is the human-readable name of the subnet. Might not be unique.",
@@ -2512,7 +2519,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 						},
 					},
 				},
-				Required: []string{"networkID", "name", "ipVersion", "cidr", "dnsNameservers", "enableDHCP", "projectID"},
+				Required: []string{"name", "ipVersion", "cidr", "dnsNameservers", "enableDHCP", "projectID"},
 			},
 		},
 		Dependencies: []string{
@@ -2527,6 +2534,14 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetSpec(ref comm
 				Description: "SubnetSpec defines the desired state of an ORC object.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"networkRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkRef is a reference to the ORC Network which this subnet is associated with.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 					"import": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Import refers to an existing OpenStack resource which will be imported instead of creating a new one.",
@@ -2560,7 +2575,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetSpec(ref comm
 						},
 					},
 				},
-				Required: []string{"cloudCredentialsRef"},
+				Required: []string{"networkRef", "cloudCredentialsRef"},
 			},
 		},
 		Dependencies: []string{
@@ -2612,11 +2627,37 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatus(ref co
 							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceStatus"),
 						},
 					},
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
 			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatusExtra(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

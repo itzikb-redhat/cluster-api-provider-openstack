@@ -23,6 +23,12 @@ package v1alpha1
 // * IPv6 may only be set if IPVersion is 6 (Spec and SubnetFilter)
 // * AllocationPools must be in CIDR
 
+type SubnetRefs struct {
+	// NetworkRef is a reference to the ORC Network which this subnet is associated with.
+	// +required
+	NetworkRef ORCNameRef `json:"networkRef"`
+}
+
 // SubnetFilter specifies a filter to select a subnet. At least one parameter must be specified.
 // +kubebuilder:validation:MinProperties:=1
 type SubnetFilter struct {
@@ -38,9 +44,6 @@ type SubnetFilter struct {
 }
 
 type SubnetResourceSpec struct {
-	// NetworkRef is a reference to the ORC Network which this subnet is associated with.
-	NetworkRef ORCNameRef `json:"networkRef"`
-
 	// Name is a human-readable name of the subnet. If not set, the object's name will be used.
 	// +optional
 	Name *OpenStackName `json:"name,omitempty"`
@@ -104,10 +107,12 @@ type SubnetResourceSpec struct {
 	// TODO: Support subnet pools
 }
 
-type SubnetResourceStatus struct {
-	// UUID of the parent network.
-	NetworkID UUID `json:"networkID"`
+type SubnetStatusExtra struct {
+	// NetworkID is the UUID of the parent network.
+	NetworkID *UUID `json:"networkID,omitempty"`
+}
 
+type SubnetResourceStatus struct {
 	// Name is the human-readable name of the subnet. Might not be unique.
 	Name OpenStackName `json:"name"`
 

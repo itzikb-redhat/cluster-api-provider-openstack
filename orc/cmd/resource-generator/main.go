@@ -46,7 +46,9 @@ var allResources []templateFields = []templateFields{
 		APIVersion: "v1alpha1",
 	},
 	{
-		Name: "Subnet",
+		Name:            "Subnet",
+		SpecExtraType:   "SubnetRefs",
+		StatusExtraType: "SubnetStatusExtra",
 	},
 }
 

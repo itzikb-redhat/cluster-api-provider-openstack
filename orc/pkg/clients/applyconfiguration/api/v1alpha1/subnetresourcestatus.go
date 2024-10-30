@@ -26,7 +26,6 @@ import (
 // SubnetResourceStatusApplyConfiguration represents a declarative configuration of the SubnetResourceStatus type for use
 // with apply.
 type SubnetResourceStatusApplyConfiguration struct {
-	NetworkID                               *v1alpha1.UUID                     `json:"networkID,omitempty"`
 	Name                                    *v1alpha1.OpenStackName            `json:"name,omitempty"`
 	Description                             *v1alpha1.OpenStackDescription     `json:"description,omitempty"`
 	IPVersion                               *v1alpha1.IPVersion                `json:"ipVersion,omitempty"`
@@ -49,14 +48,6 @@ type SubnetResourceStatusApplyConfiguration struct {
 // apply.
 func SubnetResourceStatus() *SubnetResourceStatusApplyConfiguration {
 	return &SubnetResourceStatusApplyConfiguration{}
-}
-
-// WithNetworkID sets the NetworkID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the NetworkID field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithNetworkID(value v1alpha1.UUID) *SubnetResourceStatusApplyConfiguration {
-	b.NetworkID = &value
-	return b
 }
 
 // WithName sets the Name field in the declarative configuration to the given value
