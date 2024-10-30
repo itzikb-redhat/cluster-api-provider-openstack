@@ -545,6 +545,9 @@ spec:
                     maxLength: 49
                     minLength: 1
                     type: string
+                  createdAt:
+                    format: date-time
+                    type: string
                   description:
                     description: Description for the subnet.
                     maxLength: 1024
@@ -655,6 +658,9 @@ spec:
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
+                  updatedAt:
+                    format: date-time
+                    type: string
                 required:
                 - cidr
                 - dnsNameservers

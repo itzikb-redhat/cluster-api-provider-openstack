@@ -59,6 +59,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment":             schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSegment(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NeutronStatusMetadata":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Subnet":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Subnet(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetFilter(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetGateway":              schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetGateway(ref),
@@ -1836,6 +1837,37 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref c
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"revisionNumber": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_Subnet(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -2462,6 +2494,16 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 							},
 						},
 					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
 					"revisionNumber": {
 						SchemaProps: spec.SchemaProps{
 							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
@@ -2474,7 +2516,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 			},
 		},
 		Dependencies: []string{
-			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 

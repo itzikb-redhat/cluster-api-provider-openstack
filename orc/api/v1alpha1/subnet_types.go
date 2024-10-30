@@ -160,8 +160,7 @@ type SubnetResourceStatus struct {
 	// +listType=atomic
 	Tags []NeutronTag `json:"tags,omitempty"`
 
-	// RevisionNumber optionally set via extensions/standard-attr-revisions
-	RevisionNumber *int64 `json:"revisionNumber,omitempty"`
+	NeutronStatusMetadata `json:",inline"`
 }
 
 // +kubebuilder:validation:Enum:=slaac;dhcpv6-stateful;dhcpv6-stateless

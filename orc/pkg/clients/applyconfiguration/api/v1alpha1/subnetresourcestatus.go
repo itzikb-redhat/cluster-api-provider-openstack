@@ -20,28 +20,29 @@ package v1alpha1
 
 import (
 	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // SubnetResourceStatusApplyConfiguration represents a declarative configuration of the SubnetResourceStatus type for use
 // with apply.
 type SubnetResourceStatusApplyConfiguration struct {
-	NetworkID         *v1alpha1.UUID                     `json:"networkID,omitempty"`
-	Name              *v1alpha1.OpenStackName            `json:"name,omitempty"`
-	Description       *v1alpha1.OpenStackDescription     `json:"description,omitempty"`
-	IPVersion         *v1alpha1.IPVersion                `json:"ipVersion,omitempty"`
-	CIDR              *v1alpha1.CIDR                     `json:"cidr,omitempty"`
-	GatewayIP         *v1alpha1.IPvAny                   `json:"gatewayIP,omitempty"`
-	DNSNameservers    []v1alpha1.IPvAny                  `json:"dnsNameservers,omitempty"`
-	DNSPublishFixedIP *bool                              `json:"dnsPublishFixedIP,omitempty"`
-	AllocationPools   []AllocationPoolApplyConfiguration `json:"allocationPools,omitempty"`
-	HostRoutes        []HostRouteApplyConfiguration      `json:"hostRoutes,omitempty"`
-	EnableDHCP        *bool                              `json:"enableDHCP,omitempty"`
-	ProjectID         *v1alpha1.UUID                     `json:"projectID,omitempty"`
-	IPv6AddressMode   *v1alpha1.IPv6AddressMode          `json:"ipv6AddressMode,omitempty"`
-	IPv6RAMode        *v1alpha1.IPv6RAMode               `json:"ipv6RAMode,omitempty"`
-	SubnetPoolID      *v1alpha1.UUID                     `json:"subnetPoolID,omitempty"`
-	Tags              []v1alpha1.NeutronTag              `json:"tags,omitempty"`
-	RevisionNumber    *int64                             `json:"revisionNumber,omitempty"`
+	NetworkID                               *v1alpha1.UUID                     `json:"networkID,omitempty"`
+	Name                                    *v1alpha1.OpenStackName            `json:"name,omitempty"`
+	Description                             *v1alpha1.OpenStackDescription     `json:"description,omitempty"`
+	IPVersion                               *v1alpha1.IPVersion                `json:"ipVersion,omitempty"`
+	CIDR                                    *v1alpha1.CIDR                     `json:"cidr,omitempty"`
+	GatewayIP                               *v1alpha1.IPvAny                   `json:"gatewayIP,omitempty"`
+	DNSNameservers                          []v1alpha1.IPvAny                  `json:"dnsNameservers,omitempty"`
+	DNSPublishFixedIP                       *bool                              `json:"dnsPublishFixedIP,omitempty"`
+	AllocationPools                         []AllocationPoolApplyConfiguration `json:"allocationPools,omitempty"`
+	HostRoutes                              []HostRouteApplyConfiguration      `json:"hostRoutes,omitempty"`
+	EnableDHCP                              *bool                              `json:"enableDHCP,omitempty"`
+	ProjectID                               *v1alpha1.UUID                     `json:"projectID,omitempty"`
+	IPv6AddressMode                         *v1alpha1.IPv6AddressMode          `json:"ipv6AddressMode,omitempty"`
+	IPv6RAMode                              *v1alpha1.IPv6RAMode               `json:"ipv6RAMode,omitempty"`
+	SubnetPoolID                            *v1alpha1.UUID                     `json:"subnetPoolID,omitempty"`
+	Tags                                    []v1alpha1.NeutronTag              `json:"tags,omitempty"`
+	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
 // SubnetResourceStatusApplyConfiguration constructs a declarative configuration of the SubnetResourceStatus type for use with
@@ -192,10 +193,26 @@ func (b *SubnetResourceStatusApplyConfiguration) WithTags(values ...v1alpha1.Neu
 	return b
 }
 
+// WithCreatedAt sets the CreatedAt field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CreatedAt field is set to the value of the last call.
+func (b *SubnetResourceStatusApplyConfiguration) WithCreatedAt(value v1.Time) *SubnetResourceStatusApplyConfiguration {
+	b.CreatedAt = &value
+	return b
+}
+
+// WithUpdatedAt sets the UpdatedAt field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the UpdatedAt field is set to the value of the last call.
+func (b *SubnetResourceStatusApplyConfiguration) WithUpdatedAt(value v1.Time) *SubnetResourceStatusApplyConfiguration {
+	b.UpdatedAt = &value
+	return b
+}
+
 // WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the RevisionNumber field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithRevisionNumber(value int64) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithRevisionNumber(value v1alpha1.NeutronRevisionNumber) *SubnetResourceStatusApplyConfiguration {
 	b.RevisionNumber = &value
 	return b
 }

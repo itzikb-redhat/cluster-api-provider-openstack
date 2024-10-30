@@ -86,6 +86,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.NetworkSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("NetworkStatus"):
 		return &apiv1alpha1.NetworkStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NeutronStatusMetadata"):
+		return &apiv1alpha1.NeutronStatusMetadataApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Subnet"):
 		return &apiv1alpha1.SubnetApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SubnetFilter"):

@@ -16,6 +16,10 @@ limitations under the License.
 
 package v1alpha1
 
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 // NeutronTag represents a tag on a Neutron resource.
 // It may not be empty and may not contain commas.
 // +kubebuilder:validation:Pattern:="^[^,]+$"
@@ -65,3 +69,13 @@ type CIDR string
 // +kubebuilder:validation:MinLength:=1
 // +kubebuilder:validation:MaxLength:=45
 type IPvAny string
+
+type NeutronRevisionNumber int64
+
+type NeutronStatusMetadata struct {
+	CreatedAt *metav1.Time `json:"createdAt,omitempty"`
+	UpdatedAt *metav1.Time `json:"updatedAt,omitempty"`
+
+	// RevisionNumber optionally set via extensions/standard-attr-revisions
+	RevisionNumber *NeutronRevisionNumber `json:"revisionNumber,omitempty"`
+}
