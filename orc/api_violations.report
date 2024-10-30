@@ -1,3 +1,5 @@
+API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,NetworkResourceStatus,IPV4AddressScope
+API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,NetworkResourceStatus,IPV6AddressScope
 API rule violation: names_match,k8s.io/api/core/v1,AzureDiskVolumeSource,DataDiskURI
 API rule violation: names_match,k8s.io/api/core/v1,ContainerStatus,LastTerminationState
 API rule violation: names_match,k8s.io/api/core/v1,DaemonEndpoint,Port

@@ -615,8 +615,8 @@ func (in *NetworkResourceSpec) DeepCopyInto(out *NetworkResourceSpec) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.QoSPolicyID != nil {
-		in, out := &in.QoSPolicyID, &out.QoSPolicyID
+	if in.QOSPolicyID != nil {
+		in, out := &in.QOSPolicyID, &out.QOSPolicyID
 		*out = new(string)
 		**out = **in
 	}

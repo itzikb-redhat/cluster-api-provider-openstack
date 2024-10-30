@@ -81,9 +81,9 @@ type NetworkResourceSpec struct {
 	// +optional
 	PortSecurityEnabled *bool `json:"portSecurityEnabled,omitempty"`
 
-	// QoSPolicyID is the ID of the QoS policy associated with the network.
+	// QOSPolicyID is the ID of the QoS policy associated with the network.
 	// +optional
-	QoSPolicyID *string `json:"qosPolicyID,omitempty"`
+	QOSPolicyID *string `json:"qosPolicyID,omitempty"`
 
 	// External indicates whether the network has an external routing
 	// facility that’s not managed by the networking service.
@@ -102,6 +102,7 @@ type NetworkResourceSpec struct {
 	VLANTransparent *bool `json:"vlanTransparent,omitempty"`
 
 	// AvailabilityZoneHints is the availability zone candidate for the network.
+	// +listType=set
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
 }
@@ -115,12 +116,12 @@ type NetworkFilter struct {
 
 	// Description of the existing resource
 	// +optional
-	Description *string
+	Description *string `json:"description,omitempty"`
 
 	// External indicates whether the network has an external routing
 	// facility that’s not managed by the networking service.
 	// +optional
-	External *bool
+	External *bool `json:"external,omitempty"`
 }
 
 // NetworkResourceStatus represents the observed state of the resource.
@@ -132,10 +133,12 @@ type NetworkResourceStatus struct {
 
 	// AvailabilityZoneHints is the availability zone candidate for the
 	// network.
+	// +listType=atomic
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
 
 	// Availability is the availability zone for the network.
+	// +listType=atomic
 	// +optional
 	AvailabilityZones []string `json:"availabilityZones,omitempty"`
 
@@ -188,9 +191,9 @@ type NetworkResourceStatus struct {
 	// +optional
 	Segment NetworkSegment `json:",inline"`
 
-	// QoSPolicyID is the ID of the QoS policy associated with the network.
+	// QOSPolicyID is the ID of the QoS policy associated with the network.
 	// +optional
-	QoSPolicyID string `json:"qosPolicyID,omitempty"`
+	QOSPolicyID string `json:"qosPolicyID,omitempty"`
 
 	// RevisionNumber is the revision number of the resource.
 	// +optional
@@ -207,6 +210,7 @@ type NetworkResourceStatus struct {
 	External bool `json:"external,omitempty"`
 
 	// Segment is a list of provider segment objects.
+	// +listType=atomic
 	// +optional
 	Segments []NetworkSegment `json:"segments,omitempty"`
 
@@ -221,6 +225,7 @@ type NetworkResourceStatus struct {
 	Status *string `json:"status,omitempty"`
 
 	// Subnets associated with this network.
+	// +listType=atomic
 	// +optional
 	Subnets []string `json:"subnets,omitempty"`
 
@@ -246,6 +251,7 @@ type NetworkResourceStatus struct {
 	IsDefault *bool `json:"isDefault,omitempty"`
 
 	// Tags is the list of tags on the resource.
+	// +listType=atomic
 	// +optional
 	Tags []string `json:"tags,omitempty"`
 }

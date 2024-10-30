@@ -1040,14 +1040,14 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref c
 							Format:      "",
 						},
 					},
-					"Description": {
+					"description": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Description of the existing resource",
 							Type:        []string{"string"},
 							Format:      "",
 						},
 					},
-					"External": {
+					"external": {
 						SchemaProps: spec.SchemaProps{
 							Description: "External indicates whether the network has an external routing facility that’s not managed by the networking service.",
 							Type:        []string{"boolean"},
@@ -1185,7 +1185,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 					},
 					"qosPolicyID": {
 						SchemaProps: spec.SchemaProps{
-							Description: "QoSPolicyID is the ID of the QoS policy associated with the network.",
+							Description: "QOSPolicyID is the ID of the QoS policy associated with the network.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -1212,6 +1212,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 						},
 					},
 					"availabilityZoneHints": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
 							Type:        []string{"array"},
@@ -1247,6 +1252,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 						},
 					},
 					"availabilityZoneHints": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
 							Type:        []string{"array"},
@@ -1262,6 +1272,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 						},
 					},
 					"availabilityZones": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "Availability is the availability zone for the network.",
 							Type:        []string{"array"},
@@ -1368,7 +1383,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 					},
 					"qosPolicyID": {
 						SchemaProps: spec.SchemaProps{
-							Description: "QoSPolicyID is the ID of the QoS policy associated with the network.",
+							Description: "QOSPolicyID is the ID of the QoS policy associated with the network.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -1388,6 +1403,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 						},
 					},
 					"segments": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "Segment is a list of provider segment objects.",
 							Type:        []string{"array"},
@@ -1416,6 +1436,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 						},
 					},
 					"subnets": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "Subnets associated with this network.",
 							Type:        []string{"array"},
@@ -1465,6 +1490,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 						},
 					},
 					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
 						SchemaProps: spec.SchemaProps{
 							Description: "Tags is the list of tags on the resource.",
 							Type:        []string{"array"},

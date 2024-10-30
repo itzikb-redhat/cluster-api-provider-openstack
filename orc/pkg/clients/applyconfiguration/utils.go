@@ -62,6 +62,22 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.ImageStatusExtraApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ManagedOptions"):
 		return &apiv1alpha1.ManagedOptionsApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Network"):
+		return &apiv1alpha1.NetworkApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkFilter"):
+		return &apiv1alpha1.NetworkFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkImport"):
+		return &apiv1alpha1.NetworkImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkResourceSpec"):
+		return &apiv1alpha1.NetworkResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkResourceStatus"):
+		return &apiv1alpha1.NetworkResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkSegment"):
+		return &apiv1alpha1.NetworkSegmentApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkSpec"):
+		return &apiv1alpha1.NetworkSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("NetworkStatus"):
+		return &apiv1alpha1.NetworkStatusApplyConfiguration{}
 
 	}
 	return nil

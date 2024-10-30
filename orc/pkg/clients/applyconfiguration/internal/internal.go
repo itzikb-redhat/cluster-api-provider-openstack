@@ -249,6 +249,240 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: onDelete
       type:
         scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Network
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkFilter
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: external
+      type:
+        scalar: boolean
+    - name: name
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkImport
+  map:
+    fields:
+    - name: filter
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkFilter
+    - name: id
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceSpec
+  map:
+    fields:
+    - name: adminStateUp
+      type:
+        scalar: boolean
+    - name: availabilityZoneHints
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: description
+      type:
+        scalar: string
+    - name: dnsDomain
+      type:
+        scalar: string
+    - name: external
+      type:
+        scalar: boolean
+    - name: mtu
+      type:
+        scalar: numeric
+    - name: name
+      type:
+        scalar: string
+    - name: portSecurityEnabled
+      type:
+        scalar: boolean
+    - name: qosPolicyID
+      type:
+        scalar: string
+    - name: shared
+      type:
+        scalar: boolean
+    - name: vlanTransparent
+      type:
+        scalar: boolean
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceStatus
+  map:
+    fields:
+    - name: adminStateUp
+      type:
+        scalar: boolean
+    - name: availabilityZoneHints
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: availabilityZones
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: createdAt
+      type:
+        scalar: string
+    - name: description
+      type:
+        scalar: string
+    - name: dnsDomain
+      type:
+        scalar: string
+    - name: external
+      type:
+        scalar: boolean
+    - name: id
+      type:
+        scalar: string
+    - name: ipv4AddressScope
+      type:
+        scalar: string
+    - name: ipv6AddressScope
+      type:
+        scalar: string
+    - name: isDefault
+      type:
+        scalar: boolean
+    - name: l2Adjacency
+      type:
+        scalar: boolean
+    - name: mtu
+      type:
+        scalar: numeric
+    - name: name
+      type:
+        scalar: string
+    - name: portSecurityEnabled
+      type:
+        scalar: boolean
+    - name: projectID
+      type:
+        scalar: string
+    - name: providerNetworkType
+      type:
+        scalar: string
+    - name: providerPhysicalNetwork
+      type:
+        scalar: string
+    - name: providerSegmentationID
+      type:
+        scalar: numeric
+    - name: qosPolicyID
+      type:
+        scalar: string
+    - name: revisionNumber
+      type:
+        scalar: numeric
+    - name: segments
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSegment
+          elementRelationship: atomic
+    - name: shared
+      type:
+        scalar: boolean
+    - name: status
+      type:
+        scalar: string
+    - name: subnets
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: tenantID
+      type:
+        scalar: string
+    - name: updatedAt
+      type:
+        scalar: string
+    - name: vlanTransparent
+      type:
+        scalar: boolean
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSegment
+  map:
+    fields:
+    - name: providerNetworkType
+      type:
+        scalar: string
+    - name: providerPhysicalNetwork
+      type:
+        scalar: string
+    - name: providerSegmentationID
+      type:
+        scalar: numeric
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSpec
+  map:
+    fields:
+    - name: cloudCredentialsRef
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
+      default: {}
+    - name: import
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkImport
+    - name: managedOptions
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ManagedOptions
+    - name: managementPolicy
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceSpec
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
+    - name: id
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceStatus
 - name: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
   map:
     fields:
