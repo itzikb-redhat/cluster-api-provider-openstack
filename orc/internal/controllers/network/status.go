@@ -14,15 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package image
+package network
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
-	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/images"
+	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
@@ -34,11 +35,6 @@ import (
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
 	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
-)
-
-const (
-	glanceOSHashAlgo  = "os_hash_algo"
-	glanceOSHashValue = "os_hash_value"
 )
 
 // setFinalizer sets a finalizer on the object in its own SSA transaction.
@@ -65,28 +61,27 @@ func (r *orcNetworkReconciler) setFinalizer(ctx context.Context, obj client.Obje
 	return r.client.Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 }
 
-// setStatusID sets a finalizer on the object in its own SSA transaction.
-func (r *orcNetworkReconciler) setStatusID(ctx context.Context, orcImage *orcv1alpha1.Image, id string) error {
-	applyConfig := orcapplyconfigv1alpha1.Image(orcImage.Name, orcImage.Namespace).
-		WithUID(orcImage.GetUID()).
-		WithStatus(orcapplyconfigv1alpha1.ImageStatus().
+// setStatusID sets status.ID in its own SSA transaction.
+func (r *orcNetworkReconciler) setStatusID(ctx context.Context, obj client.Object, id string) error {
+	applyConfig := orcapplyconfigv1alpha1.Subnet(obj.GetName(), obj.GetNamespace()).
+		WithUID(obj.GetUID()).
+		WithStatus(orcapplyconfigv1alpha1.SubnetStatus().
 			WithID(id))
 
-	return r.client.Status().Patch(ctx, orcImage, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
+	return r.client.Status().Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
 }
 
 type updateStatusOpts struct {
-	glanceImage               *images.Image
-	progressMessage           *string
-	err                       error
-	incrementDownloadAttempts bool
+	resource        *networkExt
+	progressMessage *string
+	err             error
 }
 
 type updateStatusOpt func(*updateStatusOpts)
 
-func withGlanceImage(glanceImage *images.Image) updateStatusOpt {
+func withResource(resource *networkExt) updateStatusOpt {
 	return func(opts *updateStatusOpts) {
-		opts.glanceImage = glanceImage
+		opts.resource = resource
 	}
 }
 
@@ -103,18 +98,52 @@ func withProgressMessage(message string) updateStatusOpt {
 	}
 }
 
-func withIncrementDownloadAttempts() updateStatusOpt {
-	return func(opts *updateStatusOpts) {
-		opts.incrementDownloadAttempts = true
+func getOSResourceStatus(log logr.Logger, osResource *networkExt) *orcapplyconfigv1alpha1.NetworkResourceStatusApplyConfiguration {
+	networkResourceStatus := (&orcapplyconfigv1alpha1.NetworkResourceStatusApplyConfiguration{}).
+		WithName(osResource.Name).
+		WithDescription(osResource.Description).
+		WithAdminStateUp(osResource.AdminStateUp).
+		WithAvailabilityZoneHints(osResource.AvailabilityZoneHints...).
+		WithStatus(osResource.Status).
+		WithProjectID(osResource.ProjectID).
+		WithTags(osResource.Tags...).
+		WithDNSDomain(osResource.DNSDomain).
+		WithRevisionNumber(orcv1alpha1.NeutronRevisionNumber(osResource.RevisionNumber)).
+		WithExternal(osResource.External).
+		WithSubnets(osResource.Subnets...).
+		WithMTU(int32(osResource.MTU)).
+		WithPortSecurityEnabled(osResource.PortSecurityEnabled).
+		WithShared(osResource.Shared).
+		WithCreatedAt(metav1.NewTime(osResource.CreatedAt)).
+		WithUpdatedAt(metav1.NewTime(osResource.UpdatedAt))
+
+	if osResource.NetworkType != "" {
+		providerProperties := orcapplyconfigv1alpha1.ProviderProperties().
+			WithNetworkType(orcv1alpha1.ProviderNetworkType(osResource.NetworkType)).
+			WithPhysicalNetwork(orcv1alpha1.PhysicalNetwork(osResource.PhysicalNetwork))
+
+		if osResource.SegmentationID != "" {
+			segmentationID, err := strconv.ParseInt(osResource.SegmentationID, 10, 32)
+			if err != nil {
+				log.V(3).Error(err, "Invalid segmentation ID", "segmentationID", osResource.SegmentationID)
+			} else {
+				providerProperties.WithSegmentationID(int32(segmentationID))
+			}
+		}
+		networkResourceStatus.WithProvider(providerProperties)
 	}
+
+	return networkResourceStatus
 }
+
+const NetworkStatusActive = "ACTIVE"
 
 // createStatusUpdate computes a complete status update based on the given
 // observed state. This is separated from updateStatus to facilitate unit
 // testing, as the version of k8s we currently import does not support patch
 // apply in the fake client.
 // Needs: https://github.com/kubernetes/kubernetes/pull/125560
-func createStatusUpdate(ctx context.Context, orcImage *orcv1alpha1.Image, now metav1.Time, opts ...updateStatusOpt) *orcapplyconfigv1alpha1.ImageApplyConfiguration {
+func createStatusUpdate(ctx context.Context, orcNetwork *orcv1alpha1.Network, now metav1.Time, opts ...updateStatusOpt) *orcapplyconfigv1alpha1.NetworkApplyConfiguration {
 	log := ctrl.LoggerFrom(ctx)
 
 	statusOpts := updateStatusOpts{}
@@ -122,67 +151,37 @@ func createStatusUpdate(ctx context.Context, orcImage *orcv1alpha1.Image, now me
 		opts[i](&statusOpts)
 	}
 
-	glanceImage := statusOpts.glanceImage
+	osResource := statusOpts.resource
 	err := statusOpts.err
 
-	applyConfigStatus := orcapplyconfigv1alpha1.ImageStatus()
-	applyConfig := orcapplyconfigv1alpha1.Image(orcImage.Name, orcImage.Namespace).WithStatus(applyConfigStatus)
+	applyConfigStatus := orcapplyconfigv1alpha1.NetworkStatus()
+	applyConfig := orcapplyconfigv1alpha1.Network(orcNetwork.Name, orcNetwork.Namespace).WithStatus(applyConfigStatus)
 
-	downloadAttempts := ptr.Deref(orcImage.Status.DownloadAttempts, 0)
-	if statusOpts.incrementDownloadAttempts {
-		downloadAttempts++
-	}
-	if downloadAttempts > 0 {
-		applyConfigStatus.WithDownloadAttempts(downloadAttempts)
-	}
-
-	var glanceHash *orcv1alpha1.ImageHash
-	if glanceImage != nil {
-		resourceStatus := orcapplyconfigv1alpha1.ImageResourceStatus()
+	if osResource != nil {
+		resourceStatus := getOSResourceStatus(log, osResource)
 		applyConfigStatus.WithResource(resourceStatus)
-		resourceStatus.WithStatus(string(glanceImage.Status))
-
-		if glanceImage.SizeBytes > 0 {
-			resourceStatus.WithSizeB(glanceImage.SizeBytes)
-		}
-		if glanceImage.VirtualSize > 0 {
-			resourceStatus.WithVirtualSizeB(glanceImage.VirtualSize)
-		}
-
-		osHashAlgo, _ := glanceImage.Properties[glanceOSHashAlgo].(string)
-		osHashValue, _ := glanceImage.Properties[glanceOSHashValue].(string)
-		if osHashAlgo != "" && osHashValue != "" {
-			glanceHash = &orcv1alpha1.ImageHash{
-				Algorithm: orcv1alpha1.ImageHashAlgorithm(osHashAlgo),
-				Value:     osHashValue,
-			}
-			resourceStatus.WithHash(
-				orcapplyconfigv1alpha1.ImageHash().
-					WithAlgorithm(glanceHash.Algorithm).
-					WithValue(glanceHash.Value))
-		}
 	}
 
 	availableCondition := applyconfigv1.Condition().
 		WithType(orcv1alpha1.OpenStackConditionAvailable).
-		WithObservedGeneration(orcImage.Generation)
+		WithObservedGeneration(orcNetwork.Generation)
 	progressingCondition := applyconfigv1.Condition().
 		WithType(orcv1alpha1.OpenStackConditionProgressing).
-		WithObservedGeneration(orcImage.Generation)
+		WithObservedGeneration(orcNetwork.Generation)
 
-	available := false
-	if glanceImage != nil && glanceImage.Status == images.ImageStatusActive {
+	// A network is available when it has a status of ACTIVE
+	available := osResource != nil && osResource.Status == NetworkStatusActive
+	if available {
 		availableCondition.
 			WithStatus(metav1.ConditionTrue).
 			WithReason(orcv1alpha1.OpenStackConditionReasonSuccess).
-			WithMessage("Glance image is available")
-		available = true
+			WithMessage("OpenStack resource is available")
 	} else {
 		// Image is not available. Reason and message will be copied from Progressing
 		availableCondition.WithStatus(metav1.ConditionFalse)
 	}
 
-	// We are progressing until the image is available or there was an error
+	// We are progressing until the OpenStack resource is available or there was an error
 	if err == nil {
 		if available {
 			progressingCondition.
@@ -225,7 +224,7 @@ func createStatusUpdate(ctx context.Context, orcImage *orcv1alpha1.Image, now me
 	// Maintain condition timestamps if they haven't changed
 	// This also ensures that we don't generate an update event if nothing has changed
 	for _, condition := range []*applyconfigv1.ConditionApplyConfiguration{availableCondition, progressingCondition} {
-		previous := meta.FindStatusCondition(orcImage.Status.Conditions, *condition.Type)
+		previous := meta.FindStatusCondition(orcNetwork.Status.Conditions, *condition.Type)
 		if previous != nil && ssa.ConditionsEqual(previous, condition) {
 			condition.WithLastTransitionTime(previous.LastTransitionTime)
 		} else {
@@ -264,10 +263,10 @@ func createStatusUpdate(ctx context.Context, orcImage *orcv1alpha1.Image, now me
 }
 
 // updateStatus computes a complete status based on the given observed state and writes it to status.
-func (r *orcNetworkReconciler) updateStatus(ctx context.Context, orcImage *orcv1alpha1.Image, opts ...updateStatusOpt) error {
+func (r *orcNetworkReconciler) updateStatus(ctx context.Context, orcObject *orcv1alpha1.Network, opts ...updateStatusOpt) error {
 	now := metav1.NewTime(time.Now())
 
-	statusUpdate := createStatusUpdate(ctx, orcImage, now, opts...)
+	statusUpdate := createStatusUpdate(ctx, orcObject, now, opts...)
 
-	return r.client.Status().Patch(ctx, orcImage, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
+	return r.client.Status().Patch(ctx, orcObject, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
 }

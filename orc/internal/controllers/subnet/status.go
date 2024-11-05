@@ -86,10 +86,9 @@ func (r *orcSubnetReconciler) setStatusNetworkID(ctx context.Context, obj client
 }
 
 type updateStatusOpts struct {
-	resource                  *subnets.Subnet
-	progressMessage           *string
-	err                       error
-	incrementDownloadAttempts bool
+	resource        *subnets.Subnet
+	progressMessage *string
+	err             error
 }
 
 type updateStatusOpt func(*updateStatusOpts)
@@ -110,12 +109,6 @@ func withError(err error) updateStatusOpt {
 func withProgressMessage(message string) updateStatusOpt {
 	return func(opts *updateStatusOpts) {
 		opts.progressMessage = &message
-	}
-}
-
-func withIncrementDownloadAttempts() updateStatusOpt {
-	return func(opts *updateStatusOpts) {
-		opts.incrementDownloadAttempts = true
 	}
 }
 

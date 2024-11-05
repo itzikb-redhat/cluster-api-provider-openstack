@@ -186,7 +186,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 		osResource, err := networkClient.GetSubnet(*orcObject.Spec.Import.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
-				// We assume that an image imported by ID must already exist. It's a terminal error if it doesn't.
+				// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
 				return nil, false, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "referenced resource does not exist in OpenStack")
 			}
 			return nil, false, err
@@ -325,7 +325,7 @@ func getResourceFromList(_ context.Context, listOpts subnets.ListOptsBuilder, ne
 		return &osResources[0], nil
 	}
 
-	// No image found
+	// No resource found
 	if len(osResources) == 0 {
 		return nil, nil
 	}
@@ -334,7 +334,7 @@ func getResourceFromList(_ context.Context, listOpts subnets.ListOptsBuilder, ne
 	return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, fmt.Sprintf("Expected to find exactly one OpenStack resource to import. Found %d", len(osResources)))
 }
 
-// createResource creates a Glance image for an ORC Image.
+// createResource creates an OpenStack resource from an ORC object
 func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
@@ -365,7 +365,7 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, networkI
 
 	// We should require the spec to be updated before retrying a create which returned a conflict
 	if orcerrors.IsConflict(err) {
-		err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating image: "+err.Error(), err)
+		err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
 	}
 
 	return osResource, err

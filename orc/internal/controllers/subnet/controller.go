@@ -86,7 +86,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 
 	log := mgr.GetLogger()
 
-	// Index servers by referenced image
+	// Index subnets by referenced network
 	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Subnet{}, networkRefPath, func(obj client.Object) []string {
 		subnet, ok := obj.(*orcv1alpha1.Subnet)
 		if !ok {

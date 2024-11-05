@@ -14,23 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package image
+package network
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/go-logr/logr"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/event"
-	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 
+	ctrlcommon "github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	ctrlexport "github.com/k-orc/openstack-resource-controller/internal/controllers/export"
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
 )
@@ -52,69 +49,40 @@ func ssaFieldOwner(txn string) client.FieldOwner {
 	return client.FieldOwner(FieldOwner + "/" + txn)
 }
 
+const (
+	// The time to wait before reconciling again when we are expecting glance to finish some task and update status.
+	externalUpdatePollingPeriod = 15 * time.Second
 
-// orcNetworkReconciler reconciles an ORC Image.
+	// The time to wait between checking if a delete was successful
+	deletePollingPeriod = 5 * time.Second
+)
+
+// orcNetworkReconciler reconciles an ORC Subnet.
 type orcNetworkReconciler struct {
 	client           client.Client
 	recorder         record.EventRecorder
 	watchFilterValue string
 	scopeFactory     scope.Factory
+	caCertificates   []byte // PEM encoded ca certificates.
 }
 
-func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
+func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory, caCertificates []byte) ctrlexport.SetupWithManager {
 	return &orcNetworkReconciler{
 		client:           client,
 		recorder:         recorder,
 		watchFilterValue: watchFilterValue,
 		scopeFactory:     scopeFactory,
+		caCertificates:   caCertificates,
 	}
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcNetworkReconciler) SetupWithManager(_ context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (r *orcNetworkReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger()
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&orcv1alpha1.Network{}).
 		WithOptions(options).
-		WithEventFilter(needsReconcilePredicate(log)).
+		WithEventFilter(ctrlcommon.NeedsReconcilePredicate(log)).
 		Complete(r)
-}
-
-func needsReconcilePredicate(log logr.Logger) predicate.Predicate {
-	filter := func(obj client.Object, event string) bool {
-		log := log.WithValues("predicate", "NeedsReconcile", "event", event)
-
-		orcImage, ok := obj.(*orcv1alpha1.Image)
-		if !ok {
-			log.V(0).Info("Expected Image", "type", fmt.Sprintf("%T", obj))
-			return false
-		}
-
-		// Always reconcile deleted objects. Note that we don't always
-		// get a Delete event for a deleted object. If the object was
-		// deleted while the controller was not running we will get a
-		// Create event for it when the controller syncs.
-		if !orcImage.DeletionTimestamp.IsZero() {
-			return true
-		}
-
-		if !orcv1alpha1.IsReconciliationComplete(orcImage) {
-			return true
-		}
-
-		log.V(4).Info("not reconciling image due to terminal state", "name", orcImage.GetName(), "namespace", orcImage.GetNamespace(), "generation", orcImage.GetGeneration())
-		return false
-	}
-
-	// We always reconcile create. We get a create event for every object when
-	// the controller restarts as the controller has no previously observed
-	// state at that time. This means that upgrading the controller will always
-	// re-reconcile objects. This has the advantage of being a way to address
-	// invalid state from controller bugs, but the disadvantage of potentially
-	// causing a 'thundering herd' when the controller restarts.
-	return predicate.Funcs{
-		UpdateFunc: func(e event.UpdateEvent) bool {
-			return filter(e.ObjectNew, "Update")
-		},
-	}
 }

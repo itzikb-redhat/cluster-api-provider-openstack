@@ -8,6 +8,7 @@ rules:
   - openstack.k-orc.cloud
   resources:
   - images
+  - networks
   - subnets
   verbs:
   - create
@@ -21,6 +22,7 @@ rules:
   - openstack.k-orc.cloud
   resources:
   - images/status
+  - networks/status
   - subnets/status
   verbs:
   - get
