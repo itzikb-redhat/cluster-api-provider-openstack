@@ -1,5 +1,3 @@
-API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,NetworkResourceStatus,IPV4AddressScope
-API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,NetworkResourceStatus,IPV6AddressScope
 API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,SubnetFilter,IPv6
 API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,SubnetResourceSpec,IPv6
 API rule violation: names_match,github.com/k-orc/openstack-resource-controller/api/v1alpha1,SubnetResourceStatus,IPv6AddressMode

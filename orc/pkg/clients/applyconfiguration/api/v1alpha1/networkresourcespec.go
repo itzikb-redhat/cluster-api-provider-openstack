@@ -27,6 +27,7 @@ import (
 type NetworkResourceSpecApplyConfiguration struct {
 	Name                  *v1alpha1.OpenStackName        `json:"name,omitempty"`
 	Description           *v1alpha1.OpenStackDescription `json:"description,omitempty"`
+	Tags                  []v1alpha1.NeutronTag          `json:"tags,omitempty"`
 	AdminStateUp          *bool                          `json:"adminStateUp,omitempty"`
 	DNSDomain             *v1alpha1.DNSDomain            `json:"dnsDomain,omitempty"`
 	MTU                   *v1alpha1.MTU                  `json:"mtu,omitempty"`
@@ -57,6 +58,16 @@ func (b *NetworkResourceSpecApplyConfiguration) WithName(value v1alpha1.OpenStac
 // If called multiple times, the Description field is set to the value of the last call.
 func (b *NetworkResourceSpecApplyConfiguration) WithDescription(value v1alpha1.OpenStackDescription) *NetworkResourceSpecApplyConfiguration {
 	b.Description = &value
+	return b
+}
+
+// WithTags adds the given value to the Tags field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Tags field.
+func (b *NetworkResourceSpecApplyConfiguration) WithTags(values ...v1alpha1.NeutronTag) *NetworkResourceSpecApplyConfiguration {
+	for i := range values {
+		b.Tags = append(b.Tags, values[i])
+	}
 	return b
 }
 

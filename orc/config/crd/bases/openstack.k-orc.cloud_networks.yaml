@@ -274,6 +274,20 @@ spec:
                       projects. By default, only administrative users can change this
                       value.
                     type: boolean
+                  tags:
+                    description: Tags is a list of tags which will be applied to the
+                      subnet.
+                    items:
+                      description: |-
+                        NeutronTag represents a tag on a Neutron resource.
+                        It may not be empty and may not contain commas.
+                      maxLength: 512
+                      minLength: 1
+                      pattern: ^[^,]+$
+                      type: string
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-type: set
                   vlanTransparent:
                     description: |-
                       VLANTransparent indicates the VLAN transparency mode of the network,
@@ -425,12 +439,6 @@ spec:
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
-                  availabilityZones:
-                    description: Availability is the availability zone for the network.
-                    items:
-                      type: string
-                    type: array
-                    x-kubernetes-list-type: atomic
                   createdAt:
                     format: date-time
                     type: string
@@ -449,23 +457,6 @@ spec:
                       network is updated from external to internal the unused floating IPs
                       of this network are automatically deleted when extension
                       floatingip-autodelete-internal is present.
-                    type: boolean
-                  ipv4AddressScope:
-                    description: |-
-                      IPV4AddressScope is the ID of the IPv4 address scope that the
-                      network is associated with.
-                    type: string
-                  ipv6AddressScope:
-                    description: |-
-                      IPV6AddressScope is the ID of the IPv6 address scope that the
-                      network is associated with.
-                    type: string
-                  isDefault:
-                    type: boolean
-                  l2Adjacency:
-                    description: |-
-                      L2Adjacency indicates whether L2 connectivity is available
-                      throughout the network.
                     type: boolean
                   mtu:
                     description: |-
@@ -554,11 +545,6 @@ spec:
                   updatedAt:
                     format: date-time
                     type: string
-                  vlanTransparent:
-                    description: |-
-                      VLANTransparent indicates the VLAN transparency mode of the network,
-                      which is VLAN transparent (true) or not VLAN transparent (false).
-                    type: boolean
                 required:
                 - adminStateUp
                 type: object

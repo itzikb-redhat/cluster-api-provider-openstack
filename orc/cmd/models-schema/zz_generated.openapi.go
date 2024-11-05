@@ -1432,6 +1432,26 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 							Format: "",
 						},
 					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags which will be applied to the subnet.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
 					"adminStateUp": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"boolean"},
@@ -1519,159 +1539,10 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 				Description: "NetworkResourceStatus represents the observed state of the resource.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"adminStateUp": {
-						SchemaProps: spec.SchemaProps{
-							Description: "AdminStateUp is the administrative state of the network, which is up (true) or down (false).",
-							Default:     false,
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
-					"availabilityZoneHints": {
-						VendorExtensible: spec.VendorExtensible{
-							Extensions: spec.Extensions{
-								"x-kubernetes-list-type": "atomic",
-							},
-						},
-						SchemaProps: spec.SchemaProps{
-							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
-						},
-					},
-					"availabilityZones": {
-						VendorExtensible: spec.VendorExtensible{
-							Extensions: spec.Extensions{
-								"x-kubernetes-list-type": "atomic",
-							},
-						},
-						SchemaProps: spec.SchemaProps{
-							Description: "Availability is the availability zone for the network.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
-						},
-					},
-					"dnsDomain": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"ipv4AddressScope": {
-						SchemaProps: spec.SchemaProps{
-							Description: "IPV4AddressScope is the ID of the IPv4 address scope that the network is associated with.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"ipv6AddressScope": {
-						SchemaProps: spec.SchemaProps{
-							Description: "IPV6AddressScope is the ID of the IPv6 address scope that the network is associated with.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"l2Adjacency": {
-						SchemaProps: spec.SchemaProps{
-							Description: "L2Adjacency indicates whether L2 connectivity is available throughout the network.",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
-					"mtu": {
-						SchemaProps: spec.SchemaProps{
-							Description: "MTU is the the maximum transmission unit value to address fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.",
-							Type:        []string{"integer"},
-							Format:      "int32",
-						},
-					},
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Human-readable name for the network. Might not be unique.",
 							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"portSecurityEnabled": {
-						SchemaProps: spec.SchemaProps{
-							Description: "PortSecurityEnabled is the port security status of the network. Valid values are enabled (true) and disabled (false). This value is used as the default value of port_security_enabled field of a newly created port.",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
-					"projectID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProjectID is the project owner of the network.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"provider": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties"),
-						},
-					},
-					"external": {
-						SchemaProps: spec.SchemaProps{
-							Description: "External defines whether the network may be used for creation of floating IPs. Only networks with this flag may be an external gateway for routers. The network must have an external routing facility that is not managed by the networking service. If the network is updated from external to internal the unused floating IPs of this network are automatically deleted when extension floatingip-autodelete-internal is present.",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
-					"shared": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Specifies whether the network resource can be accessed by any tenant.",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
-					"status": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Indicates whether network is currently operational. Possible values include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional values.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"subnets": {
-						VendorExtensible: spec.VendorExtensible{
-							Extensions: spec.Extensions{
-								"x-kubernetes-list-type": "atomic",
-							},
-						},
-						SchemaProps: spec.SchemaProps{
-							Description: "Subnets associated with this network.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
-						},
-					},
-					"vlanTransparent": {
-						SchemaProps: spec.SchemaProps{
-							Description: "VLANTransparent indicates the VLAN transparency mode of the network, which is VLAN transparent (true) or not VLAN transparent (false).",
-							Type:        []string{"boolean"},
 							Format:      "",
 						},
 					},
@@ -1682,10 +1553,18 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							Format:      "",
 						},
 					},
-					"isDefault": {
+					"projectID": {
 						SchemaProps: spec.SchemaProps{
-							Type:   []string{"boolean"},
-							Format: "",
+							Description: "ProjectID is the project owner of the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Indicates whether network is currently operational. Possible values include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional values.",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 					"tags": {
@@ -1723,6 +1602,93 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
 							Type:        []string{"integer"},
 							Format:      "int64",
+						},
+					},
+					"adminStateUp": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AdminStateUp is the administrative state of the network, which is up (true) or down (false).",
+							Default:     false,
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"availabilityZoneHints": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "AvailabilityZoneHints is the availability zone candidate for the network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"dnsDomain": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"mtu": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MTU is the the maximum transmission unit value to address fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"portSecurityEnabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PortSecurityEnabled is the port security status of the network. Valid values are enabled (true) and disabled (false). This value is used as the default value of port_security_enabled field of a newly created port.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"provider": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties"),
+						},
+					},
+					"external": {
+						SchemaProps: spec.SchemaProps{
+							Description: "External defines whether the network may be used for creation of floating IPs. Only networks with this flag may be an external gateway for routers. The network must have an external routing facility that is not managed by the networking service. If the network is updated from external to internal the unused floating IPs of this network are automatically deleted when extension floatingip-autodelete-internal is present.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"shared": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Specifies whether the network resource can be accessed by any tenant.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"subnets": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Subnets associated with this network.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
 						},
 					},
 				},

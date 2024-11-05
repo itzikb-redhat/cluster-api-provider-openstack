@@ -26,27 +26,21 @@ import (
 // NetworkResourceStatusApplyConfiguration represents a declarative configuration of the NetworkResourceStatus type for use
 // with apply.
 type NetworkResourceStatusApplyConfiguration struct {
+	Name                                    *string  `json:"name,omitempty"`
+	Description                             *string  `json:"description,omitempty"`
+	ProjectID                               *string  `json:"projectID,omitempty"`
+	Status                                  *string  `json:"status,omitempty"`
+	Tags                                    []string `json:"tags,omitempty"`
+	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 	AdminStateUp                            *bool                                 `json:"adminStateUp,omitempty"`
 	AvailabilityZoneHints                   []string                              `json:"availabilityZoneHints,omitempty"`
-	AvailabilityZones                       []string                              `json:"availabilityZones,omitempty"`
 	DNSDomain                               *string                               `json:"dnsDomain,omitempty"`
-	IPV4AddressScope                        *string                               `json:"ipv4AddressScope,omitempty"`
-	IPV6AddressScope                        *string                               `json:"ipv6AddressScope,omitempty"`
-	L2Adjacency                             *bool                                 `json:"l2Adjacency,omitempty"`
 	MTU                                     *int32                                `json:"mtu,omitempty"`
-	Name                                    *string                               `json:"name,omitempty"`
 	PortSecurityEnabled                     *bool                                 `json:"portSecurityEnabled,omitempty"`
-	ProjectID                               *string                               `json:"projectID,omitempty"`
 	Provider                                *ProviderPropertiesApplyConfiguration `json:"provider,omitempty"`
 	External                                *bool                                 `json:"external,omitempty"`
 	Shared                                  *bool                                 `json:"shared,omitempty"`
-	Status                                  *string                               `json:"status,omitempty"`
 	Subnets                                 []string                              `json:"subnets,omitempty"`
-	VLANTransparent                         *bool                                 `json:"vlanTransparent,omitempty"`
-	Description                             *string                               `json:"description,omitempty"`
-	IsDefault                               *bool                                 `json:"isDefault,omitempty"`
-	Tags                                    []string                              `json:"tags,omitempty"`
-	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
 // NetworkResourceStatusApplyConfiguration constructs a declarative configuration of the NetworkResourceStatus type for use with
@@ -55,145 +49,11 @@ func NetworkResourceStatus() *NetworkResourceStatusApplyConfiguration {
 	return &NetworkResourceStatusApplyConfiguration{}
 }
 
-// WithAdminStateUp sets the AdminStateUp field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the AdminStateUp field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithAdminStateUp(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.AdminStateUp = &value
-	return b
-}
-
-// WithAvailabilityZoneHints adds the given value to the AvailabilityZoneHints field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the AvailabilityZoneHints field.
-func (b *NetworkResourceStatusApplyConfiguration) WithAvailabilityZoneHints(values ...string) *NetworkResourceStatusApplyConfiguration {
-	for i := range values {
-		b.AvailabilityZoneHints = append(b.AvailabilityZoneHints, values[i])
-	}
-	return b
-}
-
-// WithAvailabilityZones adds the given value to the AvailabilityZones field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the AvailabilityZones field.
-func (b *NetworkResourceStatusApplyConfiguration) WithAvailabilityZones(values ...string) *NetworkResourceStatusApplyConfiguration {
-	for i := range values {
-		b.AvailabilityZones = append(b.AvailabilityZones, values[i])
-	}
-	return b
-}
-
-// WithDNSDomain sets the DNSDomain field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the DNSDomain field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithDNSDomain(value string) *NetworkResourceStatusApplyConfiguration {
-	b.DNSDomain = &value
-	return b
-}
-
-// WithIPV4AddressScope sets the IPV4AddressScope field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the IPV4AddressScope field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithIPV4AddressScope(value string) *NetworkResourceStatusApplyConfiguration {
-	b.IPV4AddressScope = &value
-	return b
-}
-
-// WithIPV6AddressScope sets the IPV6AddressScope field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the IPV6AddressScope field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithIPV6AddressScope(value string) *NetworkResourceStatusApplyConfiguration {
-	b.IPV6AddressScope = &value
-	return b
-}
-
-// WithL2Adjacency sets the L2Adjacency field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the L2Adjacency field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithL2Adjacency(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.L2Adjacency = &value
-	return b
-}
-
-// WithMTU sets the MTU field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the MTU field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithMTU(value int32) *NetworkResourceStatusApplyConfiguration {
-	b.MTU = &value
-	return b
-}
-
 // WithName sets the Name field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Name field is set to the value of the last call.
 func (b *NetworkResourceStatusApplyConfiguration) WithName(value string) *NetworkResourceStatusApplyConfiguration {
 	b.Name = &value
-	return b
-}
-
-// WithPortSecurityEnabled sets the PortSecurityEnabled field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the PortSecurityEnabled field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithPortSecurityEnabled(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.PortSecurityEnabled = &value
-	return b
-}
-
-// WithProjectID sets the ProjectID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the ProjectID field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithProjectID(value string) *NetworkResourceStatusApplyConfiguration {
-	b.ProjectID = &value
-	return b
-}
-
-// WithProvider sets the Provider field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Provider field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithProvider(value *ProviderPropertiesApplyConfiguration) *NetworkResourceStatusApplyConfiguration {
-	b.Provider = value
-	return b
-}
-
-// WithExternal sets the External field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the External field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithExternal(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.External = &value
-	return b
-}
-
-// WithShared sets the Shared field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Shared field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithShared(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.Shared = &value
-	return b
-}
-
-// WithStatus sets the Status field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Status field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithStatus(value string) *NetworkResourceStatusApplyConfiguration {
-	b.Status = &value
-	return b
-}
-
-// WithSubnets adds the given value to the Subnets field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the Subnets field.
-func (b *NetworkResourceStatusApplyConfiguration) WithSubnets(values ...string) *NetworkResourceStatusApplyConfiguration {
-	for i := range values {
-		b.Subnets = append(b.Subnets, values[i])
-	}
-	return b
-}
-
-// WithVLANTransparent sets the VLANTransparent field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the VLANTransparent field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithVLANTransparent(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.VLANTransparent = &value
 	return b
 }
 
@@ -205,11 +65,19 @@ func (b *NetworkResourceStatusApplyConfiguration) WithDescription(value string) 
 	return b
 }
 
-// WithIsDefault sets the IsDefault field in the declarative configuration to the given value
+// WithProjectID sets the ProjectID field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the IsDefault field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithIsDefault(value bool) *NetworkResourceStatusApplyConfiguration {
-	b.IsDefault = &value
+// If called multiple times, the ProjectID field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithProjectID(value string) *NetworkResourceStatusApplyConfiguration {
+	b.ProjectID = &value
+	return b
+}
+
+// WithStatus sets the Status field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Status field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithStatus(value string) *NetworkResourceStatusApplyConfiguration {
+	b.Status = &value
 	return b
 }
 
@@ -244,5 +112,81 @@ func (b *NetworkResourceStatusApplyConfiguration) WithUpdatedAt(value v1.Time) *
 // If called multiple times, the RevisionNumber field is set to the value of the last call.
 func (b *NetworkResourceStatusApplyConfiguration) WithRevisionNumber(value apiv1alpha1.NeutronRevisionNumber) *NetworkResourceStatusApplyConfiguration {
 	b.RevisionNumber = &value
+	return b
+}
+
+// WithAdminStateUp sets the AdminStateUp field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the AdminStateUp field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithAdminStateUp(value bool) *NetworkResourceStatusApplyConfiguration {
+	b.AdminStateUp = &value
+	return b
+}
+
+// WithAvailabilityZoneHints adds the given value to the AvailabilityZoneHints field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AvailabilityZoneHints field.
+func (b *NetworkResourceStatusApplyConfiguration) WithAvailabilityZoneHints(values ...string) *NetworkResourceStatusApplyConfiguration {
+	for i := range values {
+		b.AvailabilityZoneHints = append(b.AvailabilityZoneHints, values[i])
+	}
+	return b
+}
+
+// WithDNSDomain sets the DNSDomain field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the DNSDomain field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithDNSDomain(value string) *NetworkResourceStatusApplyConfiguration {
+	b.DNSDomain = &value
+	return b
+}
+
+// WithMTU sets the MTU field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MTU field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithMTU(value int32) *NetworkResourceStatusApplyConfiguration {
+	b.MTU = &value
+	return b
+}
+
+// WithPortSecurityEnabled sets the PortSecurityEnabled field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PortSecurityEnabled field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithPortSecurityEnabled(value bool) *NetworkResourceStatusApplyConfiguration {
+	b.PortSecurityEnabled = &value
+	return b
+}
+
+// WithProvider sets the Provider field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Provider field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithProvider(value *ProviderPropertiesApplyConfiguration) *NetworkResourceStatusApplyConfiguration {
+	b.Provider = value
+	return b
+}
+
+// WithExternal sets the External field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the External field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithExternal(value bool) *NetworkResourceStatusApplyConfiguration {
+	b.External = &value
+	return b
+}
+
+// WithShared sets the Shared field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Shared field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithShared(value bool) *NetworkResourceStatusApplyConfiguration {
+	b.Shared = &value
+	return b
+}
+
+// WithSubnets adds the given value to the Subnets field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Subnets field.
+func (b *NetworkResourceStatusApplyConfiguration) WithSubnets(values ...string) *NetworkResourceStatusApplyConfiguration {
+	for i := range values {
+		b.Subnets = append(b.Subnets, values[i])
+	}
 	return b
 }

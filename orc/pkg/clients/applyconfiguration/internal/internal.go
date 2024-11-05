@@ -385,6 +385,12 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: shared
       type:
         scalar: boolean
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
     - name: vlanTransparent
       type:
         scalar: boolean
@@ -401,12 +407,6 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
-    - name: availabilityZones
-      type:
-        list:
-          elementType:
-            scalar: string
-          elementRelationship: atomic
     - name: createdAt
       type:
         namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
@@ -417,18 +417,6 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
     - name: external
-      type:
-        scalar: boolean
-    - name: ipv4AddressScope
-      type:
-        scalar: string
-    - name: ipv6AddressScope
-      type:
-        scalar: string
-    - name: isDefault
-      type:
-        scalar: boolean
-    - name: l2Adjacency
       type:
         scalar: boolean
     - name: mtu
@@ -470,9 +458,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: updatedAt
       type:
         namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
-    - name: vlanTransparent
-      type:
-        scalar: boolean
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSpec
   map:
     fields:

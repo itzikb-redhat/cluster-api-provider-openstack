@@ -78,6 +78,11 @@ type NetworkResourceSpec struct {
 	// +optional
 	Description *OpenStackDescription `json:"description,omitempty"`
 
+	// Tags is a list of tags which will be applied to the subnet.
+	// +kubebuilder:validation:MaxItems:=32
+	// +listType=set
+	Tags []NeutronTag `json:"tags,omitempty"`
+
 	// +optional
 	AdminStateUp *bool `json:"adminStateUp,omitempty"`
 
@@ -149,6 +154,31 @@ type NetworkFilter struct {
 
 // NetworkResourceStatus represents the observed state of the resource.
 type NetworkResourceStatus struct {
+	// Human-readable name for the network. Might not be unique.
+	// +optional
+	Name string `json:"name,omitempty"`
+
+	// Description is a human-readable description for the resource.
+	// +optional
+	Description string `json:"description,omitempty"`
+
+	// ProjectID is the project owner of the network.
+	// +optional
+	ProjectID string `json:"projectID,omitempty"`
+
+	// Indicates whether network is currently operational. Possible values
+	// include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define
+	// additional values.
+	// +optional
+	Status string `json:"status,omitempty"`
+
+	// Tags is the list of tags on the resource.
+	// +listType=atomic
+	// +optional
+	Tags []string `json:"tags,omitempty"`
+
+	NeutronStatusMetadata `json:",inline"`
+
 	// AdminStateUp is the administrative state of the network,
 	// which is up (true) or down (false).
 	AdminStateUp bool `json:"adminStateUp"`
@@ -159,36 +189,12 @@ type NetworkResourceStatus struct {
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
 
-	// Availability is the availability zone for the network.
-	// +listType=atomic
-	// +optional
-	AvailabilityZones []string `json:"availabilityZones,omitempty"`
-
 	DNSDomain string `json:"dnsDomain,omitempty"`
-
-	// IPV4AddressScope is the ID of the IPv4 address scope that the
-	// network is associated with.
-	// +optional
-	IPV4AddressScope string `json:"ipv4AddressScope,omitempty"`
-
-	// IPV6AddressScope is the ID of the IPv6 address scope that the
-	// network is associated with.
-	// +optional
-	IPV6AddressScope string `json:"ipv6AddressScope,omitempty"`
-
-	// L2Adjacency indicates whether L2 connectivity is available
-	// throughout the network.
-	// +optional
-	L2Adjacency *bool `json:"l2Adjacency,omitempty"`
 
 	// MTU is the the maximum transmission unit value to address
 	// fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.
 	// +optional
 	MTU int32 `json:"mtu,omitempty"`
-
-	// Human-readable name for the network. Might not be unique.
-	// +optional
-	Name string `json:"name,omitempty"`
 
 	// PortSecurityEnabled is the port security status of the network.
 	// Valid values are enabled (true) and disabled (false). This value is
@@ -196,10 +202,6 @@ type NetworkResourceStatus struct {
 	// created port.
 	// +optional
 	PortSecurityEnabled *bool `json:"portSecurityEnabled,omitempty"`
-
-	// ProjectID is the project owner of the network.
-	// +optional
-	ProjectID string `json:"projectID,omitempty"`
 
 	// +optional
 	Provider *ProviderProperties `json:"provider,omitempty"`
@@ -218,33 +220,8 @@ type NetworkResourceStatus struct {
 	// +optional
 	Shared bool `json:"shared,omitempty"`
 
-	// Indicates whether network is currently operational. Possible values
-	// include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define
-	// additional values.
-	// +optional
-	Status string `json:"status,omitempty"`
-
 	// Subnets associated with this network.
 	// +listType=atomic
 	// +optional
 	Subnets []string `json:"subnets,omitempty"`
-
-	// VLANTransparent indicates the VLAN transparency mode of the network,
-	// which is VLAN transparent (true) or not VLAN transparent (false).
-	// +optional
-	VLANTransparent *bool `json:"vlanTransparent,omitempty"`
-
-	// Description is a human-readable description for the resource.
-	// +optional
-	Description string `json:"description,omitempty"`
-
-	// +optional
-	IsDefault bool `json:"isDefault,omitempty"`
-
-	// Tags is the list of tags on the resource.
-	// +listType=atomic
-	// +optional
-	Tags []string `json:"tags,omitempty"`
-
-	NeutronStatusMetadata `json:",inline"`
 }
