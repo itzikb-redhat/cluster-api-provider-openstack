@@ -56,10 +56,10 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkList":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkList(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec":        schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment":             schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSegment(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NeutronStatusMetadata":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties":         schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Subnet":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Subnet(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetFilter(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetGateway":              schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetGateway(ref),
@@ -1242,6 +1242,93 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref c
 							Format:      "",
 						},
 					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID specifies the ID of the project which owns the network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags to filter by. If specified, the resource must have all of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"tagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "TagsAny is a list of tags to filter by. If specified, the resource must have at least one of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTags is a list of tags to filter by. If specified, resources which contain all of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTagsAny is a list of tags to filter by. If specified, resources which contain any of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -1371,13 +1458,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 							Format:      "",
 						},
 					},
-					"qosPolicyID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "QOSPolicyID is the ID of the QoS policy associated with the network.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"external": {
 						SchemaProps: spec.SchemaProps{
 							Description: "External indicates whether the network has an external routing facility that’s not managed by the networking service.",
@@ -1419,6 +1499,13 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 							},
 						},
 					},
+					"isDefault": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IsDefault specifies that this is the default network.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
@@ -1435,6 +1522,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 					"adminStateUp": {
 						SchemaProps: spec.SchemaProps{
 							Description: "AdminStateUp is the administrative state of the network, which is up (true) or down (false).",
+							Default:     false,
 							Type:        []string{"boolean"},
 							Format:      "",
 						},
@@ -1479,24 +1567,10 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							},
 						},
 					},
-					"createdAt": {
-						SchemaProps: spec.SchemaProps{
-							Description: "CreatedAt contains the timestamp of when the resource was created.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"dnsDomain": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
-						},
-					},
-					"id": {
-						SchemaProps: spec.SchemaProps{
-							Description: "UUID for the network",
-							Type:        []string{"string"},
-							Format:      "",
 						},
 					},
 					"ipv4AddressScope": {
@@ -1548,39 +1622,9 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							Format:      "",
 						},
 					},
-					"providerNetworkType": {
+					"provider": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ProviderNetworkType is the type of physical network that this network should be mapped to. For example, flat, vlan, vxlan, or gre. Valid values depend on a networking back-end.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"providerPhysicalNetwork": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderPhysicalNetwork is the physical network where this network should be implemented. The Networking API v2.0 does not provide a way to list available physical networks. For example, the Open vSwitch plug-in configuration file defines a symbolic name that maps to specific bridges on each compute host.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"providerSegmentationID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderSegmentationID is the ID of the isolated segment on the physical network. The network_type attribute defines the segmentation model. For example, if the network_type value is vlan, this ID is a vlan identifier. If the network_type value is gre, this ID is a gre key.",
-							Type:        []string{"integer"},
-							Format:      "int32",
-						},
-					},
-					"qosPolicyID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "QOSPolicyID is the ID of the QoS policy associated with the network.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"revisionNumber": {
-						SchemaProps: spec.SchemaProps{
-							Description: "RevisionNumber is the revision number of the resource.",
-							Type:        []string{"integer"},
-							Format:      "int32",
+							Ref: ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties"),
 						},
 					},
 					"external": {
@@ -1588,25 +1632,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							Description: "External defines whether the network may be used for creation of floating IPs. Only networks with this flag may be an external gateway for routers. The network must have an external routing facility that is not managed by the networking service. If the network is updated from external to internal the unused floating IPs of this network are automatically deleted when extension floatingip-autodelete-internal is present.",
 							Type:        []string{"boolean"},
 							Format:      "",
-						},
-					},
-					"segments": {
-						VendorExtensible: spec.VendorExtensible{
-							Extensions: spec.Extensions{
-								"x-kubernetes-list-type": "atomic",
-							},
-						},
-						SchemaProps: spec.SchemaProps{
-							Description: "Segment is a list of provider segment objects.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment"),
-									},
-								},
-							},
 						},
 					},
 					"shared": {
@@ -1641,20 +1666,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 									},
 								},
 							},
-						},
-					},
-					"tenantID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "TenantID is the project owner of the network.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"updatedAt": {
-						SchemaProps: spec.SchemaProps{
-							Description: "UpdatedAt contains the timestamp of when the resource was last changed.",
-							Type:        []string{"string"},
-							Format:      "",
 						},
 					},
 					"vlanTransparent": {
@@ -1697,45 +1708,29 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStat
 							},
 						},
 					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"revisionNumber": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
 				},
+				Required: []string{"adminStateUp"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSegment"},
-	}
-}
-
-func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSegment(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "NetworkSegment contains provider-network properties. Currently only available in status.",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"providerNetworkType": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderNetworkType is the type of physical network that this network should be mapped to. For example, flat, vlan, vxlan, or gre. Valid values depend on a networking back-end.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"providerPhysicalNetwork": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderPhysicalNetwork is the physical network where this network should be implemented. The Networking API v2.0 does not provide a way to list available physical networks. For example, the Open vSwitch plug-in configuration file defines a symbolic name that maps to specific bridges on each compute host.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"providerSegmentationID": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderSegmentationID is the ID of the isolated segment on the physical network. The network_type attribute defines the segmentation model. For example, if the network_type value is vlan, this ID is a vlan identifier. If the network_type value is gre, this ID is a gre key.",
-							Type:        []string{"integer"},
-							Format:      "int32",
-						},
-					},
-				},
-			},
-		},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -1867,6 +1862,40 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetada
 		},
 		Dependencies: []string{
 			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ProviderProperties contains provider-network properties. Currently only available in status.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkType is the type of physical network that this network should be mapped to. Supported values are flat, vlan, vxlan, and gre. Valid values depend on the networking back-end.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"physicalNetwork": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PhysicalNetwork is the physical network where this network should be implemented. The Networking API v2.0 does not provide a way to list available physical networks. For example, the Open vSwitch plug-in configuration file defines a symbolic name that maps to specific bridges on each compute host.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"segmentationID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SegmentationID is the ID of the isolated segment on the physical network. The network_type attribute defines the segmentation model. For example, if the network_type value is vlan, this ID is a vlan identifier. If the network_type value is gre, this ID is a gre key.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

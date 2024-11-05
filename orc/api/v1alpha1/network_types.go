@@ -16,28 +16,46 @@ limitations under the License.
 
 package v1alpha1
 
-// NetworkSegment contains provider-network properties. Currently only
-// available in status.
-type NetworkSegment struct {
-	// ProviderNetworkType is the type of physical network that this
-	// network should be mapped to. For example, flat, vlan, vxlan, or gre.
-	// Valid values depend on a networking back-end.
-	ProviderNetworkType *string `json:"providerNetworkType,omitempty"`
+// +kubebuilder:validation:Enum:=flat;vlan;vxlan;gre
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=16
+type ProviderNetworkType string
 
-	// ProviderPhysicalNetwork is the physical network where this network
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=128
+type PhysicalNetwork string
+
+// ProviderProperties contains provider-network properties. Currently only
+// available in status.
+type ProviderProperties struct {
+	// NetworkType is the type of physical network that this
+	// network should be mapped to. Supported values are flat, vlan, vxlan, and gre.
+	// Valid values depend on the networking back-end.
+	NetworkType *ProviderNetworkType `json:"networkType,omitempty"`
+
+	// PhysicalNetwork is the physical network where this network
 	// should be implemented. The Networking API v2.0 does not provide a
 	// way to list available physical networks. For example, the Open
 	// vSwitch plug-in configuration file defines a symbolic name that maps
 	// to specific bridges on each compute host.
-	ProviderPhysicalNetwork *string `json:"providerPhysicalNetwork,omitempty"`
+	PhysicalNetwork *PhysicalNetwork `json:"physicalNetwork,omitempty"`
 
-	// ProviderSegmentationID is the ID of the isolated segment on the
+	// SegmentationID is the ID of the isolated segment on the
 	// physical network. The network_type attribute defines the
 	// segmentation model. For example, if the network_type value is vlan,
 	// this ID is a vlan identifier. If the network_type value is gre, this
 	// ID is a gre key.
-	ProviderSegmentationID *int32 `json:"providerSegmentationID,omitempty"`
+	SegmentationID *int32 `json:"segmentationID,omitempty"`
 }
+
+// TODO: Much better DNSDomain validation
+
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=265
+type DNSDomain string
+
+// +kubebuilder:validation:Minimum:=68
+type MTU int32
 
 // NetworkResourceSpec contains the desired state of a network
 // +kubebuilder:validation:XValidation:rule="has(self.name) ? self.name == oldSelf.name : !has(oldSelf.name)",message="name is immutable"
@@ -54,25 +72,22 @@ type NetworkSegment struct {
 type NetworkResourceSpec struct {
 	// Name will be the name of the created resource. If not specified, the
 	// name of the ORC object will be used.
-	// +kubebuilder:validation:MinLength:=1
-	// +kubebuilder:validation:MaxLength:=1000
 	// +optional
-	Name *string `json:"name,omitempty"`
+	Name *OpenStackName `json:"name,omitempty"`
 
 	// +optional
-	Description *string `json:"description,omitempty"`
+	Description *OpenStackDescription `json:"description,omitempty"`
 
 	// +optional
 	AdminStateUp *bool `json:"adminStateUp,omitempty"`
 
 	// +optional
-	DNSDomain *string `json:"dnsDomain,omitempty"`
+	DNSDomain *DNSDomain `json:"dnsDomain,omitempty"`
 
 	// MTU is the the maximum transmission unit value to address
 	// fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.
 	// +optional
-	// +kubebuilder:validation:Minimum:=68
-	MTU *int32 `json:"mtu,omitempty"`
+	MTU *MTU `json:"mtu,omitempty"`
 
 	// PortSecurityEnabled is the port security status of the network.
 	// Valid values are enabled (true) and disabled (false). This value is
@@ -80,10 +95,6 @@ type NetworkResourceSpec struct {
 	// created port.
 	// +optional
 	PortSecurityEnabled *bool `json:"portSecurityEnabled,omitempty"`
-
-	// QOSPolicyID is the ID of the QoS policy associated with the network.
-	// +optional
-	QOSPolicyID *string `json:"qosPolicyID,omitempty"`
 
 	// External indicates whether the network has an external routing
 	// facility that’s not managed by the networking service.
@@ -105,6 +116,12 @@ type NetworkResourceSpec struct {
 	// +listType=set
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
+
+	// IsDefault specifies that this is the default network.
+	// +optional
+	IsDefault *bool `json:"isDefault,omitempty"`
+
+	// TODO: Support QOSPolicy
 }
 
 // NetworkFilter defines an existing resource by its properties
@@ -112,24 +129,29 @@ type NetworkResourceSpec struct {
 type NetworkFilter struct {
 	// Name of the existing resource
 	// +optional
-	Name *string `json:"name,omitempty"`
+	Name *OpenStackName `json:"name,omitempty"`
 
 	// Description of the existing resource
 	// +optional
-	Description *string `json:"description,omitempty"`
+	Description *OpenStackDescription `json:"description,omitempty"`
 
 	// External indicates whether the network has an external routing
 	// facility that’s not managed by the networking service.
 	// +optional
 	External *bool `json:"external,omitempty"`
+
+	// ProjectID specifies the ID of the project which owns the network.
+	// +optional
+	ProjectID *UUID `json:"projectID,omitempty"`
+
+	FilterByNeutronTags `json:",inline"`
 }
 
 // NetworkResourceStatus represents the observed state of the resource.
 type NetworkResourceStatus struct {
 	// AdminStateUp is the administrative state of the network,
 	// which is up (true) or down (false).
-	// +optional
-	AdminStateUp *bool `json:"adminStateUp,omitempty"`
+	AdminStateUp bool `json:"adminStateUp"`
 
 	// AvailabilityZoneHints is the availability zone candidate for the
 	// network.
@@ -142,16 +164,7 @@ type NetworkResourceStatus struct {
 	// +optional
 	AvailabilityZones []string `json:"availabilityZones,omitempty"`
 
-	// CreatedAt contains the timestamp of when the resource was created.
-	// +optional
-	CreatedAt *string `json:"createdAt,omitempty"`
-
-	// +optional
-	DNSDomain *string `json:"dnsDomain,omitempty"`
-
-	// UUID for the network
-	// +optional
-	ID string `json:"id,omitempty"`
+	DNSDomain string `json:"dnsDomain,omitempty"`
 
 	// IPV4AddressScope is the ID of the IPv4 address scope that the
 	// network is associated with.
@@ -189,15 +202,7 @@ type NetworkResourceStatus struct {
 	ProjectID string `json:"projectID,omitempty"`
 
 	// +optional
-	Segment NetworkSegment `json:",inline"`
-
-	// QOSPolicyID is the ID of the QoS policy associated with the network.
-	// +optional
-	QOSPolicyID string `json:"qosPolicyID,omitempty"`
-
-	// RevisionNumber is the revision number of the resource.
-	// +optional
-	RevisionNumber int32 `json:"revisionNumber,omitempty"`
+	Provider *ProviderProperties `json:"provider,omitempty"`
 
 	// External defines whether the network may be used for creation of
 	// floating IPs. Only networks with this flag may be an external
@@ -209,11 +214,6 @@ type NetworkResourceStatus struct {
 	// +optional
 	External bool `json:"external,omitempty"`
 
-	// Segment is a list of provider segment objects.
-	// +listType=atomic
-	// +optional
-	Segments []NetworkSegment `json:"segments,omitempty"`
-
 	// Specifies whether the network resource can be accessed by any tenant.
 	// +optional
 	Shared bool `json:"shared,omitempty"`
@@ -222,21 +222,12 @@ type NetworkResourceStatus struct {
 	// include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define
 	// additional values.
 	// +optional
-	Status *string `json:"status,omitempty"`
+	Status string `json:"status,omitempty"`
 
 	// Subnets associated with this network.
 	// +listType=atomic
 	// +optional
 	Subnets []string `json:"subnets,omitempty"`
-
-	// TenantID is the project owner of the network.
-	// +optional
-	TenantID *string `json:"tenantID,omitempty"`
-
-	// UpdatedAt contains the timestamp of when the resource was last
-	// changed.
-	// +optional
-	UpdatedAt *string `json:"updatedAt,omitempty"`
 
 	// VLANTransparent indicates the VLAN transparency mode of the network,
 	// which is VLAN transparent (true) or not VLAN transparent (false).
@@ -245,13 +236,15 @@ type NetworkResourceStatus struct {
 
 	// Description is a human-readable description for the resource.
 	// +optional
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description,omitempty"`
 
 	// +optional
-	IsDefault *bool `json:"isDefault,omitempty"`
+	IsDefault bool `json:"isDefault,omitempty"`
 
 	// Tags is the list of tags on the resource.
 	// +listType=atomic
 	// +optional
 	Tags []string `json:"tags,omitempty"`
+
+	NeutronStatusMetadata `json:",inline"`
 }

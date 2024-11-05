@@ -18,12 +18,18 @@ limitations under the License.
 
 package v1alpha1
 
+import (
+	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+)
+
 // NetworkFilterApplyConfiguration represents a declarative configuration of the NetworkFilter type for use
 // with apply.
 type NetworkFilterApplyConfiguration struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	External    *bool   `json:"external,omitempty"`
+	Name                                  *v1alpha1.OpenStackName        `json:"name,omitempty"`
+	Description                           *v1alpha1.OpenStackDescription `json:"description,omitempty"`
+	External                              *bool                          `json:"external,omitempty"`
+	ProjectID                             *v1alpha1.UUID                 `json:"projectID,omitempty"`
+	FilterByNeutronTagsApplyConfiguration `json:",inline"`
 }
 
 // NetworkFilterApplyConfiguration constructs a declarative configuration of the NetworkFilter type for use with
@@ -35,7 +41,7 @@ func NetworkFilter() *NetworkFilterApplyConfiguration {
 // WithName sets the Name field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Name field is set to the value of the last call.
-func (b *NetworkFilterApplyConfiguration) WithName(value string) *NetworkFilterApplyConfiguration {
+func (b *NetworkFilterApplyConfiguration) WithName(value v1alpha1.OpenStackName) *NetworkFilterApplyConfiguration {
 	b.Name = &value
 	return b
 }
@@ -43,7 +49,7 @@ func (b *NetworkFilterApplyConfiguration) WithName(value string) *NetworkFilterA
 // WithDescription sets the Description field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Description field is set to the value of the last call.
-func (b *NetworkFilterApplyConfiguration) WithDescription(value string) *NetworkFilterApplyConfiguration {
+func (b *NetworkFilterApplyConfiguration) WithDescription(value v1alpha1.OpenStackDescription) *NetworkFilterApplyConfiguration {
 	b.Description = &value
 	return b
 }
@@ -53,5 +59,53 @@ func (b *NetworkFilterApplyConfiguration) WithDescription(value string) *Network
 // If called multiple times, the External field is set to the value of the last call.
 func (b *NetworkFilterApplyConfiguration) WithExternal(value bool) *NetworkFilterApplyConfiguration {
 	b.External = &value
+	return b
+}
+
+// WithProjectID sets the ProjectID field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ProjectID field is set to the value of the last call.
+func (b *NetworkFilterApplyConfiguration) WithProjectID(value v1alpha1.UUID) *NetworkFilterApplyConfiguration {
+	b.ProjectID = &value
+	return b
+}
+
+// WithTags adds the given value to the Tags field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Tags field.
+func (b *NetworkFilterApplyConfiguration) WithTags(values ...v1alpha1.NeutronTag) *NetworkFilterApplyConfiguration {
+	for i := range values {
+		b.Tags = append(b.Tags, values[i])
+	}
+	return b
+}
+
+// WithTagsAny adds the given value to the TagsAny field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the TagsAny field.
+func (b *NetworkFilterApplyConfiguration) WithTagsAny(values ...v1alpha1.NeutronTag) *NetworkFilterApplyConfiguration {
+	for i := range values {
+		b.TagsAny = append(b.TagsAny, values[i])
+	}
+	return b
+}
+
+// WithNotTags adds the given value to the NotTags field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the NotTags field.
+func (b *NetworkFilterApplyConfiguration) WithNotTags(values ...v1alpha1.NeutronTag) *NetworkFilterApplyConfiguration {
+	for i := range values {
+		b.NotTags = append(b.NotTags, values[i])
+	}
+	return b
+}
+
+// WithNotTagsAny adds the given value to the NotTagsAny field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the NotTagsAny field.
+func (b *NetworkFilterApplyConfiguration) WithNotTagsAny(values ...v1alpha1.NeutronTag) *NetworkFilterApplyConfiguration {
+	for i := range values {
+		b.NotTagsAny = append(b.NotTagsAny, values[i])
+	}
 	return b
 }

@@ -95,6 +95,8 @@ spec:
                     properties:
                       description:
                         description: Description of the existing resource
+                        maxLength: 1024
+                        minLength: 1
                         type: string
                       external:
                         description: |-
@@ -103,7 +105,76 @@ spec:
                         type: boolean
                       name:
                         description: Name of the existing resource
+                        maxLength: 1024
+                        minLength: 1
                         type: string
+                      notTags:
+                        description: |-
+                          NotTags is a list of tags to filter by. If specified, resources which
+                          contain all of the given tags will be excluded from the result.
+                        items:
+                          description: |-
+                            NeutronTag represents a tag on a Neutron resource.
+                            It may not be empty and may not contain commas.
+                          maxLength: 512
+                          minLength: 1
+                          pattern: ^[^,]+$
+                          type: string
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-type: set
+                      notTagsAny:
+                        description: |-
+                          NotTagsAny is a list of tags to filter by. If specified, resources
+                          which contain any of the given tags will be excluded from the result.
+                        items:
+                          description: |-
+                            NeutronTag represents a tag on a Neutron resource.
+                            It may not be empty and may not contain commas.
+                          maxLength: 512
+                          minLength: 1
+                          pattern: ^[^,]+$
+                          type: string
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-type: set
+                      projectID:
+                        description: ProjectID specifies the ID of the project which
+                          owns the network.
+                        format: uuid
+                        maxLength: 36
+                        type: string
+                      tags:
+                        description: |-
+                          Tags is a list of tags to filter by. If specified, the resource must
+                          have all of the tags specified to be included in the result.
+                        items:
+                          description: |-
+                            NeutronTag represents a tag on a Neutron resource.
+                            It may not be empty and may not contain commas.
+                          maxLength: 512
+                          minLength: 1
+                          pattern: ^[^,]+$
+                          type: string
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-type: set
+                      tagsAny:
+                        description: |-
+                          TagsAny is a list of tags to filter by. If specified, the resource
+                          must have at least one of the tags specified to be included in the
+                          result.
+                        items:
+                          description: |-
+                            NeutronTag represents a tag on a Neutron resource.
+                            It may not be empty and may not contain commas.
+                          maxLength: 512
+                          minLength: 1
+                          pattern: ^[^,]+$
+                          type: string
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-type: set
                     type: object
                   id:
                     description: |-
@@ -161,13 +232,20 @@ spec:
                     type: array
                     x-kubernetes-list-type: set
                   description:
+                    maxLength: 1024
+                    minLength: 1
                     type: string
                   dnsDomain:
+                    maxLength: 265
+                    minLength: 1
                     type: string
                   external:
                     description: |-
                       External indicates whether the network has an external routing
                       facility that’s not managed by the networking service.
+                    type: boolean
+                  isDefault:
+                    description: IsDefault specifies that this is the default network.
                     type: boolean
                   mtu:
                     description: |-
@@ -180,7 +258,7 @@ spec:
                     description: |-
                       Name will be the name of the created resource. If not specified, the
                       name of the ORC object will be used.
-                    maxLength: 1000
+                    maxLength: 1024
                     minLength: 1
                     type: string
                   portSecurityEnabled:
@@ -190,10 +268,6 @@ spec:
                       used as the default value of port_security_enabled field of a newly
                       created port.
                     type: boolean
-                  qosPolicyID:
-                    description: QOSPolicyID is the ID of the QoS policy associated
-                      with the network.
-                    type: string
                   shared:
                     description: |-
                       Shared indicates whether this resource is shared across all
@@ -358,8 +432,7 @@ spec:
                     type: array
                     x-kubernetes-list-type: atomic
                   createdAt:
-                    description: CreatedAt contains the timestamp of when the resource
-                      was created.
+                    format: date-time
                     type: string
                   description:
                     description: Description is a human-readable description for the
@@ -377,9 +450,6 @@ spec:
                       of this network are automatically deleted when extension
                       floatingip-autodelete-internal is present.
                     type: boolean
-                  id:
-                    description: UUID for the network
-                    type: string
                   ipv4AddressScope:
                     description: |-
                       IPV4AddressScope is the ID of the IPv4 address scope that the
@@ -417,70 +487,48 @@ spec:
                   projectID:
                     description: ProjectID is the project owner of the network.
                     type: string
-                  providerNetworkType:
+                  provider:
                     description: |-
-                      ProviderNetworkType is the type of physical network that this
-                      network should be mapped to. For example, flat, vlan, vxlan, or gre.
-                      Valid values depend on a networking back-end.
-                    type: string
-                  providerPhysicalNetwork:
-                    description: |-
-                      ProviderPhysicalNetwork is the physical network where this network
-                      should be implemented. The Networking API v2.0 does not provide a
-                      way to list available physical networks. For example, the Open
-                      vSwitch plug-in configuration file defines a symbolic name that maps
-                      to specific bridges on each compute host.
-                    type: string
-                  providerSegmentationID:
-                    description: |-
-                      ProviderSegmentationID is the ID of the isolated segment on the
-                      physical network. The network_type attribute defines the
-                      segmentation model. For example, if the network_type value is vlan,
-                      this ID is a vlan identifier. If the network_type value is gre, this
-                      ID is a gre key.
-                    format: int32
-                    type: integer
-                  qosPolicyID:
-                    description: QOSPolicyID is the ID of the QoS policy associated
-                      with the network.
-                    type: string
+                      ProviderProperties contains provider-network properties. Currently only
+                      available in status.
+                    properties:
+                      networkType:
+                        description: |-
+                          NetworkType is the type of physical network that this
+                          network should be mapped to. Supported values are flat, vlan, vxlan, and gre.
+                          Valid values depend on the networking back-end.
+                        enum:
+                        - flat
+                        - vlan
+                        - vxlan
+                        - gre
+                        maxLength: 16
+                        minLength: 1
+                        type: string
+                      physicalNetwork:
+                        description: |-
+                          PhysicalNetwork is the physical network where this network
+                          should be implemented. The Networking API v2.0 does not provide a
+                          way to list available physical networks. For example, the Open
+                          vSwitch plug-in configuration file defines a symbolic name that maps
+                          to specific bridges on each compute host.
+                        maxLength: 128
+                        minLength: 1
+                        type: string
+                      segmentationID:
+                        description: |-
+                          SegmentationID is the ID of the isolated segment on the
+                          physical network. The network_type attribute defines the
+                          segmentation model. For example, if the network_type value is vlan,
+                          this ID is a vlan identifier. If the network_type value is gre, this
+                          ID is a gre key.
+                        format: int32
+                        type: integer
+                    type: object
                   revisionNumber:
-                    description: RevisionNumber is the revision number of the resource.
-                    format: int32
+                    description: RevisionNumber optionally set via extensions/standard-attr-revisions
+                    format: int64
                     type: integer
-                  segments:
-                    description: Segment is a list of provider segment objects.
-                    items:
-                      description: |-
-                        NetworkSegment contains provider-network properties. Currently only
-                        available in status.
-                      properties:
-                        providerNetworkType:
-                          description: |-
-                            ProviderNetworkType is the type of physical network that this
-                            network should be mapped to. For example, flat, vlan, vxlan, or gre.
-                            Valid values depend on a networking back-end.
-                          type: string
-                        providerPhysicalNetwork:
-                          description: |-
-                            ProviderPhysicalNetwork is the physical network where this network
-                            should be implemented. The Networking API v2.0 does not provide a
-                            way to list available physical networks. For example, the Open
-                            vSwitch plug-in configuration file defines a symbolic name that maps
-                            to specific bridges on each compute host.
-                          type: string
-                        providerSegmentationID:
-                          description: |-
-                            ProviderSegmentationID is the ID of the isolated segment on the
-                            physical network. The network_type attribute defines the
-                            segmentation model. For example, if the network_type value is vlan,
-                            this ID is a vlan identifier. If the network_type value is gre, this
-                            ID is a gre key.
-                          format: int32
-                          type: integer
-                      type: object
-                    type: array
-                    x-kubernetes-list-type: atomic
                   shared:
                     description: Specifies whether the network resource can be accessed
                       by any tenant.
@@ -503,19 +551,16 @@ spec:
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
-                  tenantID:
-                    description: TenantID is the project owner of the network.
-                    type: string
                   updatedAt:
-                    description: |-
-                      UpdatedAt contains the timestamp of when the resource was last
-                      changed.
+                    format: date-time
                     type: string
                   vlanTransparent:
                     description: |-
                       VLANTransparent indicates the VLAN transparency mode of the network,
                       which is VLAN transparent (true) or not VLAN transparent (false).
                     type: boolean
+                required:
+                - adminStateUp
                 type: object
             type: object
         type: object

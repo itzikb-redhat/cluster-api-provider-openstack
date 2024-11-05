@@ -18,36 +18,35 @@ limitations under the License.
 
 package v1alpha1
 
+import (
+	apiv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 // NetworkResourceStatusApplyConfiguration represents a declarative configuration of the NetworkResourceStatus type for use
 // with apply.
 type NetworkResourceStatusApplyConfiguration struct {
-	AdminStateUp          *bool                              `json:"adminStateUp,omitempty"`
-	AvailabilityZoneHints []string                           `json:"availabilityZoneHints,omitempty"`
-	AvailabilityZones     []string                           `json:"availabilityZones,omitempty"`
-	CreatedAt             *string                            `json:"createdAt,omitempty"`
-	DNSDomain             *string                            `json:"dnsDomain,omitempty"`
-	ID                    *string                            `json:"id,omitempty"`
-	IPV4AddressScope      *string                            `json:"ipv4AddressScope,omitempty"`
-	IPV6AddressScope      *string                            `json:"ipv6AddressScope,omitempty"`
-	L2Adjacency           *bool                              `json:"l2Adjacency,omitempty"`
-	MTU                   *int32                             `json:"mtu,omitempty"`
-	Name                  *string                            `json:"name,omitempty"`
-	PortSecurityEnabled   *bool                              `json:"portSecurityEnabled,omitempty"`
-	ProjectID             *string                            `json:"projectID,omitempty"`
-	Segment               *NetworkSegmentApplyConfiguration  `json:",inline"`
-	QOSPolicyID           *string                            `json:"qosPolicyID,omitempty"`
-	RevisionNumber        *int32                             `json:"revisionNumber,omitempty"`
-	External              *bool                              `json:"external,omitempty"`
-	Segments              []NetworkSegmentApplyConfiguration `json:"segments,omitempty"`
-	Shared                *bool                              `json:"shared,omitempty"`
-	Status                *string                            `json:"status,omitempty"`
-	Subnets               []string                           `json:"subnets,omitempty"`
-	TenantID              *string                            `json:"tenantID,omitempty"`
-	UpdatedAt             *string                            `json:"updatedAt,omitempty"`
-	VLANTransparent       *bool                              `json:"vlanTransparent,omitempty"`
-	Description           *string                            `json:"description,omitempty"`
-	IsDefault             *bool                              `json:"isDefault,omitempty"`
-	Tags                  []string                           `json:"tags,omitempty"`
+	AdminStateUp                            *bool                                 `json:"adminStateUp,omitempty"`
+	AvailabilityZoneHints                   []string                              `json:"availabilityZoneHints,omitempty"`
+	AvailabilityZones                       []string                              `json:"availabilityZones,omitempty"`
+	DNSDomain                               *string                               `json:"dnsDomain,omitempty"`
+	IPV4AddressScope                        *string                               `json:"ipv4AddressScope,omitempty"`
+	IPV6AddressScope                        *string                               `json:"ipv6AddressScope,omitempty"`
+	L2Adjacency                             *bool                                 `json:"l2Adjacency,omitempty"`
+	MTU                                     *int32                                `json:"mtu,omitempty"`
+	Name                                    *string                               `json:"name,omitempty"`
+	PortSecurityEnabled                     *bool                                 `json:"portSecurityEnabled,omitempty"`
+	ProjectID                               *string                               `json:"projectID,omitempty"`
+	Provider                                *ProviderPropertiesApplyConfiguration `json:"provider,omitempty"`
+	External                                *bool                                 `json:"external,omitempty"`
+	Shared                                  *bool                                 `json:"shared,omitempty"`
+	Status                                  *string                               `json:"status,omitempty"`
+	Subnets                                 []string                              `json:"subnets,omitempty"`
+	VLANTransparent                         *bool                                 `json:"vlanTransparent,omitempty"`
+	Description                             *string                               `json:"description,omitempty"`
+	IsDefault                               *bool                                 `json:"isDefault,omitempty"`
+	Tags                                    []string                              `json:"tags,omitempty"`
+	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
 // NetworkResourceStatusApplyConfiguration constructs a declarative configuration of the NetworkResourceStatus type for use with
@@ -84,27 +83,11 @@ func (b *NetworkResourceStatusApplyConfiguration) WithAvailabilityZones(values .
 	return b
 }
 
-// WithCreatedAt sets the CreatedAt field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the CreatedAt field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithCreatedAt(value string) *NetworkResourceStatusApplyConfiguration {
-	b.CreatedAt = &value
-	return b
-}
-
 // WithDNSDomain sets the DNSDomain field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the DNSDomain field is set to the value of the last call.
 func (b *NetworkResourceStatusApplyConfiguration) WithDNSDomain(value string) *NetworkResourceStatusApplyConfiguration {
 	b.DNSDomain = &value
-	return b
-}
-
-// WithID sets the ID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the ID field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithID(value string) *NetworkResourceStatusApplyConfiguration {
-	b.ID = &value
 	return b
 }
 
@@ -164,27 +147,11 @@ func (b *NetworkResourceStatusApplyConfiguration) WithProjectID(value string) *N
 	return b
 }
 
-// WithSegment sets the Segment field in the declarative configuration to the given value
+// WithProvider sets the Provider field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Segment field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithSegment(value *NetworkSegmentApplyConfiguration) *NetworkResourceStatusApplyConfiguration {
-	b.Segment = value
-	return b
-}
-
-// WithQOSPolicyID sets the QOSPolicyID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the QOSPolicyID field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithQOSPolicyID(value string) *NetworkResourceStatusApplyConfiguration {
-	b.QOSPolicyID = &value
-	return b
-}
-
-// WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the RevisionNumber field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithRevisionNumber(value int32) *NetworkResourceStatusApplyConfiguration {
-	b.RevisionNumber = &value
+// If called multiple times, the Provider field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithProvider(value *ProviderPropertiesApplyConfiguration) *NetworkResourceStatusApplyConfiguration {
+	b.Provider = value
 	return b
 }
 
@@ -193,19 +160,6 @@ func (b *NetworkResourceStatusApplyConfiguration) WithRevisionNumber(value int32
 // If called multiple times, the External field is set to the value of the last call.
 func (b *NetworkResourceStatusApplyConfiguration) WithExternal(value bool) *NetworkResourceStatusApplyConfiguration {
 	b.External = &value
-	return b
-}
-
-// WithSegments adds the given value to the Segments field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the Segments field.
-func (b *NetworkResourceStatusApplyConfiguration) WithSegments(values ...*NetworkSegmentApplyConfiguration) *NetworkResourceStatusApplyConfiguration {
-	for i := range values {
-		if values[i] == nil {
-			panic("nil value passed to WithSegments")
-		}
-		b.Segments = append(b.Segments, *values[i])
-	}
 	return b
 }
 
@@ -232,22 +186,6 @@ func (b *NetworkResourceStatusApplyConfiguration) WithSubnets(values ...string) 
 	for i := range values {
 		b.Subnets = append(b.Subnets, values[i])
 	}
-	return b
-}
-
-// WithTenantID sets the TenantID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the TenantID field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithTenantID(value string) *NetworkResourceStatusApplyConfiguration {
-	b.TenantID = &value
-	return b
-}
-
-// WithUpdatedAt sets the UpdatedAt field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the UpdatedAt field is set to the value of the last call.
-func (b *NetworkResourceStatusApplyConfiguration) WithUpdatedAt(value string) *NetworkResourceStatusApplyConfiguration {
-	b.UpdatedAt = &value
 	return b
 }
 
@@ -282,5 +220,29 @@ func (b *NetworkResourceStatusApplyConfiguration) WithTags(values ...string) *Ne
 	for i := range values {
 		b.Tags = append(b.Tags, values[i])
 	}
+	return b
+}
+
+// WithCreatedAt sets the CreatedAt field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CreatedAt field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithCreatedAt(value v1.Time) *NetworkResourceStatusApplyConfiguration {
+	b.CreatedAt = &value
+	return b
+}
+
+// WithUpdatedAt sets the UpdatedAt field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the UpdatedAt field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithUpdatedAt(value v1.Time) *NetworkResourceStatusApplyConfiguration {
+	b.UpdatedAt = &value
+	return b
+}
+
+// WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the RevisionNumber field is set to the value of the last call.
+func (b *NetworkResourceStatusApplyConfiguration) WithRevisionNumber(value apiv1alpha1.NeutronRevisionNumber) *NetworkResourceStatusApplyConfiguration {
+	b.RevisionNumber = &value
 	return b
 }

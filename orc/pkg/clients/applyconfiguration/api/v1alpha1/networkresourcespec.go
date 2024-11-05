@@ -18,20 +18,24 @@ limitations under the License.
 
 package v1alpha1
 
+import (
+	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+)
+
 // NetworkResourceSpecApplyConfiguration represents a declarative configuration of the NetworkResourceSpec type for use
 // with apply.
 type NetworkResourceSpecApplyConfiguration struct {
-	Name                  *string  `json:"name,omitempty"`
-	Description           *string  `json:"description,omitempty"`
-	AdminStateUp          *bool    `json:"adminStateUp,omitempty"`
-	DNSDomain             *string  `json:"dnsDomain,omitempty"`
-	MTU                   *int32   `json:"mtu,omitempty"`
-	PortSecurityEnabled   *bool    `json:"portSecurityEnabled,omitempty"`
-	QOSPolicyID           *string  `json:"qosPolicyID,omitempty"`
-	External              *bool    `json:"external,omitempty"`
-	Shared                *bool    `json:"shared,omitempty"`
-	VLANTransparent       *bool    `json:"vlanTransparent,omitempty"`
-	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
+	Name                  *v1alpha1.OpenStackName        `json:"name,omitempty"`
+	Description           *v1alpha1.OpenStackDescription `json:"description,omitempty"`
+	AdminStateUp          *bool                          `json:"adminStateUp,omitempty"`
+	DNSDomain             *v1alpha1.DNSDomain            `json:"dnsDomain,omitempty"`
+	MTU                   *v1alpha1.MTU                  `json:"mtu,omitempty"`
+	PortSecurityEnabled   *bool                          `json:"portSecurityEnabled,omitempty"`
+	External              *bool                          `json:"external,omitempty"`
+	Shared                *bool                          `json:"shared,omitempty"`
+	VLANTransparent       *bool                          `json:"vlanTransparent,omitempty"`
+	AvailabilityZoneHints []string                       `json:"availabilityZoneHints,omitempty"`
+	IsDefault             *bool                          `json:"isDefault,omitempty"`
 }
 
 // NetworkResourceSpecApplyConfiguration constructs a declarative configuration of the NetworkResourceSpec type for use with
@@ -43,7 +47,7 @@ func NetworkResourceSpec() *NetworkResourceSpecApplyConfiguration {
 // WithName sets the Name field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Name field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithName(value string) *NetworkResourceSpecApplyConfiguration {
+func (b *NetworkResourceSpecApplyConfiguration) WithName(value v1alpha1.OpenStackName) *NetworkResourceSpecApplyConfiguration {
 	b.Name = &value
 	return b
 }
@@ -51,7 +55,7 @@ func (b *NetworkResourceSpecApplyConfiguration) WithName(value string) *NetworkR
 // WithDescription sets the Description field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Description field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithDescription(value string) *NetworkResourceSpecApplyConfiguration {
+func (b *NetworkResourceSpecApplyConfiguration) WithDescription(value v1alpha1.OpenStackDescription) *NetworkResourceSpecApplyConfiguration {
 	b.Description = &value
 	return b
 }
@@ -67,7 +71,7 @@ func (b *NetworkResourceSpecApplyConfiguration) WithAdminStateUp(value bool) *Ne
 // WithDNSDomain sets the DNSDomain field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the DNSDomain field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithDNSDomain(value string) *NetworkResourceSpecApplyConfiguration {
+func (b *NetworkResourceSpecApplyConfiguration) WithDNSDomain(value v1alpha1.DNSDomain) *NetworkResourceSpecApplyConfiguration {
 	b.DNSDomain = &value
 	return b
 }
@@ -75,7 +79,7 @@ func (b *NetworkResourceSpecApplyConfiguration) WithDNSDomain(value string) *Net
 // WithMTU sets the MTU field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the MTU field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithMTU(value int32) *NetworkResourceSpecApplyConfiguration {
+func (b *NetworkResourceSpecApplyConfiguration) WithMTU(value v1alpha1.MTU) *NetworkResourceSpecApplyConfiguration {
 	b.MTU = &value
 	return b
 }
@@ -85,14 +89,6 @@ func (b *NetworkResourceSpecApplyConfiguration) WithMTU(value int32) *NetworkRes
 // If called multiple times, the PortSecurityEnabled field is set to the value of the last call.
 func (b *NetworkResourceSpecApplyConfiguration) WithPortSecurityEnabled(value bool) *NetworkResourceSpecApplyConfiguration {
 	b.PortSecurityEnabled = &value
-	return b
-}
-
-// WithQOSPolicyID sets the QOSPolicyID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the QOSPolicyID field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithQOSPolicyID(value string) *NetworkResourceSpecApplyConfiguration {
-	b.QOSPolicyID = &value
 	return b
 }
 
@@ -127,5 +123,13 @@ func (b *NetworkResourceSpecApplyConfiguration) WithAvailabilityZoneHints(values
 	for i := range values {
 		b.AvailabilityZoneHints = append(b.AvailabilityZoneHints, values[i])
 	}
+	return b
+}
+
+// WithIsDefault sets the IsDefault field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the IsDefault field is set to the value of the last call.
+func (b *NetworkResourceSpecApplyConfiguration) WithIsDefault(value bool) *NetworkResourceSpecApplyConfiguration {
+	b.IsDefault = &value
 	return b
 }

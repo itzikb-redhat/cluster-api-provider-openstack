@@ -313,6 +313,33 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: name
       type:
         scalar: string
+    - name: notTags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: notTagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: projectID
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: tagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkImport
   map:
     fields:
@@ -343,6 +370,9 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: external
       type:
         scalar: boolean
+    - name: isDefault
+      type:
+        scalar: boolean
     - name: mtu
       type:
         scalar: numeric
@@ -352,9 +382,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: portSecurityEnabled
       type:
         scalar: boolean
-    - name: qosPolicyID
-      type:
-        scalar: string
     - name: shared
       type:
         scalar: boolean
@@ -367,6 +394,7 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: adminStateUp
       type:
         scalar: boolean
+      default: false
     - name: availabilityZoneHints
       type:
         list:
@@ -381,7 +409,7 @@ var schemaYAML = typed.YAMLObject(`types:
           elementRelationship: atomic
     - name: createdAt
       type:
-        scalar: string
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
     - name: description
       type:
         scalar: string
@@ -391,9 +419,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: external
       type:
         scalar: boolean
-    - name: id
-      type:
-        scalar: string
     - name: ipv4AddressScope
       type:
         scalar: string
@@ -418,27 +443,12 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: projectID
       type:
         scalar: string
-    - name: providerNetworkType
+    - name: provider
       type:
-        scalar: string
-    - name: providerPhysicalNetwork
-      type:
-        scalar: string
-    - name: providerSegmentationID
-      type:
-        scalar: numeric
-    - name: qosPolicyID
-      type:
-        scalar: string
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ProviderProperties
     - name: revisionNumber
       type:
         scalar: numeric
-    - name: segments
-      type:
-        list:
-          elementType:
-            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSegment
-          elementRelationship: atomic
     - name: shared
       type:
         scalar: boolean
@@ -457,27 +467,12 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
-    - name: tenantID
-      type:
-        scalar: string
     - name: updatedAt
       type:
-        scalar: string
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
     - name: vlanTransparent
       type:
         scalar: boolean
-- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSegment
-  map:
-    fields:
-    - name: providerNetworkType
-      type:
-        scalar: string
-    - name: providerPhysicalNetwork
-      type:
-        scalar: string
-    - name: providerSegmentationID
-      type:
-        scalar: numeric
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkSpec
   map:
     fields:
@@ -514,6 +509,18 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: resource
       type:
         namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceStatus
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ProviderProperties
+  map:
+    fields:
+    - name: networkType
+      type:
+        scalar: string
+    - name: physicalNetwork
+      type:
+        scalar: string
+    - name: segmentationID
+      type:
+        scalar: numeric
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Subnet
   map:
     fields:
