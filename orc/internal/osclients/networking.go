@@ -32,6 +32,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/subnets"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	"github.com/gophercloud/utils/v2/openstack/clientconfig"
 )
 
@@ -74,11 +75,11 @@ type NetworkClient interface {
 	DeleteSecGroupRule(id string) error
 	GetSecGroupRule(id string) (*rules.SecGroupRule, error)
 
-	ListNetwork(opts networks.ListOptsBuilder) ([]networks.Network, error)
-	CreateNetwork(opts networks.CreateOptsBuilder) (*networks.Network, error)
-	DeleteNetwork(id string) error
-	GetNetwork(id string) (*networks.Network, error)
-	UpdateNetwork(id string, opts networks.UpdateOptsBuilder) (*networks.Network, error)
+	ListNetwork(opts networks.ListOptsBuilder) pagination.Pager
+	CreateNetwork(ctx context.Context, opts networks.CreateOptsBuilder) networks.CreateResult
+	DeleteNetwork(ctx context.Context, id string) networks.DeleteResult
+	GetNetwork(ctx context.Context, id string) networks.GetResult
+	UpdateNetwork(ctx context.Context, id string, opts networks.UpdateOptsBuilder) networks.UpdateResult
 
 	ListSubnet(opts subnets.ListOptsBuilder) ([]subnets.Subnet, error)
 	CreateSubnet(opts subnets.CreateOptsBuilder) (*subnets.Subnet, error)
@@ -265,31 +266,27 @@ func (c networkClient) GetSecGroupRule(id string) (*rules.SecGroupRule, error) {
 	return rules.Get(context.TODO(), c.serviceClient, id).Extract()
 }
 
-func (c networkClient) ListNetwork(opts networks.ListOptsBuilder) ([]networks.Network, error) {
-	allPages, err := networks.List(c.serviceClient, opts).AllPages(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	return networks.ExtractNetworks(allPages)
+func (c networkClient) ListNetwork(opts networks.ListOptsBuilder) pagination.Pager {
+	return networks.List(c.serviceClient, opts)
 }
 
-func (c networkClient) CreateNetwork(opts networks.CreateOptsBuilder) (*networks.Network, error) {
-	return networks.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreateNetwork(ctx context.Context, opts networks.CreateOptsBuilder) networks.CreateResult {
+	return networks.Create(ctx, c.serviceClient, opts)
 }
 
-func (c networkClient) DeleteNetwork(id string) error {
-	return networks.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeleteNetwork(ctx context.Context, id string) networks.DeleteResult {
+	return networks.Delete(ctx, c.serviceClient, id)
 }
 
-func (c networkClient) GetNetwork(id string) (*networks.Network, error) {
-	return networks.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetNetwork(ctx context.Context, id string) networks.GetResult {
+	return networks.Get(ctx, c.serviceClient, id)
 }
 
-func (c networkClient) UpdateNetwork(id string, opts networks.UpdateOptsBuilder) (*networks.Network, error) {
-	return networks.Update(context.TODO(), c.serviceClient, id, opts).Extract()
+func (c networkClient) UpdateNetwork(ctx context.Context, id string, opts networks.UpdateOptsBuilder) networks.UpdateResult {
+	return networks.Update(ctx, c.serviceClient, id, opts)
 }
 
-func (c networkClient) ListSubnet(opts subnets.ListOptsBuilder) ([]subnets.Subnet, error) {
+func (c networkClient) ListSubnet(ctx context.Context, opts subnets.ListOptsBuilder) ([]subnets.Subnet, error) {
 	allPages, err := subnets.List(c.serviceClient, opts).AllPages(context.TODO())
 	if err != nil {
 		return nil, err

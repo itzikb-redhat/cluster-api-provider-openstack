@@ -25,6 +25,7 @@ limitations under the License.
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	extensions "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions"
@@ -37,6 +38,7 @@ import (
 	networks "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	ports "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	subnets "github.com/gophercloud/gophercloud/v2/openstack/networking/v2/subnets"
+	pagination "github.com/gophercloud/gophercloud/v2/pagination"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -94,18 +96,17 @@ func (mr *MockNetworkClientMockRecorder) CreateFloatingIP(opts any) *gomock.Call
 }
 
 // CreateNetwork mocks base method.
-func (m *MockNetworkClient) CreateNetwork(opts networks.CreateOptsBuilder) (*networks.Network, error) {
+func (m *MockNetworkClient) CreateNetwork(ctx context.Context, opts networks.CreateOptsBuilder) networks.CreateResult {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateNetwork", opts)
-	ret0, _ := ret[0].(*networks.Network)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "CreateNetwork", ctx, opts)
+	ret0, _ := ret[0].(networks.CreateResult)
+	return ret0
 }
 
 // CreateNetwork indicates an expected call of CreateNetwork.
-func (mr *MockNetworkClientMockRecorder) CreateNetwork(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) CreateNetwork(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNetwork", reflect.TypeOf((*MockNetworkClient)(nil).CreateNetwork), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNetwork", reflect.TypeOf((*MockNetworkClient)(nil).CreateNetwork), ctx, opts)
 }
 
 // CreatePort mocks base method.
@@ -213,17 +214,17 @@ func (mr *MockNetworkClientMockRecorder) DeleteFloatingIP(id any) *gomock.Call {
 }
 
 // DeleteNetwork mocks base method.
-func (m *MockNetworkClient) DeleteNetwork(id string) error {
+func (m *MockNetworkClient) DeleteNetwork(ctx context.Context, id string) networks.DeleteResult {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteNetwork", id)
-	ret0, _ := ret[0].(error)
+	ret := m.ctrl.Call(m, "DeleteNetwork", ctx, id)
+	ret0, _ := ret[0].(networks.DeleteResult)
 	return ret0
 }
 
 // DeleteNetwork indicates an expected call of DeleteNetwork.
-func (mr *MockNetworkClientMockRecorder) DeleteNetwork(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) DeleteNetwork(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNetwork", reflect.TypeOf((*MockNetworkClient)(nil).DeleteNetwork), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNetwork", reflect.TypeOf((*MockNetworkClient)(nil).DeleteNetwork), ctx, id)
 }
 
 // DeletePort mocks base method.
@@ -326,18 +327,17 @@ func (mr *MockNetworkClientMockRecorder) GetFloatingIP(id any) *gomock.Call {
 }
 
 // GetNetwork mocks base method.
-func (m *MockNetworkClient) GetNetwork(id string) (*networks.Network, error) {
+func (m *MockNetworkClient) GetNetwork(ctx context.Context, id string) networks.GetResult {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNetwork", id)
-	ret0, _ := ret[0].(*networks.Network)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "GetNetwork", ctx, id)
+	ret0, _ := ret[0].(networks.GetResult)
+	return ret0
 }
 
 // GetNetwork indicates an expected call of GetNetwork.
-func (mr *MockNetworkClientMockRecorder) GetNetwork(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) GetNetwork(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNetwork", reflect.TypeOf((*MockNetworkClient)(nil).GetNetwork), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNetwork", reflect.TypeOf((*MockNetworkClient)(nil).GetNetwork), ctx, id)
 }
 
 // GetPort mocks base method.
@@ -446,12 +446,11 @@ func (mr *MockNetworkClientMockRecorder) ListFloatingIP(opts any) *gomock.Call {
 }
 
 // ListNetwork mocks base method.
-func (m *MockNetworkClient) ListNetwork(opts networks.ListOptsBuilder) ([]networks.Network, error) {
+func (m *MockNetworkClient) ListNetwork(opts networks.ListOptsBuilder) pagination.Pager {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListNetwork", opts)
-	ret0, _ := ret[0].([]networks.Network)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(pagination.Pager)
+	return ret0
 }
 
 // ListNetwork indicates an expected call of ListNetwork.
@@ -625,18 +624,17 @@ func (mr *MockNetworkClientMockRecorder) UpdateFloatingIP(id, opts any) *gomock.
 }
 
 // UpdateNetwork mocks base method.
-func (m *MockNetworkClient) UpdateNetwork(id string, opts networks.UpdateOptsBuilder) (*networks.Network, error) {
+func (m *MockNetworkClient) UpdateNetwork(ctx context.Context, id string, opts networks.UpdateOptsBuilder) networks.UpdateResult {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateNetwork", id, opts)
-	ret0, _ := ret[0].(*networks.Network)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "UpdateNetwork", ctx, id, opts)
+	ret0, _ := ret[0].(networks.UpdateResult)
+	return ret0
 }
 
 // UpdateNetwork indicates an expected call of UpdateNetwork.
-func (mr *MockNetworkClientMockRecorder) UpdateNetwork(id, opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) UpdateNetwork(ctx, id, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNetwork", reflect.TypeOf((*MockNetworkClient)(nil).UpdateNetwork), id, opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNetwork", reflect.TypeOf((*MockNetworkClient)(nil).UpdateNetwork), ctx, id, opts)
 }
 
 // UpdatePort mocks base method.
