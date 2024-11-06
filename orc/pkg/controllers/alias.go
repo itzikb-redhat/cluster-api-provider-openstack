@@ -22,8 +22,10 @@ import (
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
 
 	imagecontroller "github.com/k-orc/openstack-resource-controller/internal/controllers/image"
+	networkcontroller "github.com/k-orc/openstack-resource-controller/internal/controllers/network"
 )
 
 var ImageController = imagecontroller.New
+var NetworkController = networkcontroller.New
 
 var NewScopeFactory = scope.NewFactory

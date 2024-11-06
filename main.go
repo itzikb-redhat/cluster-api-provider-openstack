@@ -355,6 +355,17 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager, caCerts []byte) {
 		setupLog.Error(err, "unable to create controller", "controller", "ORCImage")
 		os.Exit(1)
 	}
+
+	if err := orccontrollers.NetworkController(
+		mgr.GetClient(),
+		mgr.GetEventRecorderFor("orc-network-controller"),
+		watchFilterValue,
+		orcFactory,
+		caCerts,
+	).SetupWithManager(ctx, mgr, concurrency(openStackMachineConcurrency)); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ORCNetwork")
+		os.Exit(1)
+	}
 }
 
 func setupWebhooks(mgr ctrl.Manager) {
