@@ -726,20 +726,10 @@ func (in *NetworkResourceSpec) DeepCopyInto(out *NetworkResourceSpec) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.VLANTransparent != nil {
-		in, out := &in.VLANTransparent, &out.VLANTransparent
-		*out = new(bool)
-		**out = **in
-	}
 	if in.AvailabilityZoneHints != nil {
 		in, out := &in.AvailabilityZoneHints, &out.AvailabilityZoneHints
 		*out = make([]string, len(*in))
 		copy(*out, *in)
-	}
-	if in.IsDefault != nil {
-		in, out := &in.IsDefault, &out.IsDefault
-		*out = new(bool)
-		**out = **in
 	}
 }
 

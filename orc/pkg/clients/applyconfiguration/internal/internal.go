@@ -370,9 +370,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: external
       type:
         scalar: boolean
-    - name: isDefault
-      type:
-        scalar: boolean
     - name: mtu
       type:
         scalar: numeric
@@ -391,9 +388,6 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: associative
-    - name: vlanTransparent
-      type:
-        scalar: boolean
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceStatus
   map:
     fields:

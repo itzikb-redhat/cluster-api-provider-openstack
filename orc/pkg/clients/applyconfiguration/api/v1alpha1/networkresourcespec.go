@@ -34,9 +34,7 @@ type NetworkResourceSpecApplyConfiguration struct {
 	PortSecurityEnabled   *bool                          `json:"portSecurityEnabled,omitempty"`
 	External              *bool                          `json:"external,omitempty"`
 	Shared                *bool                          `json:"shared,omitempty"`
-	VLANTransparent       *bool                          `json:"vlanTransparent,omitempty"`
 	AvailabilityZoneHints []string                       `json:"availabilityZoneHints,omitempty"`
-	IsDefault             *bool                          `json:"isDefault,omitempty"`
 }
 
 // NetworkResourceSpecApplyConfiguration constructs a declarative configuration of the NetworkResourceSpec type for use with
@@ -119,14 +117,6 @@ func (b *NetworkResourceSpecApplyConfiguration) WithShared(value bool) *NetworkR
 	return b
 }
 
-// WithVLANTransparent sets the VLANTransparent field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the VLANTransparent field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithVLANTransparent(value bool) *NetworkResourceSpecApplyConfiguration {
-	b.VLANTransparent = &value
-	return b
-}
-
 // WithAvailabilityZoneHints adds the given value to the AvailabilityZoneHints field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the AvailabilityZoneHints field.
@@ -134,13 +124,5 @@ func (b *NetworkResourceSpecApplyConfiguration) WithAvailabilityZoneHints(values
 	for i := range values {
 		b.AvailabilityZoneHints = append(b.AvailabilityZoneHints, values[i])
 	}
-	return b
-}
-
-// WithIsDefault sets the IsDefault field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the IsDefault field is set to the value of the last call.
-func (b *NetworkResourceSpecApplyConfiguration) WithIsDefault(value bool) *NetworkResourceSpecApplyConfiguration {
-	b.IsDefault = &value
 	return b
 }

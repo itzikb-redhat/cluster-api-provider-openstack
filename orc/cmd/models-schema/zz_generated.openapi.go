@@ -1492,13 +1492,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 							Format:      "",
 						},
 					},
-					"vlanTransparent": {
-						SchemaProps: spec.SchemaProps{
-							Description: "VLANTransparent indicates the VLAN transparency mode of the network, which is VLAN transparent (true) or not VLAN transparent (false).",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
 					"availabilityZoneHints": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -1517,13 +1510,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 									},
 								},
 							},
-						},
-					},
-					"isDefault": {
-						SchemaProps: spec.SchemaProps{
-							Description: "IsDefault specifies that this is the default network.",
-							Type:        []string{"boolean"},
-							Format:      "",
 						},
 					},
 				},

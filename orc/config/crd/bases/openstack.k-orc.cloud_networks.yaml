@@ -244,9 +244,6 @@ spec:
                       External indicates whether the network has an external routing
                       facility that’s not managed by the networking service.
                     type: boolean
-                  isDefault:
-                    description: IsDefault specifies that this is the default network.
-                    type: boolean
                   mtu:
                     description: |-
                       MTU is the the maximum transmission unit value to address
@@ -288,11 +285,6 @@ spec:
                     maxItems: 32
                     type: array
                     x-kubernetes-list-type: set
-                  vlanTransparent:
-                    description: |-
-                      VLANTransparent indicates the VLAN transparency mode of the network,
-                      which is VLAN transparent (true) or not VLAN transparent (false).
-                    type: boolean
                 type: object
                 x-kubernetes-validations:
                 - message: name is immutable

@@ -112,21 +112,10 @@ type NetworkResourceSpec struct {
 	// +optional
 	Shared *bool `json:"shared,omitempty"`
 
-	// VLANTransparent indicates the VLAN transparency mode of the network,
-	// which is VLAN transparent (true) or not VLAN transparent (false).
-	// +optional
-	VLANTransparent *bool `json:"vlanTransparent,omitempty"`
-
 	// AvailabilityZoneHints is the availability zone candidate for the network.
 	// +listType=set
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
-
-	// IsDefault specifies that this is the default network.
-	// +optional
-	IsDefault *bool `json:"isDefault,omitempty"`
-
-	// TODO: Support QOSPolicy
 }
 
 // NetworkFilter defines an existing resource by its properties
