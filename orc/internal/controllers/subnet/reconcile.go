@@ -315,8 +315,8 @@ func listOptsFromCreation(osResource *orcv1alpha1.Subnet) subnets.ListOptsBuilde
 	return subnets.ListOpts{Name: string(getResourceName(osResource))}
 }
 
-func getResourceFromList(_ context.Context, listOpts subnets.ListOptsBuilder, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
-	osResources, err := networkClient.ListSubnet(listOpts)
+func getResourceFromList(ctx context.Context, listOpts subnets.ListOptsBuilder, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
+	osResources, err := networkClient.ListSubnet(ctx, listOpts)
 	if err != nil {
 		return nil, err
 	}
