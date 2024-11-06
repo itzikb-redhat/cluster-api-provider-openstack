@@ -81,7 +81,7 @@ type NetworkClient interface {
 	GetNetwork(ctx context.Context, id string) networks.GetResult
 	UpdateNetwork(ctx context.Context, id string, opts networks.UpdateOptsBuilder) networks.UpdateResult
 
-	ListSubnet(opts subnets.ListOptsBuilder) ([]subnets.Subnet, error)
+	ListSubnet(ctx context.Context, opts subnets.ListOptsBuilder) ([]subnets.Subnet, error)
 	CreateSubnet(opts subnets.CreateOptsBuilder) (*subnets.Subnet, error)
 	DeleteSubnet(id string) error
 	GetSubnet(id string) (*subnets.Subnet, error)
@@ -95,6 +95,8 @@ type NetworkClient interface {
 type networkClient struct {
 	serviceClient *gophercloud.ServiceClient
 }
+
+var _ NetworkClient = &networkClient{}
 
 // NewNetworkClient returns an instance of the networking service.
 func NewNetworkClient(providerClient *gophercloud.ProviderClient, providerClientOpts *clientconfig.ClientOpts) (NetworkClient, error) {
