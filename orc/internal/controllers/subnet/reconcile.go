@@ -274,7 +274,7 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 	deleted = true
 
 	// Clear the finalizer
-	applyConfig := orcapplyconfigv1alpha1.Image(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
+	applyConfig := orcapplyconfigv1alpha1.Subnet(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
 	return ctrl.Result{}, r.client.Patch(ctx, orcObject, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 }
 

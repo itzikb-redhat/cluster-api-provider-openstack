@@ -31,9 +31,9 @@ func NeedsReconcilePredicate(log logr.Logger) predicate.Predicate {
 	filter := func(obj client.Object, event string) bool {
 		log := log.WithValues("predicate", "NeedsReconcile", "event", event)
 
-		orcSubnet, ok := obj.(*orcv1alpha1.Subnet)
+		orcObject, ok := obj.(orcv1alpha1.ObjectWithConditions)
 		if !ok {
-			log.V(0).Info("Expected Image", "type", fmt.Sprintf("%T", obj))
+			log.V(0).Info("Expected ObjectWithConditions", "type", fmt.Sprintf("%T", obj))
 			return false
 		}
 
@@ -41,15 +41,15 @@ func NeedsReconcilePredicate(log logr.Logger) predicate.Predicate {
 		// get a Delete event for a deleted object. If the object was
 		// deleted while the controller was not running we will get a
 		// Create event for it when the controller syncs.
-		if !orcSubnet.DeletionTimestamp.IsZero() {
+		if !orcObject.GetDeletionTimestamp().IsZero() {
 			return true
 		}
 
-		if !orcv1alpha1.IsReconciliationComplete(orcSubnet) {
+		if !orcv1alpha1.IsReconciliationComplete(orcObject) {
 			return true
 		}
 
-		log.V(4).Info("not reconciling due to terminal state", "name", orcSubnet.GetName(), "namespace", orcSubnet.GetNamespace(), "generation", orcSubnet.GetGeneration())
+		log.V(4).Info("not reconciling due to terminal state", "name", orcObject.GetName(), "namespace", orcObject.GetNamespace(), "generation", orcObject.GetGeneration())
 		return false
 	}
 

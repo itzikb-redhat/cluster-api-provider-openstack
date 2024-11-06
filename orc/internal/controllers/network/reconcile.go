@@ -83,7 +83,7 @@ func (r *orcNetworkReconciler) getNetworkClient(ctx context.Context, orcNetwork 
 
 func (r *orcNetworkReconciler) reconcileNormal(ctx context.Context, orcObject *orcv1alpha1.Network) (_ ctrl.Result, err error) {
 	log := ctrl.LoggerFrom(ctx)
-	log.V(3).Info("Reconciling subnet")
+	log.V(3).Info("Reconciling resource")
 
 	var statusOpts []updateStatusOpt
 	addStatus := func(opt updateStatusOpt) {
@@ -244,14 +244,21 @@ func (r *orcNetworkReconciler) reconcileDelete(ctx context.Context, orcObject *o
 			osResource := &networkExt{}
 			getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
 			err := getResult.ExtractInto(osResource)
-			if err != nil && !orcerrors.IsNotFound(err) {
-				return ctrl.Result{}, err
-			}
 
-			if osResource != nil {
+			switch {
+			case orcerrors.IsNotFound(err):
+				// Success!
+
+			case err != nil:
+				return ctrl.Result{}, err
+
+			default:
 				addStatus(withResource(osResource))
-				deleteResult := networkClient.DeleteNetwork(ctx, *orcObject.Status.ID)
-				return ctrl.Result{RequeueAfter: deletePollingPeriod}, deleteResult.ExtractErr()
+				err := networkClient.DeleteNetwork(ctx, *orcObject.Status.ID).ExtractErr()
+				if err != nil {
+					return ctrl.Result{}, err
+				}
+				return ctrl.Result{RequeueAfter: deletePollingPeriod}, nil
 			}
 
 			// Fall through if the resource is no longer present
@@ -280,7 +287,7 @@ func (r *orcNetworkReconciler) reconcileDelete(ctx context.Context, orcObject *o
 	deleted = true
 
 	// Clear the finalizer
-	applyConfig := orcapplyconfigv1alpha1.Image(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
+	applyConfig := orcapplyconfigv1alpha1.Network(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
 	return ctrl.Result{}, r.client.Patch(ctx, orcObject, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 }
 

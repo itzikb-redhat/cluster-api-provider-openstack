@@ -63,9 +63,9 @@ func (r *orcNetworkReconciler) setFinalizer(ctx context.Context, obj client.Obje
 
 // setStatusID sets status.ID in its own SSA transaction.
 func (r *orcNetworkReconciler) setStatusID(ctx context.Context, obj client.Object, id string) error {
-	applyConfig := orcapplyconfigv1alpha1.Subnet(obj.GetName(), obj.GetNamespace()).
+	applyConfig := orcapplyconfigv1alpha1.Network(obj.GetName(), obj.GetNamespace()).
 		WithUID(obj.GetUID()).
-		WithStatus(orcapplyconfigv1alpha1.SubnetStatus().
+		WithStatus(orcapplyconfigv1alpha1.NetworkStatus().
 			WithID(id))
 
 	return r.client.Status().Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
@@ -256,7 +256,7 @@ func createStatusUpdate(ctx context.Context, orcNetwork *orcv1alpha1.Network, no
 		}
 		addConditionValues(availableCondition)
 		addConditionValues(progressingCondition)
-		log.V(4).Info("Setting image status", logValues...)
+		log.V(4).Info("Setting resource status", logValues...)
 	}
 
 	return applyConfig
