@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 
 	"github.com/go-logr/logr"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/dns"
@@ -156,7 +155,9 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 	switch {
 	case orcObject.Status.ID != nil:
 		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource, err := networkClient.GetNetwork(*orcObject.Status.ID)
+		osResource := &networkExt{}
+		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
+		err := getResult.ExtractInto(osResource)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
@@ -168,7 +169,9 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
 		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource, err := networkClient.GetNetwork(*orcObject.Spec.Import.ID)
+		osResource := &networkExt{}
+		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
+		err := getResult.ExtractInto(osResource)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
@@ -238,14 +241,17 @@ func (r *orcNetworkReconciler) reconcileDelete(ctx context.Context, orcObject *o
 			// This GET is technically redundant because we could just check the
 			// result from DELETE, but it's necessary if we want to report
 			// status while deleting
-			osResource, err := networkClient.GetNetwork(*orcObject.Status.ID)
+			osResource := &networkExt{}
+			getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
+			err := getResult.ExtractInto(osResource)
 			if err != nil && !orcerrors.IsNotFound(err) {
 				return ctrl.Result{}, err
 			}
 
 			if osResource != nil {
 				addStatus(withResource(osResource))
-				return ctrl.Result{RequeueAfter: deletePollingPeriod}, networkClient.DeleteNetwork(*orcObject.Status.ID)
+				deleteResult := networkClient.DeleteNetwork(ctx, *orcObject.Status.ID)
+				return ctrl.Result{RequeueAfter: deletePollingPeriod}, deleteResult.ExtractErr()
 			}
 
 			// Fall through if the resource is no longer present
@@ -307,8 +313,14 @@ func listOptsFromCreation(osResource *orcv1alpha1.Network) networks.ListOptsBuil
 	return networks.ListOpts{Name: string(getResourceName(osResource))}
 }
 
-func getResourceFromList(_ context.Context, listOpts networks.ListOptsBuilder, networkClient osclients.NetworkClient) (*networks.Network, error) {
-	osResources, err := networkClient.ListNetwork(listOpts)
+func getResourceFromList(ctx context.Context, listOpts networks.ListOptsBuilder, networkClient osclients.NetworkClient) (*networkExt, error) {
+	pages, err := networkClient.ListNetwork(listOpts).AllPages(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var osResources []networkExt
+	err = networks.ExtractNetworksInto(pages, &osResources)
 	if err != nil {
 		return nil, err
 	}
@@ -317,7 +329,7 @@ func getResourceFromList(_ context.Context, listOpts networks.ListOptsBuilder, n
 		return &osResources[0], nil
 	}
 
-	// No image found
+	// No resource found
 	if len(osResources) == 0 {
 		return nil, nil
 	}
@@ -326,8 +338,8 @@ func getResourceFromList(_ context.Context, listOpts networks.ListOptsBuilder, n
 	return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, fmt.Sprintf("Expected to find exactly one OpenStack resource to import. Found %d", len(osResources)))
 }
 
-// createResource creates a Glance image for an ORC Image.
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Network, networkClient osclients.NetworkClient) (*networks.Network, error) {
+// createResource creates an OpenStack resource for an ORC object.
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Network, networkClient osclients.NetworkClient) (*networkExt, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
@@ -343,22 +355,64 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Network, network
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
 	}
 
-	// TODO: Write this
-	createOpts := networks.CreateOpts{}
-
-	tags := make([]string, len(resource.Tags))
-	for i := range resource.Tags {
-		tags[i] = string(resource.Tags[i])
-	}
-	// Sort tags before creation to simplify comparisons
-	slices.Sort(tags)
-
-	osResource, err := networkClient.CreateNetwork(&createOpts)
-
-	// We should require the spec to be updated before retrying a create which returned a conflict
-	if orcerrors.IsConflict(err) {
-		err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating image: "+err.Error(), err)
+	var createOpts networks.CreateOptsBuilder = &networks.CreateOpts{
+		Name:                  string(getResourceName(orcObject)),
+		Description:           string(*resource.Description),
+		AdminStateUp:          resource.AdminStateUp,
+		Shared:                resource.Shared,
+		AvailabilityZoneHints: resource.AvailabilityZoneHints,
 	}
 
-	return osResource, err
+	if resource.DNSDomain != nil {
+		createOpts = &dns.NetworkCreateOptsExt{
+			CreateOptsBuilder: createOpts,
+			DNSDomain:         string(*resource.DNSDomain),
+		}
+	}
+
+	if resource.MTU != nil {
+		createOpts = &mtu.CreateOptsExt{
+			CreateOptsBuilder: createOpts,
+			MTU:               int(*resource.MTU),
+		}
+	}
+
+	if resource.PortSecurityEnabled != nil {
+		createOpts = &portsecurity.NetworkCreateOptsExt{
+			CreateOptsBuilder:   createOpts,
+			PortSecurityEnabled: resource.PortSecurityEnabled,
+		}
+	}
+
+	if resource.External != nil {
+		createOpts = &external.CreateOptsExt{
+			CreateOptsBuilder: createOpts,
+			External:          resource.External,
+		}
+	}
+
+	/*
+		XXX: Tags are missing. This is complicated because we need to ensure we
+		     record the network creation immediately. Might be best to do this
+		     through Update in a separate reconcile.
+
+		tags := make([]string, len(resource.Tags))
+		for i := range resource.Tags {
+			tags[i] = string(resource.Tags[i])
+		}
+		// Sort tags before creation to simplify comparisons
+		slices.Sort(tags)
+	*/
+
+	osResource := &networkExt{}
+	createResult := networkClient.CreateNetwork(ctx, createOpts)
+	if err := createResult.ExtractInto(osResource); err != nil {
+		// We should require the spec to be updated before retrying a create which returned a conflict
+		if orcerrors.IsConflict(err) {
+			err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
+		}
+		return nil, err
+	}
+
+	return osResource, nil
 }
