@@ -3,6 +3,8 @@
 # It should be run by config/default
 resources:
 - bases/openstack.k-orc.cloud_images.yaml
+- bases/openstack.k-orc.cloud_networks.yaml
+- bases/openstack.k-orc.cloud_subnets.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patches:
