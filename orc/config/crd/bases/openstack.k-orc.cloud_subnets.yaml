@@ -274,7 +274,7 @@ spec:
                       type: object
                     maxItems: 32
                     type: array
-                    x-kubernetes-list-type: set
+                    x-kubernetes-list-type: atomic
                   cidr:
                     description: CIDR is the address CIDR of the subnet. It must match
                       the IP version specified in IPVersion.
@@ -355,7 +355,7 @@ spec:
                       type: object
                     maxItems: 256
                     type: array
-                    x-kubernetes-list-type: set
+                    x-kubernetes-list-type: atomic
                   ipVersion:
                     description: IPVersion is the IP version for the subnet.
                     enum:

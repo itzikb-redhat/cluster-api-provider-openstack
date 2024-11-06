@@ -73,7 +73,7 @@ type SubnetResourceSpec struct {
 	// AllocationPools are IP Address pools that will be available for DHCP. IP
 	// addresses must be in CIDR.
 	// +kubebuilder:validation:MaxItems:=32
-	// +listType=set
+	// +listType=atomic
 	AllocationPools []AllocationPool `json:"allocationPools,omitempty"`
 
 	// Gateway specifies the default gateway of the subnet. If not specified,
@@ -97,7 +97,7 @@ type SubnetResourceSpec struct {
 
 	// HostRoutes are any static host routes to be set via DHCP.
 	// +kubebuilder:validation:MaxItems:=256
-	// +listType=set
+	// +listType=atomic
 	HostRoutes []HostRoute `json:"hostRoutes,omitempty"`
 
 	// IPv6 contains IPv6-specific options. It may only be set if IPVersion is 6.

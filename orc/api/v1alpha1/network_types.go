@@ -58,17 +58,6 @@ type DNSDomain string
 type MTU int32
 
 // NetworkResourceSpec contains the desired state of a network
-// +kubebuilder:validation:XValidation:rule="has(self.name) ? self.name == oldSelf.name : !has(oldSelf.name)",message="name is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.description) ? self.description == oldSelf.description : !has(oldSelf.description)",message="description is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.adminStateUp) ? self.adminStateUp == oldSelf.adminStateUp : !has(oldSelf.adminStateUp)",message="adminStateUp is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.dnsDomain) ? self.dnsDomain == oldSelf.dnsDomain : !has(oldSelf.dnsDomain)",message="dnsDomain is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.mtu) ? self.mtu == oldSelf.mtu : !has(oldSelf.mtu)",message="mtu is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.portSecurityEnabled) ? self.portSecurityEnabled == oldSelf.portSecurityEnabled : !has(oldSelf.portSecurityEnabled)",message="portSecurityEnabled is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.qosPolicyID) ? self.qosPolicyID == oldSelf.qosPolicyID : !has(oldSelf.qosPolicyID)",message="qosPolicyID is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.external) ? self.external == oldSelf.external : !has(oldSelf.external)",message="external is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.shared) ? self.shared == oldSelf.shared : !has(oldSelf.shared)",message="shared is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.vlanTransparent) ? self.vlanTransparent == oldSelf.vlanTransparent : !has(oldSelf.vlanTransparent)",message="vlanTransparent is immutable"
-// +kubebuilder:validation:XValidation:rule="has(self.availabilityZoneHints) ? self.availabilityZoneHints == oldSelf.availabilityZoneHints : !has(oldSelf.availabilityZoneHints)",message="availabilityZoneHints is immutable"
 type NetworkResourceSpec struct {
 	// Name will be the name of the created resource. If not specified, the
 	// name of the ORC object will be used.

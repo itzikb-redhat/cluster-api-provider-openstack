@@ -286,37 +286,6 @@ spec:
                     type: array
                     x-kubernetes-list-type: set
                 type: object
-                x-kubernetes-validations:
-                - message: name is immutable
-                  rule: 'has(self.name) ? self.name == oldSelf.name : !has(oldSelf.name)'
-                - message: description is immutable
-                  rule: 'has(self.description) ? self.description == oldSelf.description
-                    : !has(oldSelf.description)'
-                - message: adminStateUp is immutable
-                  rule: 'has(self.adminStateUp) ? self.adminStateUp == oldSelf.adminStateUp
-                    : !has(oldSelf.adminStateUp)'
-                - message: dnsDomain is immutable
-                  rule: 'has(self.dnsDomain) ? self.dnsDomain == oldSelf.dnsDomain
-                    : !has(oldSelf.dnsDomain)'
-                - message: mtu is immutable
-                  rule: 'has(self.mtu) ? self.mtu == oldSelf.mtu : !has(oldSelf.mtu)'
-                - message: portSecurityEnabled is immutable
-                  rule: 'has(self.portSecurityEnabled) ? self.portSecurityEnabled
-                    == oldSelf.portSecurityEnabled : !has(oldSelf.portSecurityEnabled)'
-                - message: qosPolicyID is immutable
-                  rule: 'has(self.qosPolicyID) ? self.qosPolicyID == oldSelf.qosPolicyID
-                    : !has(oldSelf.qosPolicyID)'
-                - message: external is immutable
-                  rule: 'has(self.external) ? self.external == oldSelf.external :
-                    !has(oldSelf.external)'
-                - message: shared is immutable
-                  rule: 'has(self.shared) ? self.shared == oldSelf.shared : !has(oldSelf.shared)'
-                - message: vlanTransparent is immutable
-                  rule: 'has(self.vlanTransparent) ? self.vlanTransparent == oldSelf.vlanTransparent
-                    : !has(oldSelf.vlanTransparent)'
-                - message: availabilityZoneHints is immutable
-                  rule: 'has(self.availabilityZoneHints) ? self.availabilityZoneHints
-                    == oldSelf.availabilityZoneHints : !has(oldSelf.availabilityZoneHints)'
             required:
             - cloudCredentialsRef
             type: object

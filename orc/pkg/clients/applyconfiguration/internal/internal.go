@@ -596,7 +596,7 @@ var schemaYAML = typed.YAMLObject(`types:
         list:
           elementType:
             namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllocationPool
-          elementRelationship: associative
+          elementRelationship: atomic
     - name: cidr
       type:
         scalar: string
@@ -624,7 +624,7 @@ var schemaYAML = typed.YAMLObject(`types:
         list:
           elementType:
             namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
-          elementRelationship: associative
+          elementRelationship: atomic
     - name: ipVersion
       type:
         scalar: numeric
