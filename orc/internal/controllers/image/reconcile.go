@@ -61,7 +61,7 @@ func (r *orcImageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 func (r *orcImageReconciler) getImageClient(ctx context.Context, orcImage *orcv1alpha1.Image) (osclients.ImageClient, error) {
 	log := ctrl.LoggerFrom(ctx)
 
-	clientScope, err := r.scopeFactory.NewClientScopeFromObject(ctx, r.client, r.caCertificates, log, orcImage)
+	clientScope, err := r.scopeFactory.NewClientScopeFromObject(ctx, r.client, log, orcImage)
 	if err != nil {
 		return nil, err
 	}

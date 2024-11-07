@@ -74,7 +74,7 @@ func (r *orcNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 func (r *orcNetworkReconciler) getNetworkClient(ctx context.Context, orcNetwork *orcv1alpha1.Network) (osclients.NetworkClient, error) {
 	log := ctrl.LoggerFrom(ctx)
 
-	clientScope, err := r.scopeFactory.NewClientScopeFromObject(ctx, r.client, r.caCertificates, log, orcNetwork)
+	clientScope, err := r.scopeFactory.NewClientScopeFromObject(ctx, r.client, log, orcNetwork)
 	if err != nil {
 		return nil, err
 	}

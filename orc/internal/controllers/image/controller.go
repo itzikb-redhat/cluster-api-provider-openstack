@@ -69,16 +69,14 @@ type orcImageReconciler struct {
 	recorder         record.EventRecorder
 	watchFilterValue string
 	scopeFactory     scope.Factory
-	caCertificates   []byte // PEM encoded ca certificates.
 }
 
-func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory, caCertificates []byte) ctrlexport.SetupWithManager {
+func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
 	return &orcImageReconciler{
 		client:           client,
 		recorder:         recorder,
 		watchFilterValue: watchFilterValue,
 		scopeFactory:     scopeFactory,
-		caCertificates:   caCertificates,
 	}
 }
 

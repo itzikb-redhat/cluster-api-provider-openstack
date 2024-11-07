@@ -65,7 +65,7 @@ func (f *MockScopeFactory) SetClientScopeCreateError(err error) {
 	f.clientScopeCreateError = err
 }
 
-func (f *MockScopeFactory) NewClientScopeFromObject(_ context.Context, _ client.Client, _ []byte, _ logr.Logger, _ ...orcv1alpha1.CloudCredentialsRefProvider) (Scope, error) {
+func (f *MockScopeFactory) NewClientScopeFromObject(_ context.Context, _ client.Client, _ logr.Logger, _ ...orcv1alpha1.CloudCredentialsRefProvider) (Scope, error) {
 	if f.clientScopeCreateError != nil {
 		return nil, f.clientScopeCreateError
 	}

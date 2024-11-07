@@ -48,10 +48,11 @@ const (
 )
 
 type providerScopeFactory struct {
-	clientCache *cache.LRUExpireCache
+	clientCache   *cache.LRUExpireCache
+	defaultCACert []byte
 }
 
-func (f *providerScopeFactory) NewClientScopeFromObject(ctx context.Context, ctrlClient client.Client, defaultCACert []byte, logger logr.Logger, objects ...orcv1alpha1.CloudCredentialsRefProvider) (Scope, error) {
+func (f *providerScopeFactory) NewClientScopeFromObject(ctx context.Context, ctrlClient client.Client, logger logr.Logger, objects ...orcv1alpha1.CloudCredentialsRefProvider) (Scope, error) {
 	namespace, credentialsRef := func() (*string, *orcv1alpha1.CloudCredentialsReference) {
 		for _, o := range objects {
 			namespace, credentialsRef := o.GetCloudCredentialsRef()
@@ -77,7 +78,7 @@ func (f *providerScopeFactory) NewClientScopeFromObject(ctx context.Context, ctr
 	}
 
 	if caCert == nil {
-		caCert = defaultCACert
+		caCert = f.defaultCACert
 	}
 
 	if f.clientCache == nil {
