@@ -67,7 +67,7 @@ type NetworkResourceSpec struct {
 	// +optional
 	Description *OpenStackDescription `json:"description,omitempty"`
 
-	// Tags is a list of tags which will be applied to the subnet.
+	// Tags is a list of tags which will be applied to the network.
 	// +kubebuilder:validation:MaxItems:=32
 	// +listType=set
 	Tags []NeutronTag `json:"tags,omitempty"`

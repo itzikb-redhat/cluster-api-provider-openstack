@@ -89,7 +89,7 @@ type NetworkClient interface {
 
 	ListExtensions() ([]extensions.Extension, error)
 
-	ReplaceAllAttributesTags(resourceType string, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error)
+	ReplaceAllAttributesTags(ctx context.Context, resourceType string, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error)
 }
 
 type networkClient struct {
@@ -119,8 +119,8 @@ func (c networkClient) RemoveRouterInterface(id string, opts routers.RemoveInter
 	return routers.RemoveInterface(context.TODO(), c.serviceClient, id, opts).Extract()
 }
 
-func (c networkClient) ReplaceAllAttributesTags(resourceType string, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error) {
-	return attributestags.ReplaceAll(context.TODO(), c.serviceClient, resourceType, resourceID, opts).Extract()
+func (c networkClient) ReplaceAllAttributesTags(ctx context.Context, resourceType string, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error) {
+	return attributestags.ReplaceAll(ctx, c.serviceClient, resourceType, resourceID, opts).Extract()
 }
 
 func (c networkClient) ListRouter(opts routers.ListOpts) ([]routers.Router, error) {

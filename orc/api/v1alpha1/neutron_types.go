@@ -22,9 +22,8 @@ import (
 
 // NeutronTag represents a tag on a Neutron resource.
 // It may not be empty and may not contain commas.
-// +kubebuilder:validation:Pattern:="^[^,]+$"
 // +kubebuilder:validation:MinLength:=1
-// +kubebuilder:validation:MaxLength:=512
+// +kubebuilder:validation:MaxLength:=60
 type NeutronTag string
 
 type FilterByNeutronTags struct {

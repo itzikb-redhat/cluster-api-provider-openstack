@@ -30,6 +30,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/networks"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/ptr"
+	"k8s.io/utils/set"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -147,6 +148,15 @@ func (r *orcNetworkReconciler) reconcileNormal(ctx context.Context, orcObject *o
 	log = log.WithValues("ID", osResource.ID)
 	log.V(4).Info("Got resource")
 	ctx = ctrl.LoggerInto(ctx, log)
+
+	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
+		for _, updateFunc := range needsUpdate(networkClient, orcObject, osResource) {
+			if err := updateFunc(ctx); err != nil {
+				addStatus(withProgressMessage("Updating the OpenStack resource"))
+				return ctrl.Result{}, fmt.Errorf("failed to update the OpenStack resource: %v")
+			}
+		}
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -422,4 +432,25 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Network, network
 	}
 
 	return osResource, nil
+}
+
+// needsUpdate returns a slice of functions that call the OpenStack API to
+// align the OpenStack resoruce to its representation in the ORC spec object.
+// For network, only the Neutron tags are currently taken into consideration.
+func needsUpdate(networkClient osclients.NetworkClient, orcObject *orcv1alpha1.Network, osResource *networkExt) (updateFuncs []func(context.Context) error) {
+	addUpdateFunc := func(updateFunc func(context.Context) error) {
+		updateFuncs = append(updateFuncs, updateFunc)
+	}
+	resourceTagSet := set.New[string](osResource.Tags...)
+	objectTagSet := set.New[string]()
+	for i := range orcObject.Spec.Resource.Tags {
+		objectTagSet.Insert(string(orcObject.Spec.Resource.Tags[i]))
+	}
+	if !objectTagSet.Equal(resourceTagSet) {
+		addUpdateFunc(func(ctx context.Context) error {
+			_, err := networkClient.ReplaceAllAttributesTags(ctx, "networks", osResource.ID, nil)
+			return err
+		})
+	}
+	return updateFuncs
 }
