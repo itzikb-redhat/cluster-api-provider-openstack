@@ -153,7 +153,7 @@ func (r *orcNetworkReconciler) reconcileNormal(ctx context.Context, orcObject *o
 		for _, updateFunc := range needsUpdate(networkClient, orcObject, osResource) {
 			if err := updateFunc(ctx); err != nil {
 				addStatus(withProgressMessage("Updating the OpenStack resource"))
-				return ctrl.Result{}, fmt.Errorf("failed to update the OpenStack resource: %v")
+				return ctrl.Result{}, fmt.Errorf("failed to update the OpenStack resource: %w", err)
 			}
 		}
 	}

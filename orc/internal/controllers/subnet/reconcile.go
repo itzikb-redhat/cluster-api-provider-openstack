@@ -335,7 +335,7 @@ func getResourceFromList(ctx context.Context, listOpts subnets.ListOptsBuilder, 
 }
 
 // createResource creates an OpenStack resource from an ORC object
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, _ orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")

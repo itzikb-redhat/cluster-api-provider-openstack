@@ -36,11 +36,6 @@ import (
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
 
-const (
-	glanceOSHashAlgo  = "os_hash_algo"
-	glanceOSHashValue = "os_hash_value"
-)
-
 // setFinalizer sets a finalizer on the object in its own SSA transaction.
 func (r *orcSubnetReconciler) setFinalizer(ctx context.Context, obj client.Object) error {
 	gvk := obj.GetObjectKind().GroupVersionKind()
