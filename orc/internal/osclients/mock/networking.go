@@ -594,18 +594,18 @@ func (mr *MockNetworkClientMockRecorder) RemoveSubports(id, opts any) *gomock.Ca
 }
 
 // ReplaceAllAttributesTags mocks base method.
-func (m *MockNetworkClient) ReplaceAllAttributesTags(resourceType, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error) {
+func (m *MockNetworkClient) ReplaceAllAttributesTags(ctx context.Context, resourceType, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReplaceAllAttributesTags", resourceType, resourceID, opts)
+	ret := m.ctrl.Call(m, "ReplaceAllAttributesTags", ctx, resourceType, resourceID, opts)
 	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReplaceAllAttributesTags indicates an expected call of ReplaceAllAttributesTags.
-func (mr *MockNetworkClientMockRecorder) ReplaceAllAttributesTags(resourceType, resourceID, opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) ReplaceAllAttributesTags(ctx, resourceType, resourceID, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplaceAllAttributesTags", reflect.TypeOf((*MockNetworkClient)(nil).ReplaceAllAttributesTags), resourceType, resourceID, opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplaceAllAttributesTags", reflect.TypeOf((*MockNetworkClient)(nil).ReplaceAllAttributesTags), ctx, resourceType, resourceID, opts)
 }
 
 // UpdateFloatingIP mocks base method.

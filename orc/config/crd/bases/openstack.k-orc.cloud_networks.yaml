@@ -116,9 +116,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -131,9 +130,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -152,9 +150,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -168,9 +165,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -273,14 +269,13 @@ spec:
                     type: boolean
                   tags:
                     description: Tags is a list of tags which will be applied to the
-                      subnet.
+                      network.
                     items:
                       description: |-
                         NeutronTag represents a tag on a Neutron resource.
                         It may not be empty and may not contain commas.
-                      maxLength: 512
+                      maxLength: 60
                       minLength: 1
-                      pattern: ^[^,]+$
                       type: string
                     maxItems: 32
                     type: array

@@ -144,9 +144,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -159,9 +158,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -178,9 +176,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -194,9 +191,8 @@ spec:
                           description: |-
                             NeutronTag represents a tag on a Neutron resource.
                             It may not be empty and may not contain commas.
-                          maxLength: 512
+                          maxLength: 60
                           minLength: 1
-                          pattern: ^[^,]+$
                           type: string
                         maxItems: 32
                         type: array
@@ -405,9 +401,8 @@ spec:
                       description: |-
                         NeutronTag represents a tag on a Neutron resource.
                         It may not be empty and may not contain commas.
-                      maxLength: 512
+                      maxLength: 60
                       minLength: 1
-                      pattern: ^[^,]+$
                       type: string
                     maxItems: 32
                     type: array
@@ -652,9 +647,8 @@ spec:
                       description: |-
                         NeutronTag represents a tag on a Neutron resource.
                         It may not be empty and may not contain commas.
-                      maxLength: 512
+                      maxLength: 60
                       minLength: 1
-                      pattern: ^[^,]+$
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic

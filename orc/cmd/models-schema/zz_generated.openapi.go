@@ -1439,7 +1439,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec
 							},
 						},
 						SchemaProps: spec.SchemaProps{
-							Description: "Tags is a list of tags which will be applied to the subnet.",
+							Description: "Tags is a list of tags which will be applied to the network.",
 							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
