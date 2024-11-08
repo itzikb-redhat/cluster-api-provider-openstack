@@ -32,6 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
 	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
@@ -73,6 +74,7 @@ func (r *orcImageReconciler) reconcileNormal(ctx context.Context, orcImage *orcv
 	log.V(3).Info("Reconciling image")
 
 	if !controllerutil.ContainsFinalizer(orcImage, Finalizer) {
+		patch := common.GetFinalizerPatch(orcImage, Finalizer)
 		return ctrl.Result{}, r.setFinalizer(ctx, orcImage)
 	}
 
