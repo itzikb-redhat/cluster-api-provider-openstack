@@ -19,19 +19,13 @@ package subnet
 import (
 	"context"
 	"fmt"
-	"slices"
-	"strings"
 	"time"
 
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
@@ -117,7 +111,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 
 	const networkFinalizer = "subnet"
 
-	err := addDeletionGuard(mgr, networkFinalizer, FieldOwner, getNetworkRefsForSubnet, getSubnetsForNetwork)
+	err := ctrlcommon.AddDeletionGuard(mgr, networkFinalizer, FieldOwner, getNetworkRefsForSubnet, getSubnetsForNetwork)
 	if err != nil {
 		return err
 	}
@@ -152,84 +146,4 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 		WithOptions(options).
 		WithEventFilter(ctrlcommon.NeedsReconcilePredicate(log)).
 		Complete(r)
-}
-
-type pointerToObject[T any] interface {
-	*T
-	client.Object
-}
-
-func addDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToObject[dependency], guarded, dependency any](
-	mgr ctrl.Manager, finalizer string, fieldOwner client.FieldOwner,
-	getGuarded func(client.Object) []string,
-	getDependencies func(guardedP) ([]dependency, error),
-) error {
-	deletionGuard := reconcile.Func(func(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-		k8sClient := mgr.GetClient()
-
-		var guarded guardedP = new(guarded)
-		err := k8sClient.Get(ctx, req.NamespacedName, guarded)
-		if err != nil {
-			if apierrors.IsNotFound(err) {
-				return ctrl.Result{}, nil
-			}
-			return ctrl.Result{}, err
-		}
-
-		// If the object hasn't been deleted, we simply check that it has our finalizer
-		if !guarded.GetDeletionTimestamp().IsZero() {
-			if !slices.Contains(guarded.GetFinalizers(), finalizer) {
-				patch := ctrlcommon.GetFinalizerPatch(guarded, finalizer)
-				return ctrl.Result{}, k8sClient.Patch(ctx, guarded, patch, client.ForceOwnership, fieldOwner)
-			}
-
-			return ctrl.Result{}, nil
-		}
-
-		dependencies, err := getDependencies(guarded)
-		if err != nil {
-			return reconcile.Result{}, nil
-		}
-		if len(dependencies) == 0 {
-			patch := ctrlcommon.RemoveFinalizerPatch(guarded)
-			return ctrl.Result{}, k8sClient.Patch(ctx, guarded, patch, client.ForceOwnership, fieldOwner)
-		}
-		return ctrl.Result{}, nil
-	})
-
-	var guardedSpecimen guarded
-	var guardedSpecimenP guardedP = &guardedSpecimen
-	var dependencySpecimen dependency
-	var dependencySpecimenP dependencyP = &dependencySpecimen
-
-	lowerType := func(v any) string {
-		return strings.ToLower(fmt.Sprintf("%T", v))
-	}
-
-	controllerName := lowerType(guardedSpecimen) + "_deletion_guard_for_" + lowerType(dependencySpecimen)
-
-	err := builder.ControllerManagedBy(mgr).
-		For(guardedSpecimenP).
-		Watches(dependencySpecimenP,
-			handler.Funcs{
-				DeleteFunc: func(ctx context.Context, evt event.TypedDeleteEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
-					for _, guarded := range getGuarded(evt.Object) {
-						q.Add(reconcile.Request{
-							NamespacedName: types.NamespacedName{
-								Namespace: evt.Object.GetNamespace(),
-								Name:      guarded,
-							},
-						})
-					}
-				},
-			},
-		).
-		Named(controllerName).
-		Complete(deletionGuard)
-
-	if err != nil {
-		return fmt.Errorf("failed to construct %s deletion guard for %s controller", lowerType(guardedSpecimen), lowerType(dependencySpecimen))
-	}
-
-	return nil
 }
