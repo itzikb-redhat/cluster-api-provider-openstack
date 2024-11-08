@@ -19,13 +19,12 @@ package controllers
 // This file provides a minimal exported interface to non-exported controllers.
 
 import (
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/image"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/network"
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
-
-	imagecontroller "github.com/k-orc/openstack-resource-controller/internal/controllers/image"
-	networkcontroller "github.com/k-orc/openstack-resource-controller/internal/controllers/network"
 )
 
-var ImageController = imagecontroller.New
-var NetworkController = networkcontroller.New
+var ImageController = image.New
+var NetworkController = network.New
 
 var NewScopeFactory = scope.NewFactory

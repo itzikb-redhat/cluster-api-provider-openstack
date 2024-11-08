@@ -41,30 +41,6 @@ const (
 	glanceOSHashValue = "os_hash_value"
 )
 
-// setFinalizer sets a finalizer on the object in its own SSA transaction.
-func (r *orcImageReconciler) setFinalizer(ctx context.Context, obj client.Object) error {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-
-	applyConfig := struct {
-		applyconfigv1.TypeMetaApplyConfiguration   `json:",inline"`
-		applyconfigv1.ObjectMetaApplyConfiguration `json:"metadata,omitempty"`
-	}{}
-
-	// Type meta
-	applyConfig.
-		WithAPIVersion(gvk.GroupVersion().String()).
-		WithKind(gvk.Kind)
-
-	// Object meta
-	applyConfig.
-		WithName(obj.GetName()).
-		WithNamespace(obj.GetNamespace()).
-		WithUID(obj.GetUID()). // For safety: ensure we don't accidentally create a new object if we race with delete
-		WithFinalizers(Finalizer)
-
-	return r.client.Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
-}
-
 // setStatusID sets a finalizer on the object in its own SSA transaction.
 func (r *orcImageReconciler) setStatusID(ctx context.Context, orcImage *orcv1alpha1.Image, id string) error {
 	applyConfig := orcapplyconfigv1alpha1.Image(orcImage.Name, orcImage.Namespace).
