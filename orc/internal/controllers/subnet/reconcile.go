@@ -288,7 +288,7 @@ func (r *orcSubnetReconciler) deleteResource(ctx context.Context, orcObject *orc
 
 		default:
 			addStatus(withResource(osResource))
-			err := networkClient.DeleteNetwork(ctx, *orcObject.Status.ID).ExtractErr()
+			err := networkClient.DeleteSubnet(ctx, *orcObject.Status.ID)
 			if err != nil {
 				return false, err
 			}
