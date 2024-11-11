@@ -59,22 +59,23 @@ func ssaFieldOwner(txn string) client.FieldOwner {
 const (
 	// The time to wait before reconciling again when we are expecting glance to finish some task and update status.
 	externalUpdatePollingPeriod = 15 * time.Second
+
+	// The time to wait between polling for subnet deletion
+	deletePollingPeriod = 1 * time.Second
 )
 
 // orcSubnetReconciler reconciles an ORC Subnet.
 type orcSubnetReconciler struct {
-	client           client.Client
-	recorder         record.EventRecorder
-	watchFilterValue string
-	scopeFactory     scope.Factory
+	client       client.Client
+	recorder     record.EventRecorder
+	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
+func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
 	return &orcSubnetReconciler{
-		client:           client,
-		recorder:         recorder,
-		watchFilterValue: watchFilterValue,
-		scopeFactory:     scopeFactory,
+		client:       client,
+		recorder:     recorder,
+		scopeFactory: scopeFactory,
 	}
 }
 

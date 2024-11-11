@@ -170,18 +170,18 @@ func (mr *MockNetworkClientMockRecorder) CreateSecGroupRule(opts any) *gomock.Ca
 }
 
 // CreateSubnet mocks base method.
-func (m *MockNetworkClient) CreateSubnet(opts subnets.CreateOptsBuilder) (*subnets.Subnet, error) {
+func (m *MockNetworkClient) CreateSubnet(ctx context.Context, opts subnets.CreateOptsBuilder) (*subnets.Subnet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSubnet", opts)
+	ret := m.ctrl.Call(m, "CreateSubnet", ctx, opts)
 	ret0, _ := ret[0].(*subnets.Subnet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateSubnet indicates an expected call of CreateSubnet.
-func (mr *MockNetworkClientMockRecorder) CreateSubnet(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) CreateSubnet(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubnet", reflect.TypeOf((*MockNetworkClient)(nil).CreateSubnet), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubnet", reflect.TypeOf((*MockNetworkClient)(nil).CreateSubnet), ctx, opts)
 }
 
 // CreateTrunk mocks base method.
@@ -284,17 +284,17 @@ func (mr *MockNetworkClientMockRecorder) DeleteSecGroupRule(id any) *gomock.Call
 }
 
 // DeleteSubnet mocks base method.
-func (m *MockNetworkClient) DeleteSubnet(id string) error {
+func (m *MockNetworkClient) DeleteSubnet(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSubnet", id)
+	ret := m.ctrl.Call(m, "DeleteSubnet", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteSubnet indicates an expected call of DeleteSubnet.
-func (mr *MockNetworkClientMockRecorder) DeleteSubnet(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) DeleteSubnet(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSubnet", reflect.TypeOf((*MockNetworkClient)(nil).DeleteSubnet), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSubnet", reflect.TypeOf((*MockNetworkClient)(nil).DeleteSubnet), ctx, id)
 }
 
 // DeleteTrunk mocks base method.
@@ -401,18 +401,18 @@ func (mr *MockNetworkClientMockRecorder) GetSecGroupRule(id any) *gomock.Call {
 }
 
 // GetSubnet mocks base method.
-func (m *MockNetworkClient) GetSubnet(id string) (*subnets.Subnet, error) {
+func (m *MockNetworkClient) GetSubnet(ctx context.Context, id string) (*subnets.Subnet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSubnet", id)
+	ret := m.ctrl.Call(m, "GetSubnet", ctx, id)
 	ret0, _ := ret[0].(*subnets.Subnet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSubnet indicates an expected call of GetSubnet.
-func (mr *MockNetworkClientMockRecorder) GetSubnet(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) GetSubnet(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubnet", reflect.TypeOf((*MockNetworkClient)(nil).GetSubnet), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubnet", reflect.TypeOf((*MockNetworkClient)(nil).GetSubnet), ctx, id)
 }
 
 // ListExtensions mocks base method.
@@ -683,16 +683,16 @@ func (mr *MockNetworkClientMockRecorder) UpdateSecGroup(id, opts any) *gomock.Ca
 }
 
 // UpdateSubnet mocks base method.
-func (m *MockNetworkClient) UpdateSubnet(id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error) {
+func (m *MockNetworkClient) UpdateSubnet(ctx context.Context, id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateSubnet", id, opts)
+	ret := m.ctrl.Call(m, "UpdateSubnet", ctx, id, opts)
 	ret0, _ := ret[0].(*subnets.Subnet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateSubnet indicates an expected call of UpdateSubnet.
-func (mr *MockNetworkClientMockRecorder) UpdateSubnet(id, opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) UpdateSubnet(ctx, id, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSubnet", reflect.TypeOf((*MockNetworkClient)(nil).UpdateSubnet), id, opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSubnet", reflect.TypeOf((*MockNetworkClient)(nil).UpdateSubnet), ctx, id, opts)
 }

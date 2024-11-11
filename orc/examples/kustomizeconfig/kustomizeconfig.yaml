@@ -3,3 +3,10 @@ nameReference:
   fieldSpecs:
   - path: spec/cloudCredentialsRef/secretName
     kind: Network
+  - path: spec/cloudCredentialsRef/secretName
+    kind: Subnet
+
+- kind: Network
+  fieldSpecs:
+  - path: spec/networkRef
+    kind: Subnet

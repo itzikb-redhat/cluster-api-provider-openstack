@@ -108,8 +108,42 @@ func withProgressMessage(message string) updateStatusOpt {
 }
 
 func getOSResourceStatus(osResource *subnets.Subnet) *orcapplyconfigv1alpha1.SubnetResourceStatusApplyConfiguration {
-	// TODO: write this
-	return &orcapplyconfigv1alpha1.SubnetResourceStatusApplyConfiguration{}
+	status := orcapplyconfigv1alpha1.SubnetResourceStatus().
+		WithName(osResource.Name).
+		WithDescription(osResource.Description).
+		WithIPVersion(osResource.IPVersion).
+		WithCIDR(osResource.CIDR).
+		WithGatewayIP(osResource.GatewayIP).
+		WithDNSPublishFixedIP(osResource.DNSPublishFixedIP).
+		WithEnableDHCP(osResource.EnableDHCP).
+		WithProjectID(osResource.ProjectID).
+		WithRevisionNumber(int64(osResource.RevisionNumber)).
+		WithIPv6AddressMode(osResource.IPv6AddressMode).
+		WithIPv6RAMode(osResource.IPv6RAMode).
+		WithTags(osResource.Tags...).
+		WithDNSNameservers(osResource.DNSNameservers...)
+
+	if len(osResource.AllocationPools) > 0 {
+		allocationPools := make([]*orcapplyconfigv1alpha1.AllocationPoolStatusApplyConfiguration, len(osResource.AllocationPools))
+		for i := range osResource.AllocationPools {
+			allocationPools[i] = orcapplyconfigv1alpha1.AllocationPoolStatus().
+				WithStart(osResource.AllocationPools[i].Start).
+				WithEnd(osResource.AllocationPools[i].End)
+		}
+		status.WithAllocationPools(allocationPools...)
+	}
+
+	if len(osResource.HostRoutes) > 0 {
+		hostRoutes := make([]*orcapplyconfigv1alpha1.HostRouteStatusApplyConfiguration, len(osResource.HostRoutes))
+		for i := range osResource.HostRoutes {
+			hostRoutes[i] = orcapplyconfigv1alpha1.HostRouteStatus().
+				WithDestination(osResource.HostRoutes[i].DestinationCIDR).
+				WithNextHop(osResource.HostRoutes[i].NextHop)
+		}
+		status.WithHostRoutes(hostRoutes...)
+	}
+
+	return status
 }
 
 // createStatusUpdate computes a complete status update based on the given
@@ -230,7 +264,7 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 		}
 		addConditionValues(availableCondition)
 		addConditionValues(progressingCondition)
-		log.V(4).Info("Setting image status", logValues...)
+		log.V(4).Info("Setting resource status", logValues...)
 	}
 
 	return applyConfig

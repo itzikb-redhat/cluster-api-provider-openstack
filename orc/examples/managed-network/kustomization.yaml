@@ -8,3 +8,4 @@ components:
 resources:
 - ../credentials
 - network.yaml
+- subnet.yaml

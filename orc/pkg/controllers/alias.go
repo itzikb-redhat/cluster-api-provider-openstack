@@ -21,10 +21,12 @@ package controllers
 import (
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/image"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/network"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/subnet"
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
 )
 
 var ImageController = image.New
 var NetworkController = network.New
+var SubnetController = subnet.New
 
 var NewScopeFactory = scope.NewFactory

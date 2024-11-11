@@ -20,10 +20,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/go-logr/logr"
+	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/subnets"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/ptr"
@@ -171,7 +171,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 	switch {
 	case orcObject.Status.ID != nil:
 		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource, err := networkClient.GetSubnet(*orcObject.Status.ID)
+		osResource, err := networkClient.GetSubnet(ctx, *orcObject.Status.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
@@ -183,7 +183,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
 		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource, err := networkClient.GetSubnet(*orcObject.Spec.Import.ID)
+		osResource, err := networkClient.GetSubnet(ctx, *orcObject.Spec.Import.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
@@ -249,6 +249,25 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 			return ctrl.Result{}, err
 		}
 
+		if orcObject.Status.ID != nil {
+			osResource, err := networkClient.GetSubnet(ctx, *orcObject.Status.ID)
+
+			switch {
+			case orcerrors.IsNotFound(err):
+				// Success!
+
+			case err != nil:
+				return ctrl.Result{}, err
+
+			default:
+				addStatus(withResource(osResource))
+				err := networkClient.DeleteSubnet(ctx, *orcObject.Status.ID)
+				if err != nil {
+					return ctrl.Result{}, err
+				}
+				return ctrl.Result{RequeueAfter: deletePollingPeriod}, nil
+			}
+		}
 		// XXX: Don't do this. getOSResourceFromObject refactor was probably unnecessary. Consider undoing it for simplicity. Here we should:
 		// * fetch by ID if set
 		// * fetch by creation opts if ID is not set
@@ -261,7 +280,7 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 		// Delete any returned OpenStack resource, but don't clear the finalizer until a fetch returns nothing
 		if osResource != nil {
 			log.V(4).Info("Deleting OpenStack resource", "id", osResource.ID)
-			err := networkClient.DeleteSubnet(osResource.ID)
+			err := networkClient.DeleteSubnet(ctx, osResource.ID)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
@@ -335,7 +354,7 @@ func getResourceFromList(ctx context.Context, listOpts subnets.ListOptsBuilder, 
 }
 
 // createResource creates an OpenStack resource from an ORC object
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, _ orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*subnets.Subnet, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
@@ -351,17 +370,58 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, _ orcv1a
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
 	}
 
-	// TODO: Write this
-	createOpts := subnets.CreateOpts{}
-
-	tags := make([]string, len(resource.Tags))
-	for i := range resource.Tags {
-		tags[i] = string(resource.Tags[i])
+	createOpts := subnets.CreateOpts{
+		NetworkID:         string(networkID),
+		CIDR:              string(resource.CIDR),
+		Name:              string(getResourceName(orcObject)),
+		Description:       string(ptr.Deref(resource.Description, "")),
+		IPVersion:         gophercloud.IPVersion(resource.IPVersion),
+		EnableDHCP:        resource.EnableDHCP,
+		DNSPublishFixedIP: resource.DNSPublishFixedIP,
 	}
-	// Sort tags before creation to simplify comparisons
-	slices.Sort(tags)
 
-	osResource, err := networkClient.CreateSubnet(&createOpts)
+	if len(resource.AllocationPools) > 0 {
+		createOpts.AllocationPools = make([]subnets.AllocationPool, len(resource.AllocationPools))
+		for i := range resource.AllocationPools {
+			createOpts.AllocationPools[i].Start = string(resource.AllocationPools[i].Start)
+			createOpts.AllocationPools[i].End = string(resource.AllocationPools[i].End)
+		}
+	}
+
+	if resource.Gateway != nil {
+		switch resource.Gateway.Type {
+		case orcv1alpha1.SubnetGatewayTypeAutomatic:
+			// Nothing to do
+		case orcv1alpha1.SubnetGatewayTypeNone:
+			createOpts.GatewayIP = ptr.To("")
+		case orcv1alpha1.SubnetGatewayTypeIP:
+			fallthrough
+		default:
+			createOpts.GatewayIP = (*string)(resource.Gateway.IP)
+		}
+	}
+
+	if len(resource.DNSNameservers) > 0 {
+		createOpts.DNSNameservers = make([]string, len(resource.DNSNameservers))
+		for i := range resource.DNSNameservers {
+			createOpts.DNSNameservers[i] = string(resource.DNSNameservers[i])
+		}
+	}
+
+	if len(resource.HostRoutes) > 0 {
+		createOpts.HostRoutes = make([]subnets.HostRoute, len(resource.HostRoutes))
+		for i := range resource.HostRoutes {
+			createOpts.HostRoutes[i].DestinationCIDR = string(resource.HostRoutes[i].Destination)
+			createOpts.HostRoutes[i].NextHop = string(resource.HostRoutes[i].NextHop)
+		}
+	}
+
+	if resource.IPv6 != nil {
+		createOpts.IPv6AddressMode = string(ptr.Deref(resource.IPv6.AddressMode, ""))
+		createOpts.IPv6RAMode = string(ptr.Deref(resource.IPv6.RAMode, ""))
+	}
+
+	osResource, err := networkClient.CreateSubnet(ctx, &createOpts)
 
 	// We should require the spec to be updated before retrying a create which returned a conflict
 	if orcerrors.IsConflict(err) {

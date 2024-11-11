@@ -82,10 +82,10 @@ type NetworkClient interface {
 	UpdateNetwork(ctx context.Context, id string, opts networks.UpdateOptsBuilder) networks.UpdateResult
 
 	ListSubnet(ctx context.Context, opts subnets.ListOptsBuilder) ([]subnets.Subnet, error)
-	CreateSubnet(opts subnets.CreateOptsBuilder) (*subnets.Subnet, error)
-	DeleteSubnet(id string) error
-	GetSubnet(id string) (*subnets.Subnet, error)
-	UpdateSubnet(id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error)
+	CreateSubnet(ctx context.Context, opts subnets.CreateOptsBuilder) (*subnets.Subnet, error)
+	DeleteSubnet(ctx context.Context, id string) error
+	GetSubnet(ctx context.Context, id string) (*subnets.Subnet, error)
+	UpdateSubnet(ctx context.Context, id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error)
 
 	ListExtensions() ([]extensions.Extension, error)
 
@@ -296,20 +296,20 @@ func (c networkClient) ListSubnet(ctx context.Context, opts subnets.ListOptsBuil
 	return subnets.ExtractSubnets(allPages)
 }
 
-func (c networkClient) CreateSubnet(opts subnets.CreateOptsBuilder) (*subnets.Subnet, error) {
-	return subnets.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreateSubnet(ctx context.Context, opts subnets.CreateOptsBuilder) (*subnets.Subnet, error) {
+	return subnets.Create(ctx, c.serviceClient, opts).Extract()
 }
 
-func (c networkClient) DeleteSubnet(id string) error {
-	return subnets.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeleteSubnet(ctx context.Context, id string) error {
+	return subnets.Delete(ctx, c.serviceClient, id).ExtractErr()
 }
 
-func (c networkClient) GetSubnet(id string) (*subnets.Subnet, error) {
-	return subnets.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetSubnet(ctx context.Context, id string) (*subnets.Subnet, error) {
+	return subnets.Get(ctx, c.serviceClient, id).Extract()
 }
 
-func (c networkClient) UpdateSubnet(id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error) {
-	return subnets.Update(context.TODO(), c.serviceClient, id, opts).Extract()
+func (c networkClient) UpdateSubnet(ctx context.Context, id string, opts subnets.UpdateOptsBuilder) (*subnets.Subnet, error) {
+	return subnets.Update(ctx, c.serviceClient, id, opts).Extract()
 }
 
 func (c networkClient) ListExtensions() ([]extensions.Extension, error) {
