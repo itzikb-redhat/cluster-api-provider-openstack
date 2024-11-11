@@ -22,6 +22,7 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/dns"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/external"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/mtu"
@@ -448,7 +449,8 @@ func needsUpdate(networkClient osclients.NetworkClient, orcObject *orcv1alpha1.N
 	}
 	if !objectTagSet.Equal(resourceTagSet) {
 		addUpdateFunc(func(ctx context.Context) error {
-			_, err := networkClient.ReplaceAllAttributesTags(ctx, "networks", osResource.ID, nil)
+			opts := attributestags.ReplaceAllOpts{Tags: objectTagSet.SortedList()}
+			_, err := networkClient.ReplaceAllAttributesTags(ctx, "networks", osResource.ID, &opts)
 			return err
 		})
 	}
