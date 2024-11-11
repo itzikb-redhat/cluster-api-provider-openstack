@@ -50,10 +50,15 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 	getGuardedFromDependency func(client.Object) []string,
 	getDependenciesFromGuarded func(guardedP) ([]dependency, error),
 ) error {
+	log := mgr.GetLogger()
+
 	// deletionGuard reconciles the guarded object
 	// It adds a finalizer to any guarded object which is not marked as deleted
 	// If the guarded object is marked deleted, we remove the finalizer only if there are no dependent objects
 	deletionGuard := reconcile.Func(func(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
+		log = log.WithValues("subject", req)
+		log.V(5).Info("Reconciling deletion guard")
+
 		k8sClient := mgr.GetClient()
 
 		var guarded guardedP = new(guarded)
@@ -66,23 +71,29 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 		}
 
 		// If the object hasn't been deleted, we simply check that it has our finalizer
-		if !guarded.GetDeletionTimestamp().IsZero() {
+		if guarded.GetDeletionTimestamp().IsZero() {
 			if !slices.Contains(guarded.GetFinalizers(), finalizer) {
+				log.V(4).Info("Adding finalizer")
 				patch := GetFinalizerPatch(guarded, finalizer)
 				return ctrl.Result{}, k8sClient.Patch(ctx, guarded, patch, client.ForceOwnership, fieldOwner)
 			}
 
+			log.V(5).Info("Finalizer already present")
 			return ctrl.Result{}, nil
 		}
+
+		log.V(4).Info("Handling delete")
 
 		dependencies, err := getDependenciesFromGuarded(guarded)
 		if err != nil {
 			return reconcile.Result{}, nil
 		}
 		if len(dependencies) == 0 {
+			log.V(4).Info("Removing finalizer")
 			patch := RemoveFinalizerPatch(guarded)
 			return ctrl.Result{}, k8sClient.Patch(ctx, guarded, patch, client.ForceOwnership, fieldOwner)
 		}
+		log.V(5).Info("Waiting for dependencies", "dependencies", len(dependencies))
 		return ctrl.Result{}, nil
 	})
 
