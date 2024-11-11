@@ -25,8 +25,8 @@ import (
 // SubnetGatewayApplyConfiguration represents a declarative configuration of the SubnetGateway type for use
 // with apply.
 type SubnetGatewayApplyConfiguration struct {
-	Type *string          `json:"type,omitempty"`
-	IP   *v1alpha1.IPvAny `json:"ip,omitempty"`
+	Type *v1alpha1.SubnetGatewayType `json:"type,omitempty"`
+	IP   *v1alpha1.IPvAny            `json:"ip,omitempty"`
 }
 
 // SubnetGatewayApplyConfiguration constructs a declarative configuration of the SubnetGateway type for use with
@@ -38,7 +38,7 @@ func SubnetGateway() *SubnetGatewayApplyConfiguration {
 // WithType sets the Type field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Type field is set to the value of the last call.
-func (b *SubnetGatewayApplyConfiguration) WithType(value string) *SubnetGatewayApplyConfiguration {
+func (b *SubnetGatewayApplyConfiguration) WithType(value v1alpha1.SubnetGatewayType) *SubnetGatewayApplyConfiguration {
 	b.Type = &value
 	return b
 }

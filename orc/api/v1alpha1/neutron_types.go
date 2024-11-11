@@ -69,12 +69,10 @@ type CIDR string
 // +kubebuilder:validation:MaxLength:=45
 type IPvAny string
 
-type NeutronRevisionNumber int64
-
 type NeutronStatusMetadata struct {
 	CreatedAt *metav1.Time `json:"createdAt,omitempty"`
 	UpdatedAt *metav1.Time `json:"updatedAt,omitempty"`
 
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
-	RevisionNumber *NeutronRevisionNumber `json:"revisionNumber,omitempty"`
+	RevisionNumber *int64 `json:"revisionNumber,omitempty"`
 }

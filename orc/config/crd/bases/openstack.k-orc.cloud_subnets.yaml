@@ -525,12 +525,8 @@ spec:
                     items:
                       properties:
                         end:
-                          maxLength: 45
-                          minLength: 1
                           type: string
                         start:
-                          maxLength: 45
-                          minLength: 1
                           type: string
                       required:
                       - end
@@ -541,24 +537,17 @@ spec:
                   cidr:
                     description: CIDR representing IP range for this subnet, based
                       on IP version.
-                    format: cidr
-                    maxLength: 49
-                    minLength: 1
                     type: string
                   createdAt:
                     format: date-time
                     type: string
                   description:
                     description: Description for the subnet.
-                    maxLength: 1024
-                    minLength: 1
                     type: string
                   dnsNameservers:
                     description: DNSNameservers is a list of name servers used by
                       hosts in this subnet.
                     items:
-                      maxLength: 45
-                      minLength: 1
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
@@ -573,8 +562,6 @@ spec:
                   gatewayIP:
                     description: GatewayIP is the default gateway used by devices
                       in this subnet, if any.
-                    maxLength: 45
-                    minLength: 1
                     type: string
                   hostRoutes:
                     description: |-
@@ -583,13 +570,8 @@ spec:
                     items:
                       properties:
                         destination:
-                          format: cidr
-                          maxLength: 49
-                          minLength: 1
                           type: string
                         nextHop:
-                          maxLength: 45
-                          minLength: 1
                           type: string
                       required:
                       - destination
@@ -599,37 +581,22 @@ spec:
                     x-kubernetes-list-type: atomic
                   ipVersion:
                     description: IPVersion specifies IP version, either `4' or `6'.
-                    enum:
-                    - 4
-                    - 6
                     type: integer
                   ipv6AddressMode:
                     description: The IPv6 address modes specifies mechanisms for assigning
                       IPv6 IP addresses.
-                    enum:
-                    - slaac
-                    - dhcpv6-stateful
-                    - dhcpv6-stateless
                     type: string
                   ipv6RAMode:
                     description: |-
                       The IPv6 router advertisement specifies whether the networking service
                       should transmit ICMPv6 packets.
-                    enum:
-                    - slaac
-                    - dhcpv6-stateful
-                    - dhcpv6-stateless
                     type: string
                   name:
                     description: Name is the human-readable name of the subnet. Might
                       not be unique.
-                    maxLength: 1024
-                    minLength: 1
                     type: string
                   projectID:
                     description: ProjectID is the project owner of the subnet.
-                    format: uuid
-                    maxLength: 36
                     type: string
                   revisionNumber:
                     description: RevisionNumber optionally set via extensions/standard-attr-revisions
@@ -638,17 +605,10 @@ spec:
                   subnetPoolID:
                     description: SubnetPoolID is the id of the subnet pool associated
                       with the subnet.
-                    format: uuid
-                    maxLength: 36
                     type: string
                   tags:
                     description: Tags optionally set via extensions/attributestags
                     items:
-                      description: |-
-                        NeutronTag represents a tag on a Neutron resource.
-                        It may not be empty and may not contain commas.
-                      maxLength: 60
-                      minLength: 1
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
@@ -657,7 +617,6 @@ spec:
                     type: string
                 required:
                 - cidr
-                - dnsNameservers
                 - enableDHCP
                 - ipVersion
                 - name

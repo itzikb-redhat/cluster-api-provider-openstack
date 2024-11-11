@@ -19,16 +19,15 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // NeutronStatusMetadataApplyConfiguration represents a declarative configuration of the NeutronStatusMetadata type for use
 // with apply.
 type NeutronStatusMetadataApplyConfiguration struct {
-	CreatedAt      *v1.Time                        `json:"createdAt,omitempty"`
-	UpdatedAt      *v1.Time                        `json:"updatedAt,omitempty"`
-	RevisionNumber *v1alpha1.NeutronRevisionNumber `json:"revisionNumber,omitempty"`
+	CreatedAt      *v1.Time `json:"createdAt,omitempty"`
+	UpdatedAt      *v1.Time `json:"updatedAt,omitempty"`
+	RevisionNumber *int64   `json:"revisionNumber,omitempty"`
 }
 
 // NeutronStatusMetadataApplyConfiguration constructs a declarative configuration of the NeutronStatusMetadata type for use with
@@ -56,7 +55,7 @@ func (b *NeutronStatusMetadataApplyConfiguration) WithUpdatedAt(value v1.Time) *
 // WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the RevisionNumber field is set to the value of the last call.
-func (b *NeutronStatusMetadataApplyConfiguration) WithRevisionNumber(value v1alpha1.NeutronRevisionNumber) *NeutronStatusMetadataApplyConfiguration {
+func (b *NeutronStatusMetadataApplyConfiguration) WithRevisionNumber(value int64) *NeutronStatusMetadataApplyConfiguration {
 	b.RevisionNumber = &value
 	return b
 }

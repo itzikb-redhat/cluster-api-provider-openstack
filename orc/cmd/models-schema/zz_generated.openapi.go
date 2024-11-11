@@ -31,9 +31,11 @@ import (
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool":             schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference":  schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FilterByNeutronTags":        schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRoute(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus":            schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRouteStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.IPv6Options":                schema_k_orc_openstack_resource_controller_api_v1alpha1_IPv6Options(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Image":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Image(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageContent":               schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageContent(ref),
@@ -383,6 +385,33 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref 
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"start": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"end": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"start", "end"},
+			},
+		},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -506,6 +535,33 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags
 }
 
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRoute(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"destination": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"nextHop": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"destination", "nextHop"},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRouteStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2342,7 +2398,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 							Description: "IPVersion specifies IP version, either `4' or `6'.",
 							Default:     0,
 							Type:        []string{"integer"},
-							Format:      "byte",
+							Format:      "int32",
 						},
 					},
 					"cidr": {
@@ -2400,7 +2456,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool"),
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus"),
 									},
 								},
 							},
@@ -2419,7 +2475,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute"),
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus"),
 									},
 								},
 							},
@@ -2500,11 +2556,11 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatu
 						},
 					},
 				},
-				Required: []string{"name", "ipVersion", "cidr", "dnsNameservers", "enableDHCP", "projectID"},
+				Required: []string{"name", "ipVersion", "cidr", "enableDHCP", "projectID"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 

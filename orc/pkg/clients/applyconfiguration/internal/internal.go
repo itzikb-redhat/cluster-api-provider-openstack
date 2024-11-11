@@ -50,6 +50,17 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllocationPoolStatus
+  map:
+    fields:
+    - name: end
+      type:
+        scalar: string
+      default: ""
+    - name: start
+      type:
+        scalar: string
+      default: ""
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
   map:
     fields:
@@ -62,6 +73,17 @@ var schemaYAML = typed.YAMLObject(`types:
         scalar: string
       default: ""
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
+  map:
+    fields:
+    - name: destination
+      type:
+        scalar: string
+      default: ""
+    - name: nextHop
+      type:
+        scalar: string
+      default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRouteStatus
   map:
     fields:
     - name: destination
@@ -651,7 +673,7 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         list:
           elementType:
-            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllocationPool
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllocationPoolStatus
           elementRelationship: atomic
     - name: cidr
       type:
@@ -683,7 +705,7 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         list:
           elementType:
-            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRouteStatus
           elementRelationship: atomic
     - name: ipVersion
       type:

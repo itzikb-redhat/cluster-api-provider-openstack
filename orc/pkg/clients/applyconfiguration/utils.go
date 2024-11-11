@@ -34,12 +34,16 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 	// Group=openstack.k-orc.cloud, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPool"):
 		return &apiv1alpha1.AllocationPoolApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPoolStatus"):
+		return &apiv1alpha1.AllocationPoolStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("CloudCredentialsReference"):
 		return &apiv1alpha1.CloudCredentialsReferenceApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("FilterByNeutronTags"):
 		return &apiv1alpha1.FilterByNeutronTagsApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRoute"):
 		return &apiv1alpha1.HostRouteApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("HostRouteStatus"):
+		return &apiv1alpha1.HostRouteStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Image"):
 		return &apiv1alpha1.ImageApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ImageContent"):

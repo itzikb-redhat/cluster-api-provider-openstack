@@ -19,28 +19,27 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // SubnetResourceStatusApplyConfiguration represents a declarative configuration of the SubnetResourceStatus type for use
 // with apply.
 type SubnetResourceStatusApplyConfiguration struct {
-	Name                                    *v1alpha1.OpenStackName            `json:"name,omitempty"`
-	Description                             *v1alpha1.OpenStackDescription     `json:"description,omitempty"`
-	IPVersion                               *v1alpha1.IPVersion                `json:"ipVersion,omitempty"`
-	CIDR                                    *v1alpha1.CIDR                     `json:"cidr,omitempty"`
-	GatewayIP                               *v1alpha1.IPvAny                   `json:"gatewayIP,omitempty"`
-	DNSNameservers                          []v1alpha1.IPvAny                  `json:"dnsNameservers,omitempty"`
-	DNSPublishFixedIP                       *bool                              `json:"dnsPublishFixedIP,omitempty"`
-	AllocationPools                         []AllocationPoolApplyConfiguration `json:"allocationPools,omitempty"`
-	HostRoutes                              []HostRouteApplyConfiguration      `json:"hostRoutes,omitempty"`
-	EnableDHCP                              *bool                              `json:"enableDHCP,omitempty"`
-	ProjectID                               *v1alpha1.UUID                     `json:"projectID,omitempty"`
-	IPv6AddressMode                         *v1alpha1.IPv6AddressMode          `json:"ipv6AddressMode,omitempty"`
-	IPv6RAMode                              *v1alpha1.IPv6RAMode               `json:"ipv6RAMode,omitempty"`
-	SubnetPoolID                            *v1alpha1.UUID                     `json:"subnetPoolID,omitempty"`
-	Tags                                    []v1alpha1.NeutronTag              `json:"tags,omitempty"`
+	Name                                    *string                                  `json:"name,omitempty"`
+	Description                             *string                                  `json:"description,omitempty"`
+	IPVersion                               *int                                     `json:"ipVersion,omitempty"`
+	CIDR                                    *string                                  `json:"cidr,omitempty"`
+	GatewayIP                               *string                                  `json:"gatewayIP,omitempty"`
+	DNSNameservers                          []string                                 `json:"dnsNameservers,omitempty"`
+	DNSPublishFixedIP                       *bool                                    `json:"dnsPublishFixedIP,omitempty"`
+	AllocationPools                         []AllocationPoolStatusApplyConfiguration `json:"allocationPools,omitempty"`
+	HostRoutes                              []HostRouteStatusApplyConfiguration      `json:"hostRoutes,omitempty"`
+	EnableDHCP                              *bool                                    `json:"enableDHCP,omitempty"`
+	ProjectID                               *string                                  `json:"projectID,omitempty"`
+	IPv6AddressMode                         *string                                  `json:"ipv6AddressMode,omitempty"`
+	IPv6RAMode                              *string                                  `json:"ipv6RAMode,omitempty"`
+	SubnetPoolID                            *string                                  `json:"subnetPoolID,omitempty"`
+	Tags                                    []string                                 `json:"tags,omitempty"`
 	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
@@ -53,7 +52,7 @@ func SubnetResourceStatus() *SubnetResourceStatusApplyConfiguration {
 // WithName sets the Name field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Name field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithName(value v1alpha1.OpenStackName) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithName(value string) *SubnetResourceStatusApplyConfiguration {
 	b.Name = &value
 	return b
 }
@@ -61,7 +60,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithName(value v1alpha1.OpenSta
 // WithDescription sets the Description field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Description field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithDescription(value v1alpha1.OpenStackDescription) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithDescription(value string) *SubnetResourceStatusApplyConfiguration {
 	b.Description = &value
 	return b
 }
@@ -69,7 +68,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithDescription(value v1alpha1.
 // WithIPVersion sets the IPVersion field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the IPVersion field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithIPVersion(value v1alpha1.IPVersion) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithIPVersion(value int) *SubnetResourceStatusApplyConfiguration {
 	b.IPVersion = &value
 	return b
 }
@@ -77,7 +76,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithIPVersion(value v1alpha1.IP
 // WithCIDR sets the CIDR field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the CIDR field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithCIDR(value v1alpha1.CIDR) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithCIDR(value string) *SubnetResourceStatusApplyConfiguration {
 	b.CIDR = &value
 	return b
 }
@@ -85,7 +84,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithCIDR(value v1alpha1.CIDR) *
 // WithGatewayIP sets the GatewayIP field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the GatewayIP field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithGatewayIP(value v1alpha1.IPvAny) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithGatewayIP(value string) *SubnetResourceStatusApplyConfiguration {
 	b.GatewayIP = &value
 	return b
 }
@@ -93,7 +92,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithGatewayIP(value v1alpha1.IP
 // WithDNSNameservers adds the given value to the DNSNameservers field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the DNSNameservers field.
-func (b *SubnetResourceStatusApplyConfiguration) WithDNSNameservers(values ...v1alpha1.IPvAny) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithDNSNameservers(values ...string) *SubnetResourceStatusApplyConfiguration {
 	for i := range values {
 		b.DNSNameservers = append(b.DNSNameservers, values[i])
 	}
@@ -111,7 +110,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithDNSPublishFixedIP(value boo
 // WithAllocationPools adds the given value to the AllocationPools field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the AllocationPools field.
-func (b *SubnetResourceStatusApplyConfiguration) WithAllocationPools(values ...*AllocationPoolApplyConfiguration) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithAllocationPools(values ...*AllocationPoolStatusApplyConfiguration) *SubnetResourceStatusApplyConfiguration {
 	for i := range values {
 		if values[i] == nil {
 			panic("nil value passed to WithAllocationPools")
@@ -124,7 +123,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithAllocationPools(values ...*
 // WithHostRoutes adds the given value to the HostRoutes field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the HostRoutes field.
-func (b *SubnetResourceStatusApplyConfiguration) WithHostRoutes(values ...*HostRouteApplyConfiguration) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithHostRoutes(values ...*HostRouteStatusApplyConfiguration) *SubnetResourceStatusApplyConfiguration {
 	for i := range values {
 		if values[i] == nil {
 			panic("nil value passed to WithHostRoutes")
@@ -145,7 +144,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithEnableDHCP(value bool) *Sub
 // WithProjectID sets the ProjectID field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the ProjectID field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithProjectID(value v1alpha1.UUID) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithProjectID(value string) *SubnetResourceStatusApplyConfiguration {
 	b.ProjectID = &value
 	return b
 }
@@ -153,7 +152,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithProjectID(value v1alpha1.UU
 // WithIPv6AddressMode sets the IPv6AddressMode field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the IPv6AddressMode field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithIPv6AddressMode(value v1alpha1.IPv6AddressMode) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithIPv6AddressMode(value string) *SubnetResourceStatusApplyConfiguration {
 	b.IPv6AddressMode = &value
 	return b
 }
@@ -161,7 +160,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithIPv6AddressMode(value v1alp
 // WithIPv6RAMode sets the IPv6RAMode field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the IPv6RAMode field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithIPv6RAMode(value v1alpha1.IPv6RAMode) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithIPv6RAMode(value string) *SubnetResourceStatusApplyConfiguration {
 	b.IPv6RAMode = &value
 	return b
 }
@@ -169,7 +168,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithIPv6RAMode(value v1alpha1.I
 // WithSubnetPoolID sets the SubnetPoolID field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the SubnetPoolID field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithSubnetPoolID(value v1alpha1.UUID) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithSubnetPoolID(value string) *SubnetResourceStatusApplyConfiguration {
 	b.SubnetPoolID = &value
 	return b
 }
@@ -177,7 +176,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithSubnetPoolID(value v1alpha1
 // WithTags adds the given value to the Tags field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the Tags field.
-func (b *SubnetResourceStatusApplyConfiguration) WithTags(values ...v1alpha1.NeutronTag) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithTags(values ...string) *SubnetResourceStatusApplyConfiguration {
 	for i := range values {
 		b.Tags = append(b.Tags, values[i])
 	}
@@ -203,7 +202,7 @@ func (b *SubnetResourceStatusApplyConfiguration) WithUpdatedAt(value v1.Time) *S
 // WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the RevisionNumber field is set to the value of the last call.
-func (b *SubnetResourceStatusApplyConfiguration) WithRevisionNumber(value v1alpha1.NeutronRevisionNumber) *SubnetResourceStatusApplyConfiguration {
+func (b *SubnetResourceStatusApplyConfiguration) WithRevisionNumber(value int64) *SubnetResourceStatusApplyConfiguration {
 	b.RevisionNumber = &value
 	return b
 }

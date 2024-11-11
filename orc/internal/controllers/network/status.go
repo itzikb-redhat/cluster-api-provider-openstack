@@ -108,7 +108,7 @@ func getOSResourceStatus(log logr.Logger, osResource *networkExt) *orcapplyconfi
 		WithProjectID(osResource.ProjectID).
 		WithTags(osResource.Tags...).
 		WithDNSDomain(osResource.DNSDomain).
-		WithRevisionNumber(orcv1alpha1.NeutronRevisionNumber(osResource.RevisionNumber)).
+		WithRevisionNumber(int64(osResource.RevisionNumber)).
 		WithExternal(osResource.External).
 		WithSubnets(osResource.Subnets...).
 		WithMTU(int32(osResource.MTU)).
