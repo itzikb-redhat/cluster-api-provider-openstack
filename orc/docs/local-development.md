@@ -71,11 +71,6 @@ To recompile, kill the process with ctrl-C and re-run it.
 
 ## Create an example ORC resource
 
-
-  * Define some credentials
-  * Generate `dev-settings` containing our own username as a name prefix
-  * Create an ORC resource using the above
-
 ### Define some OpenStack credentials
 
 Create a `clouds.yaml` file in `orc/examples/credentials`. The name of the cloud in this clouds.yaml must be `openstack`.
