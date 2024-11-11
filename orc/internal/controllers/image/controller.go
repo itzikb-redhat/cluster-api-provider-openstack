@@ -65,18 +65,16 @@ const (
 
 // orcImageReconciler reconciles an ORC Image.
 type orcImageReconciler struct {
-	client           client.Client
-	recorder         record.EventRecorder
-	watchFilterValue string
-	scopeFactory     scope.Factory
+	client       client.Client
+	recorder     record.EventRecorder
+	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, watchFilterValue string, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
+func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
 	return &orcImageReconciler{
-		client:           client,
-		recorder:         recorder,
-		watchFilterValue: watchFilterValue,
-		scopeFactory:     scopeFactory,
+		client:       client,
+		recorder:     recorder,
+		scopeFactory: scopeFactory,
 	}
 }
 
