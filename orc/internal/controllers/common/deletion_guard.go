@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -50,13 +51,11 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 	getGuardedFromDependency func(client.Object) []string,
 	getDependenciesFromGuarded func(guardedP) ([]dependency, error),
 ) error {
-	log := mgr.GetLogger()
-
 	// deletionGuard reconciles the guarded object
 	// It adds a finalizer to any guarded object which is not marked as deleted
 	// If the guarded object is marked deleted, we remove the finalizer only if there are no dependent objects
 	deletionGuard := reconcile.Func(func(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-		log = log.WithValues("subject", req)
+		log := ctrl.LoggerFrom(ctx, "name", req.Name, "namespace", req.Namespace)
 		log.V(5).Info("Reconciling deletion guard")
 
 		k8sClient := mgr.GetClient()
@@ -97,16 +96,20 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 		return ctrl.Result{}, nil
 	})
 
-	var guardedSpecimen guarded
-	var guardedSpecimenP guardedP = &guardedSpecimen
-	var dependencySpecimen dependency
-	var dependencySpecimenP dependencyP = &dependencySpecimen
+	var guardedSpecimen guardedP = new(guarded)
+	var dependencySpecimen dependencyP = new(dependency)
 
-	lowerType := func(v any) string {
-		return strings.ToLower(fmt.Sprintf("%T", v))
+	scheme := mgr.GetScheme()
+	guardedName, err := prettyName(guardedSpecimen, scheme)
+	if err != nil {
+		return err
+	}
+	dependencyName, err := prettyName(dependencySpecimen, scheme)
+	if err != nil {
+		return err
 	}
 
-	controllerName := lowerType(guardedSpecimen) + "_deletion_guard_for_" + lowerType(dependencySpecimen)
+	controllerName := guardedName + "_deletion_guard_for_" + dependencyName
 
 	// Register deletionGuard with the manager as a reconciler of guarded.
 	// We also watch dependency, but we're only interested in deletion events.
@@ -114,9 +117,9 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 	// continue to call deletionGuard every time a dependent object is deleted
 	// so that we will eventually be called when the last dependent object is
 	// deleted and we can remove the dependency.
-	err := builder.ControllerManagedBy(mgr).
-		For(guardedSpecimenP).
-		Watches(dependencySpecimenP,
+	err = builder.ControllerManagedBy(mgr).
+		For(guardedSpecimen).
+		Watches(dependencySpecimen,
 			handler.Funcs{
 				DeleteFunc: func(ctx context.Context, evt event.TypedDeleteEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 					for _, guarded := range getGuardedFromDependency(evt.Object) {
@@ -134,8 +137,20 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 		Complete(deletionGuard)
 
 	if err != nil {
-		return fmt.Errorf("failed to construct %s deletion guard for %s controller", lowerType(guardedSpecimen), lowerType(dependencySpecimen))
+		return fmt.Errorf("failed to construct %s deletion guard for %s controller", guardedName, dependencyName)
 	}
 
 	return nil
+}
+
+func prettyName(obj runtime.Object, scheme *runtime.Scheme) (string, error) {
+	gvks, _, err := scheme.ObjectKinds(obj)
+	if err != nil {
+		return "", fmt.Errorf("looking up GVK for guarded object %T: %w", obj, err)
+	}
+	if len(gvks) == 0 {
+		return "", fmt.Errorf("no registered kind for guarded object %T", obj)
+	}
+
+	return strings.ToLower(gvks[0].Kind), nil
 }
