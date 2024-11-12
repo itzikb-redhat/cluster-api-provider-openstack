@@ -69,6 +69,12 @@ type CIDR string
 // +kubebuilder:validation:MaxLength:=45
 type IPvAny string
 
+// XXX: AvailabilityZoneHint MaxLength is made up
+
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=128
+type AvailabilityZoneHint string
+
 type NeutronStatusMetadata struct {
 	CreatedAt *metav1.Time `json:"createdAt,omitempty"`
 	UpdatedAt *metav1.Time `json:"updatedAt,omitempty"`
@@ -76,3 +82,9 @@ type NeutronStatusMetadata struct {
 	// RevisionNumber optionally set via extensions/standard-attr-revisions
 	RevisionNumber *int64 `json:"revisionNumber,omitempty"`
 }
+
+// XXX: KubernetesNameRef MaxLength is made up
+
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=128
+type KubernetesNameRef string

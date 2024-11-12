@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.4
-  name: networks.openstack.k-orc.cloud
+  name: routers.openstack.k-orc.cloud
 spec:
   group: openstack.k-orc.cloud
   names:
-    kind: Network
-    listKind: NetworkList
-    plural: networks
-    singular: network
+    kind: Router
+    listKind: RouterList
+    plural: routers
+    singular: router
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -34,7 +34,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Network is the Schema for an ORC resource.
+        description: Router is the Schema for an ORC resource.
         properties:
           apiVersion:
             description: |-
@@ -54,7 +54,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: NetworkSpec defines the desired state of an ORC object.
+            description: RouterSpec defines the desired state of an ORC object.
             properties:
               cloudCredentialsRef:
                 description: CloudCredentialsRef points to a secret containing OpenStack
@@ -94,17 +94,10 @@ spec:
                     minProperties: 1
                     properties:
                       description:
-                        description: Description of the existing resource
                         maxLength: 1024
                         minLength: 1
                         type: string
-                      external:
-                        description: |-
-                          External indicates whether the network has an external routing
-                          facility that’s not managed by the networking service.
-                        type: boolean
                       name:
-                        description: Name of the existing resource
                         maxLength: 1024
                         minLength: 1
                         type: string
@@ -137,8 +130,6 @@ spec:
                         type: array
                         x-kubernetes-list-type: set
                       projectID:
-                        description: ProjectID specifies the ID of the project which
-                          owns the network.
                         format: uuid
                         maxLength: 36
                         type: string
@@ -221,57 +212,48 @@ spec:
                   adminStateUp:
                     type: boolean
                   availabilityZoneHints:
-                    description: AvailabilityZoneHints is the availability zone candidate
-                      for the network.
                     items:
                       maxLength: 128
                       minLength: 1
                       type: string
                     type: array
                     x-kubernetes-list-type: set
+                  createdAt:
+                    format: date-time
+                    type: string
                   description:
+                    description: Description for the subnet.
                     maxLength: 1024
                     minLength: 1
                     type: string
-                  dnsDomain:
-                    maxLength: 265
-                    minLength: 1
-                    type: string
-                  external:
-                    description: |-
-                      External indicates whether the network has an external routing
-                      facility that’s not managed by the networking service.
+                  distributed:
                     type: boolean
-                  mtu:
-                    description: |-
-                      MTU is the the maximum transmission unit value to address
-                      fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.
-                    format: int32
-                    minimum: 68
-                    type: integer
+                  externalGateways:
+                    items:
+                      properties:
+                        networkRef:
+                          maxLength: 128
+                          minLength: 1
+                          type: string
+                      required:
+                      - networkRef
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  highlyAvailable:
+                    type: boolean
                   name:
-                    description: |-
-                      Name will be the name of the created resource. If not specified, the
-                      name of the ORC object will be used.
+                    description: Name is the human-readable name of the subnet. Might
+                      not be unique.
                     maxLength: 1024
                     minLength: 1
                     type: string
-                  portSecurityEnabled:
-                    description: |-
-                      PortSecurityEnabled is the port security status of the network.
-                      Valid values are enabled (true) and disabled (false). This value is
-                      used as the default value of port_security_enabled field of a newly
-                      created port.
-                    type: boolean
-                  shared:
-                    description: |-
-                      Shared indicates whether this resource is shared across all
-                      projects. By default, only administrative users can change this
-                      value.
-                    type: boolean
+                  revisionNumber:
+                    description: RevisionNumber optionally set via extensions/standard-attr-revisions
+                    format: int64
+                    type: integer
                   tags:
-                    description: Tags is a list of tags which will be applied to the
-                      network.
+                    description: Tags optionally set via extensions/attributestags
                     items:
                       description: |-
                         NeutronTag represents a tag on a Neutron resource.
@@ -279,9 +261,13 @@ spec:
                       maxLength: 60
                       minLength: 1
                       type: string
-                    maxItems: 32
                     type: array
                     x-kubernetes-list-type: set
+                  updatedAt:
+                    format: date-time
+                    type: string
+                required:
+                - name
                 type: object
             required:
             - cloudCredentialsRef
@@ -302,7 +288,7 @@ spec:
               rule: 'has(self.managedOptions) ? self.managementPolicy == ''managed''
                 : true'
           status:
-            description: NetworkStatus defines the observed state of an ORC resource.
+            description: RouterStatus defines the observed state of an ORC resource.
             properties:
               conditions:
                 description: |-
@@ -385,14 +371,13 @@ spec:
                   resource.
                 properties:
                   adminStateUp:
-                    description: |-
-                      AdminStateUp is the administrative state of the network,
-                      which is up (true) or down (false).
                     type: boolean
                   availabilityZoneHints:
-                    description: |-
-                      AvailabilityZoneHints is the availability zone candidate for the
-                      network.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  availabilityZones:
                     items:
                       type: string
                     type: array
@@ -404,96 +389,32 @@ spec:
                     description: Description is a human-readable description for the
                       resource.
                     type: string
-                  dnsDomain:
-                    type: string
-                  external:
-                    description: |-
-                      External defines whether the network may be used for creation of
-                      floating IPs. Only networks with this flag may be an external
-                      gateway for routers. The network must have an external routing
-                      facility that is not managed by the networking service. If the
-                      network is updated from external to internal the unused floating IPs
-                      of this network are automatically deleted when extension
-                      floatingip-autodelete-internal is present.
+                  externalGateways:
+                    items:
+                      properties:
+                        networkID:
+                          type: string
+                      required:
+                      - networkID
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  highlyAvailable:
                     type: boolean
-                  mtu:
-                    description: |-
-                      MTU is the the maximum transmission unit value to address
-                      fragmentation. Minimum value is 68 for IPv4, and 1280 for IPv6.
-                    format: int32
-                    type: integer
                   name:
-                    description: Human-readable name for the network. Might not be
-                      unique.
+                    description: Name is the human-readable name of the resource.
+                      Might not be unique.
                     type: string
-                  portSecurityEnabled:
-                    description: |-
-                      PortSecurityEnabled is the port security status of the network.
-                      Valid values are enabled (true) and disabled (false). This value is
-                      used as the default value of port_security_enabled field of a newly
-                      created port.
-                    type: boolean
                   projectID:
-                    description: ProjectID is the project owner of the network.
+                    description: ProjectID is the project owner of the resource.
                     type: string
-                  provider:
-                    description: |-
-                      ProviderProperties contains provider-network properties. Currently only
-                      available in status.
-                    properties:
-                      networkType:
-                        description: |-
-                          NetworkType is the type of physical network that this
-                          network should be mapped to. Supported values are flat, vlan, vxlan, and gre.
-                          Valid values depend on the networking back-end.
-                        enum:
-                        - flat
-                        - vlan
-                        - vxlan
-                        - gre
-                        maxLength: 16
-                        minLength: 1
-                        type: string
-                      physicalNetwork:
-                        description: |-
-                          PhysicalNetwork is the physical network where this network
-                          should be implemented. The Networking API v2.0 does not provide a
-                          way to list available physical networks. For example, the Open
-                          vSwitch plug-in configuration file defines a symbolic name that maps
-                          to specific bridges on each compute host.
-                        maxLength: 128
-                        minLength: 1
-                        type: string
-                      segmentationID:
-                        description: |-
-                          SegmentationID is the ID of the isolated segment on the
-                          physical network. The network_type attribute defines the
-                          segmentation model. For example, if the network_type value is vlan,
-                          this ID is a vlan identifier. If the network_type value is gre, this
-                          ID is a gre key.
-                        format: int32
-                        type: integer
-                    type: object
                   revisionNumber:
                     description: RevisionNumber optionally set via extensions/standard-attr-revisions
                     format: int64
                     type: integer
-                  shared:
-                    description: Specifies whether the network resource can be accessed
-                      by any tenant.
-                    type: boolean
                   status:
-                    description: |-
-                      Indicates whether network is currently operational. Possible values
-                      include `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define
-                      additional values.
+                    description: Status indicates the current status of the resource.
                     type: string
-                  subnets:
-                    description: Subnets associated with this network.
-                    items:
-                      type: string
-                    type: array
-                    x-kubernetes-list-type: atomic
                   tags:
                     description: Tags is the list of tags on the resource.
                     items:
@@ -505,6 +426,7 @@ spec:
                     type: string
                 required:
                 - adminStateUp
+                - highlyAvailable
                 type: object
             type: object
         type: object

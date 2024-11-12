@@ -38,6 +38,10 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.AllocationPoolStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("CloudCredentialsReference"):
 		return &apiv1alpha1.CloudCredentialsReferenceApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ExternalGateway"):
+		return &apiv1alpha1.ExternalGatewayApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ExternalGatewayStatus"):
+		return &apiv1alpha1.ExternalGatewayStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("FilterByNeutronTags"):
 		return &apiv1alpha1.FilterByNeutronTagsApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRoute"):
@@ -92,6 +96,20 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.NeutronStatusMetadataApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ProviderProperties"):
 		return &apiv1alpha1.ProviderPropertiesApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Router"):
+		return &apiv1alpha1.RouterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterFilter"):
+		return &apiv1alpha1.RouterFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterImport"):
+		return &apiv1alpha1.RouterImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterResourceSpec"):
+		return &apiv1alpha1.RouterResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterResourceStatus"):
+		return &apiv1alpha1.RouterResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterSpec"):
+		return &apiv1alpha1.RouterSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterStatus"):
+		return &apiv1alpha1.RouterStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Subnet"):
 		return &apiv1alpha1.SubnetApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SubnetFilter"):

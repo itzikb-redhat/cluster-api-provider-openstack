@@ -104,7 +104,7 @@ type NetworkResourceSpec struct {
 	// AvailabilityZoneHints is the availability zone candidate for the network.
 	// +listType=set
 	// +optional
-	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
+	AvailabilityZoneHints []AvailabilityZoneHint `json:"availabilityZoneHints,omitempty"`
 }
 
 // NetworkFilter defines an existing resource by its properties

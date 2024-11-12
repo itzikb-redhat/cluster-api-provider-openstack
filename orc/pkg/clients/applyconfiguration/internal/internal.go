@@ -72,6 +72,20 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGateway
+  map:
+    fields:
+    - name: networkRef
+      type:
+        scalar: string
+      default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGatewayStatus
+  map:
+    fields:
+    - name: networkID
+      type:
+        scalar: string
+      default: ""
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
   map:
     fields:
@@ -522,6 +536,210 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: segmentationID
       type:
         scalar: numeric
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Router
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterFilter
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: notTags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: notTagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: projectID
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: tagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterImport
+  map:
+    fields:
+    - name: filter
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterFilter
+    - name: id
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceSpec
+  map:
+    fields:
+    - name: adminStateUp
+      type:
+        scalar: boolean
+    - name: availabilityZoneHints
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: createdAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+    - name: description
+      type:
+        scalar: string
+    - name: distributed
+      type:
+        scalar: boolean
+    - name: externalGateways
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGateway
+          elementRelationship: atomic
+    - name: highlyAvailable
+      type:
+        scalar: boolean
+    - name: name
+      type:
+        scalar: string
+      default: ""
+    - name: revisionNumber
+      type:
+        scalar: numeric
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: updatedAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceStatus
+  map:
+    fields:
+    - name: adminStateUp
+      type:
+        scalar: boolean
+      default: false
+    - name: availabilityZoneHints
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: availabilityZones
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: createdAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+    - name: description
+      type:
+        scalar: string
+    - name: externalGateways
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGatewayStatus
+          elementRelationship: atomic
+    - name: highlyAvailable
+      type:
+        scalar: boolean
+      default: false
+    - name: name
+      type:
+        scalar: string
+    - name: projectID
+      type:
+        scalar: string
+    - name: revisionNumber
+      type:
+        scalar: numeric
+    - name: status
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: updatedAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterSpec
+  map:
+    fields:
+    - name: cloudCredentialsRef
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
+      default: {}
+    - name: import
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterImport
+    - name: managedOptions
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ManagedOptions
+    - name: managementPolicy
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceSpec
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
+    - name: id
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceStatus
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Subnet
   map:
     fields:

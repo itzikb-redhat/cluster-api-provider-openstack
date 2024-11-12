@@ -50,6 +50,9 @@ var allResources []templateFields = []templateFields{
 		SpecExtraType:   "SubnetRefs",
 		StatusExtraType: "SubnetStatusExtra",
 	},
+	{
+		Name: "Router",
+	},
 }
 
 func main() {
