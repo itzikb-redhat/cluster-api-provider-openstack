@@ -81,9 +81,7 @@ func New(client client.Client, recorder record.EventRecorder, scopeFactory scope
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
-	const networkRefPath = "spec.resource.networkRef"
-
-	log := mgr.GetLogger()
+	log := mgr.GetLogger().WithValues("controller", "subnet")
 
 	getNetworkRefsForSubnet := func(obj client.Object) []string {
 		subnet, ok := obj.(*orcv1alpha1.Subnet)
@@ -94,8 +92,11 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 	}
 
 	// Index subnets by referenced network
+	const networkRefPath = "spec.resource.networkRef"
+
 	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Subnet{}, networkRefPath, func(obj client.Object) []string {
-		return getNetworkRefsForSubnet(obj)
+		networks := getNetworkRefsForSubnet(obj)
+		return networks
 	}); err != nil {
 		return fmt.Errorf("adding subnets by network index: %w", err)
 	}
@@ -110,9 +111,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 		return subnetList.Items, nil
 	}
 
-	const networkFinalizer = "subnet"
-
-	err := ctrlcommon.AddDeletionGuard(mgr, networkFinalizer, FieldOwner, getNetworkRefsForSubnet, getSubnetsForNetwork)
+	err := ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getNetworkRefsForSubnet, getSubnetsForNetwork)
 	if err != nil {
 		return err
 	}
@@ -121,16 +120,18 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 		For(&orcv1alpha1.Subnet{}, builder.WithPredicates(ctrlcommon.NeedsReconcilePredicate(log))).
 		Watches(&orcv1alpha1.Network{},
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
-				log = log.WithValues("watch", "Network")
+				log := log.WithValues("watch", "Network", "name", obj.GetName(), "namespace", obj.GetNamespace())
 
 				network, ok := obj.(*orcv1alpha1.Network)
 				if !ok {
+					log.Info("Watch got unexpected object type", "type", fmt.Sprintf("%T", obj))
 					return nil
 				}
 
 				subnets, err := getSubnetsForNetwork(network)
 				if err != nil {
 					log.Error(err, "listing Subnets")
+					return nil
 				}
 				requests := make([]reconcile.Request, len(subnets))
 				for i := range subnets {
