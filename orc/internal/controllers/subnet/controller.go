@@ -118,7 +118,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 	}
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&orcv1alpha1.Subnet{}).
+		For(&orcv1alpha1.Subnet{}, builder.WithPredicates(ctrlcommon.NeedsReconcilePredicate(log))).
 		Watches(&orcv1alpha1.Network{},
 			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
 				log = log.WithValues("watch", "Network")
@@ -145,6 +145,5 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Network{})),
 		).
 		WithOptions(options).
-		WithEventFilter(ctrlcommon.NeedsReconcilePredicate(log)).
 		Complete(r)
 }

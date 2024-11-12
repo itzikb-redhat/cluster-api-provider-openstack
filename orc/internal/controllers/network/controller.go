@@ -22,6 +22,7 @@ import (
 
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 
@@ -77,8 +78,7 @@ func (r *orcNetworkReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Ma
 	log := mgr.GetLogger()
 
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&orcv1alpha1.Network{}).
+		For(&orcv1alpha1.Network{}, builder.WithPredicates(ctrlcommon.NeedsReconcilePredicate(log))).
 		WithOptions(options).
-		WithEventFilter(ctrlcommon.NeedsReconcilePredicate(log)).
 		Complete(r)
 }
