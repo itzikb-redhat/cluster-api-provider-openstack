@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/gophercloud/gophercloud/v2"
@@ -254,18 +255,13 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 		}
 		log.V(4).Info("Not deleting OpenStack resource due to policy", logPolicy...)
 	} else {
-		if len(orcObject.GetFinalizers()) > 1 {
-			log.V(4).Info("Deferring resource cleanup due to remaining external finalizers")
-			return ctrl.Result{}, nil
-		}
-
-		deleted, err := r.deleteResource(ctx, orcObject, addStatus)
+		deleted, requeue, err := r.deleteResource(ctx, log, orcObject, addStatus)
 		if err != nil {
 			return ctrl.Result{}, err
 		}
 
 		if !deleted {
-			return ctrl.Result{RequeueAfter: deletePollingPeriod}, nil
+			return ctrl.Result{RequeueAfter: requeue}, nil
 		}
 		log.V(4).Info("OpenStack resource is deleted")
 	}
@@ -277,10 +273,10 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 	return ctrl.Result{}, r.client.Patch(ctx, orcObject, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 }
 
-func (r *orcSubnetReconciler) deleteResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, addStatus func(updateStatusOpt)) (bool, error) {
+func (r *orcSubnetReconciler) deleteResource(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Subnet, addStatus func(updateStatusOpt)) (bool, time.Duration, error) {
 	networkClient, err := r.getNetworkClient(ctx, orcObject)
 	if err != nil {
-		return false, err
+		return false, 0, err
 	}
 
 	if orcObject.Status.ID != nil {
@@ -292,18 +288,24 @@ func (r *orcSubnetReconciler) deleteResource(ctx context.Context, orcObject *orc
 		switch {
 		case orcerrors.IsNotFound(err):
 			// Success!
-			return true, nil
+			return true, 0, nil
 
 		case err != nil:
-			return false, err
+			return false, 0, err
 
 		default:
 			addStatus(withResource(osResource))
+
+			if len(orcObject.GetFinalizers()) > 1 {
+				log.V(4).Info("Deferring resource cleanup due to remaining external finalizers")
+				return false, 0, nil
+			}
+
 			err := networkClient.DeleteSubnet(ctx, *orcObject.Status.ID)
 			if err != nil {
-				return false, err
+				return false, 0, err
 			}
-			return false, nil
+			return false, deletePollingPeriod, nil
 		}
 	}
 
@@ -314,16 +316,16 @@ func (r *orcSubnetReconciler) deleteResource(ctx context.Context, orcObject *orc
 	listOpts := listOptsFromCreation(orcObject)
 	osResource, err := getResourceFromList(ctx, listOpts, networkClient)
 	if err != nil {
-		return false, err
+		return false, 0, err
 	}
 
 	if osResource != nil {
 		addStatus(withResource(osResource))
-		return false, r.setStatusID(ctx, orcObject, osResource.ID)
+		return false, deletePollingPeriod, r.setStatusID(ctx, orcObject, osResource.ID)
 	}
 
 	// Didn't find an orphaned resource. Assume success.
-	return true, nil
+	return true, 0, nil
 }
 
 // getResourceName returns the name of the OpenStack resource we should use.
