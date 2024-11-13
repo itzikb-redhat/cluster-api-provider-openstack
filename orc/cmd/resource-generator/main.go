@@ -53,6 +53,9 @@ var allResources []templateFields = []templateFields{
 	{
 		Name: "Router",
 	},
+	{
+		Name: "Port",
+	},
 }
 
 func main() {

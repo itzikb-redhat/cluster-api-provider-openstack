@@ -524,6 +524,160 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: resource
       type:
         namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.NetworkResourceStatus
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Port
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortFilter
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: notTags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: notTagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: projectID
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: tagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortImport
+  map:
+    fields:
+    - name: filter
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortFilter
+    - name: id
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceSpec
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: projectID
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceStatus
+  map:
+    fields:
+    - name: adminStateUp
+      type:
+        scalar: boolean
+      default: false
+    - name: createdAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: projectID
+      type:
+        scalar: string
+    - name: revisionNumber
+      type:
+        scalar: numeric
+    - name: status
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: updatedAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortSpec
+  map:
+    fields:
+    - name: cloudCredentialsRef
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
+      default: {}
+    - name: import
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortImport
+    - name: managedOptions
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ManagedOptions
+    - name: managementPolicy
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceSpec
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
+    - name: id
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceStatus
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ProviderProperties
   map:
     fields:

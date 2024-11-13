@@ -22,6 +22,8 @@ type ImageExpansion interface{}
 
 type NetworkExpansion interface{}
 
+type PortExpansion interface{}
+
 type RouterExpansion interface{}
 
 type SubnetExpansion interface{}

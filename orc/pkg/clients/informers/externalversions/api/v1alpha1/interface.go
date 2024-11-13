@@ -28,6 +28,8 @@ type Interface interface {
 	Images() ImageInformer
 	// Networks returns a NetworkInformer.
 	Networks() NetworkInformer
+	// Ports returns a PortInformer.
+	Ports() PortInformer
 	// Routers returns a RouterInformer.
 	Routers() RouterInformer
 	// Subnets returns a SubnetInformer.
@@ -53,6 +55,11 @@ func (v *version) Images() ImageInformer {
 // Networks returns a NetworkInformer.
 func (v *version) Networks() NetworkInformer {
 	return &networkInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Ports returns a PortInformer.
+func (v *version) Ports() PortInformer {
+	return &portInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Routers returns a RouterInformer.

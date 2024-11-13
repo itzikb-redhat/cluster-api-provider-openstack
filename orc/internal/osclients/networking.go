@@ -43,10 +43,10 @@ type NetworkClient interface {
 	GetFloatingIP(id string) (*floatingips.FloatingIP, error)
 	UpdateFloatingIP(id string, opts floatingips.UpdateOptsBuilder) (*floatingips.FloatingIP, error)
 
-	ListPort(opts ports.ListOptsBuilder) ([]ports.Port, error)
-	CreatePort(opts ports.CreateOptsBuilder) (*ports.Port, error)
+	ListPort(ctx context.Context, opts ports.ListOptsBuilder) ([]ports.Port, error)
+	CreatePort(ctx context.Context, opts ports.CreateOptsBuilder) (*ports.Port, error)
 	DeletePort(id string) error
-	GetPort(id string) (*ports.Port, error)
+	GetPort(ctx context.Context, id string) (*ports.Port, error)
 	UpdatePort(id string, opts ports.UpdateOptsBuilder) (*ports.Port, error)
 
 	ListTrunk(opts trunks.ListOptsBuilder) ([]trunks.Trunk, error)
@@ -159,24 +159,24 @@ func (c networkClient) UpdateFloatingIP(id string, opts floatingips.UpdateOptsBu
 	return floatingips.Update(context.TODO(), c.serviceClient, id, opts).Extract()
 }
 
-func (c networkClient) ListPort(opts ports.ListOptsBuilder) ([]ports.Port, error) {
-	allPages, err := ports.List(c.serviceClient, opts).AllPages(context.TODO())
+func (c networkClient) ListPort(ctx context.Context, opts ports.ListOptsBuilder) ([]ports.Port, error) {
+	allPages, err := ports.List(c.serviceClient, opts).AllPages(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return ports.ExtractPorts(allPages)
 }
 
-func (c networkClient) CreatePort(opts ports.CreateOptsBuilder) (*ports.Port, error) {
-	return ports.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreatePort(ctx context.Context, opts ports.CreateOptsBuilder) (*ports.Port, error) {
+	return ports.Create(ctx, c.serviceClient, opts).Extract()
 }
 
 func (c networkClient) DeletePort(id string) error {
 	return ports.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
 }
 
-func (c networkClient) GetPort(id string) (*ports.Port, error) {
-	return ports.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetPort(ctx context.Context, id string) (*ports.Port, error) {
+	return ports.Get(ctx, c.serviceClient, id).Extract()
 }
 
 func (c networkClient) UpdatePort(id string, opts ports.UpdateOptsBuilder) (*ports.Port, error) {

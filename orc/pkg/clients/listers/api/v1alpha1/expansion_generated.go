@@ -34,6 +34,14 @@ type NetworkListerExpansion interface{}
 // NetworkNamespaceLister.
 type NetworkNamespaceListerExpansion interface{}
 
+// PortListerExpansion allows custom methods to be added to
+// PortLister.
+type PortListerExpansion interface{}
+
+// PortNamespaceListerExpansion allows custom methods to be added to
+// PortNamespaceLister.
+type PortNamespaceListerExpansion interface{}
+
 // RouterListerExpansion allows custom methods to be added to
 // RouterLister.
 type RouterListerExpansion interface{}

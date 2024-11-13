@@ -94,6 +94,20 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.NetworkStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("NeutronStatusMetadata"):
 		return &apiv1alpha1.NeutronStatusMetadataApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Port"):
+		return &apiv1alpha1.PortApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortFilter"):
+		return &apiv1alpha1.PortFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortImport"):
+		return &apiv1alpha1.PortImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortResourceSpec"):
+		return &apiv1alpha1.PortResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortResourceStatus"):
+		return &apiv1alpha1.PortResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortSpec"):
+		return &apiv1alpha1.PortSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("PortStatus"):
+		return &apiv1alpha1.PortStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ProviderProperties"):
 		return &apiv1alpha1.ProviderPropertiesApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Router"):

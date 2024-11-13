@@ -110,18 +110,18 @@ func (mr *MockNetworkClientMockRecorder) CreateNetwork(ctx, opts any) *gomock.Ca
 }
 
 // CreatePort mocks base method.
-func (m *MockNetworkClient) CreatePort(opts ports.CreateOptsBuilder) (*ports.Port, error) {
+func (m *MockNetworkClient) CreatePort(ctx context.Context, opts ports.CreateOptsBuilder) (*ports.Port, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePort", opts)
+	ret := m.ctrl.Call(m, "CreatePort", ctx, opts)
 	ret0, _ := ret[0].(*ports.Port)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreatePort indicates an expected call of CreatePort.
-func (mr *MockNetworkClientMockRecorder) CreatePort(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) CreatePort(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePort", reflect.TypeOf((*MockNetworkClient)(nil).CreatePort), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePort", reflect.TypeOf((*MockNetworkClient)(nil).CreatePort), ctx, opts)
 }
 
 // CreateRouter mocks base method.
@@ -341,18 +341,18 @@ func (mr *MockNetworkClientMockRecorder) GetNetwork(ctx, id any) *gomock.Call {
 }
 
 // GetPort mocks base method.
-func (m *MockNetworkClient) GetPort(id string) (*ports.Port, error) {
+func (m *MockNetworkClient) GetPort(ctx context.Context, id string) (*ports.Port, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPort", id)
+	ret := m.ctrl.Call(m, "GetPort", ctx, id)
 	ret0, _ := ret[0].(*ports.Port)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetPort indicates an expected call of GetPort.
-func (mr *MockNetworkClientMockRecorder) GetPort(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) GetPort(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPort", reflect.TypeOf((*MockNetworkClient)(nil).GetPort), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPort", reflect.TypeOf((*MockNetworkClient)(nil).GetPort), ctx, id)
 }
 
 // GetRouter mocks base method.
@@ -460,18 +460,18 @@ func (mr *MockNetworkClientMockRecorder) ListNetwork(opts any) *gomock.Call {
 }
 
 // ListPort mocks base method.
-func (m *MockNetworkClient) ListPort(opts ports.ListOptsBuilder) ([]ports.Port, error) {
+func (m *MockNetworkClient) ListPort(ctx context.Context, opts ports.ListOptsBuilder) ([]ports.Port, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPort", opts)
+	ret := m.ctrl.Call(m, "ListPort", ctx, opts)
 	ret0, _ := ret[0].([]ports.Port)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListPort indicates an expected call of ListPort.
-func (mr *MockNetworkClientMockRecorder) ListPort(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) ListPort(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPort", reflect.TypeOf((*MockNetworkClient)(nil).ListPort), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPort", reflect.TypeOf((*MockNetworkClient)(nil).ListPort), ctx, opts)
 }
 
 // ListRouter mocks base method.
