@@ -184,7 +184,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
 		log.V(4).Info("Importing existing OpenStack resource by ID")
 		osResource := &networkExt{}
-		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
+		getResult := networkClient.GetNetwork(ctx, *orcObject.Spec.Import.ID)
 		err := getResult.ExtractInto(osResource)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
