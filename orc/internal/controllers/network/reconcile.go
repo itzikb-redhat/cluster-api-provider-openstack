@@ -251,7 +251,7 @@ func (r *orcNetworkReconciler) reconcileDelete(ctx context.Context, orcObject *o
 			return ctrl.Result{}, err
 		}
 
-		if deleted {
+		if !deleted {
 			return ctrl.Result{RequeueAfter: requeue}, nil
 		}
 		log.V(4).Info("OpenStack resource is deleted")
