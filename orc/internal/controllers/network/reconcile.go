@@ -390,12 +390,22 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Network, network
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
 	}
 
-	var createOpts networks.CreateOptsBuilder = &networks.CreateOpts{
-		Name:                  string(getResourceName(orcObject)),
-		Description:           string(*resource.Description),
-		AdminStateUp:          resource.AdminStateUp,
-		Shared:                resource.Shared,
-		AvailabilityZoneHints: resource.AvailabilityZoneHints,
+	var createOpts networks.CreateOptsBuilder
+	{
+		createOptsBase := networks.CreateOpts{
+			Name:         string(getResourceName(orcObject)),
+			Description:  string(*resource.Description),
+			AdminStateUp: resource.AdminStateUp,
+			Shared:       resource.Shared,
+		}
+
+		if len(resource.AvailabilityZoneHints) > 0 {
+			createOptsBase.AvailabilityZoneHints = make([]string, len(resource.AvailabilityZoneHints))
+			for i := range resource.AvailabilityZoneHints {
+				createOptsBase.AvailabilityZoneHints[i] = string(resource.AvailabilityZoneHints[i])
+			}
+		}
+		createOpts = createOptsBase
 	}
 
 	if resource.DNSDomain != nil {
