@@ -34,6 +34,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
 	"github.com/k-orc/openstack-resource-controller/internal/util/neutrontags"
@@ -124,7 +125,8 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 
 	// Don't add finalizer until parent network is available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
-		return ctrl.Result{}, r.setFinalizer(ctx, orcObject)
+		patch := common.SetFinalizerPatch(orcObject, Finalizer)
+		return ctrl.Result{}, r.client.Patch(ctx, orcObject, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 	}
 
 	networkClient, err := r.getNetworkClient(ctx, orcObject)

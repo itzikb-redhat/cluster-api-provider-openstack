@@ -74,7 +74,7 @@ func (r *orcImageReconciler) reconcileNormal(ctx context.Context, orcImage *orcv
 	log.V(3).Info("Reconciling image")
 
 	if !controllerutil.ContainsFinalizer(orcImage, Finalizer) {
-		patch := common.GetFinalizerPatch(orcImage, Finalizer)
+		patch := common.SetFinalizerPatch(orcImage, Finalizer)
 		return ctrl.Result{}, r.client.Patch(ctx, orcImage, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 	}
 

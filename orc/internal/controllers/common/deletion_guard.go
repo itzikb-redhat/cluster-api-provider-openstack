@@ -73,7 +73,7 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 		if guarded.GetDeletionTimestamp().IsZero() {
 			if !slices.Contains(guarded.GetFinalizers(), finalizer) {
 				log.V(4).Info("Adding finalizer")
-				patch := GetFinalizerPatch(guarded, finalizer)
+				patch := SetFinalizerPatch(guarded, finalizer)
 				return ctrl.Result{}, k8sClient.Patch(ctx, guarded, patch, client.ForceOwnership, fieldOwner)
 			}
 

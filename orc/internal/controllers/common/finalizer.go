@@ -46,13 +46,14 @@ func metaApplyConfigFromObject(obj client.Object) metaApplyConfig {
 	return applyConfig
 }
 
-// setFinalizer sets a finalizer on the object in its own SSA transaction.
-func GetFinalizerPatch(obj client.Object, finalizer string) client.Patch {
+// SetFinalizerPatch returns an apply configuration which adds a finalizer
+func SetFinalizerPatch(obj client.Object, finalizer string) client.Patch {
 	applyConfig := metaApplyConfigFromObject(obj)
 	applyConfig.WithFinalizers(finalizer)
 	return ssa.ApplyConfigPatch(applyConfig)
 }
 
+// RemoveFinalizerPatch returns an apply configuration which removes a finalizer
 func RemoveFinalizerPatch(obj client.Object) client.Patch {
 	applyConfig := metaApplyConfigFromObject(obj)
 	return ssa.ApplyConfigPatch(applyConfig)
