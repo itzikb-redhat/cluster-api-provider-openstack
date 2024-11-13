@@ -56,13 +56,13 @@ type NetworkClient interface {
 	ListTrunkSubports(trunkID string) ([]trunks.Subport, error)
 	RemoveSubports(id string, opts trunks.RemoveSubportsOpts) error
 
-	ListRouter(opts routers.ListOpts) ([]routers.Router, error)
-	CreateRouter(opts routers.CreateOptsBuilder) (*routers.Router, error)
-	DeleteRouter(id string) error
-	GetRouter(id string) (*routers.Router, error)
-	UpdateRouter(id string, opts routers.UpdateOptsBuilder) (*routers.Router, error)
-	AddRouterInterface(id string, opts routers.AddInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
-	RemoveRouterInterface(id string, opts routers.RemoveInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
+	ListRouter(ctx context.Context, opts routers.ListOpts) ([]routers.Router, error)
+	CreateRouter(ctx context.Context, opts routers.CreateOptsBuilder) (*routers.Router, error)
+	DeleteRouter(ctx context.Context, id string) error
+	GetRouter(ctx context.Context, id string) (*routers.Router, error)
+	UpdateRouter(ctx context.Context, id string, opts routers.UpdateOptsBuilder) (*routers.Router, error)
+	AddRouterInterface(ctx context.Context, id string, opts routers.AddInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
+	RemoveRouterInterface(ctx context.Context, id string, opts routers.RemoveInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
 
 	ListSecGroup(opts groups.ListOpts) ([]groups.SecGroup, error)
 	CreateSecGroup(opts groups.CreateOptsBuilder) (*groups.SecGroup, error)
@@ -111,20 +111,20 @@ func NewNetworkClient(providerClient *gophercloud.ProviderClient, providerClient
 	return networkClient{serviceClient}, nil
 }
 
-func (c networkClient) AddRouterInterface(id string, opts routers.AddInterfaceOptsBuilder) (*routers.InterfaceInfo, error) {
-	return routers.AddInterface(context.TODO(), c.serviceClient, id, opts).Extract()
+func (c networkClient) AddRouterInterface(ctx context.Context, id string, opts routers.AddInterfaceOptsBuilder) (*routers.InterfaceInfo, error) {
+	return routers.AddInterface(ctx, c.serviceClient, id, opts).Extract()
 }
 
-func (c networkClient) RemoveRouterInterface(id string, opts routers.RemoveInterfaceOptsBuilder) (*routers.InterfaceInfo, error) {
-	return routers.RemoveInterface(context.TODO(), c.serviceClient, id, opts).Extract()
+func (c networkClient) RemoveRouterInterface(ctx context.Context, id string, opts routers.RemoveInterfaceOptsBuilder) (*routers.InterfaceInfo, error) {
+	return routers.RemoveInterface(ctx, c.serviceClient, id, opts).Extract()
 }
 
 func (c networkClient) ReplaceAllAttributesTags(ctx context.Context, resourceType string, resourceID string, opts attributestags.ReplaceAllOptsBuilder) ([]string, error) {
 	return attributestags.ReplaceAll(ctx, c.serviceClient, resourceType, resourceID, opts).Extract()
 }
 
-func (c networkClient) ListRouter(opts routers.ListOpts) ([]routers.Router, error) {
-	allPages, err := routers.List(c.serviceClient, opts).AllPages(context.TODO())
+func (c networkClient) ListRouter(ctx context.Context, opts routers.ListOpts) ([]routers.Router, error) {
+	allPages, err := routers.List(c.serviceClient, opts).AllPages(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -208,19 +208,19 @@ func (c networkClient) ListTrunk(opts trunks.ListOptsBuilder) ([]trunks.Trunk, e
 	return trunks.ExtractTrunks(allPages)
 }
 
-func (c networkClient) CreateRouter(opts routers.CreateOptsBuilder) (*routers.Router, error) {
-	return routers.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreateRouter(ctx context.Context, opts routers.CreateOptsBuilder) (*routers.Router, error) {
+	return routers.Create(ctx, c.serviceClient, opts).Extract()
 }
 
-func (c networkClient) DeleteRouter(id string) error {
-	return routers.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeleteRouter(ctx context.Context, id string) error {
+	return routers.Delete(ctx, c.serviceClient, id).ExtractErr()
 }
 
-func (c networkClient) GetRouter(id string) (*routers.Router, error) {
-	return routers.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetRouter(ctx context.Context, id string) (*routers.Router, error) {
+	return routers.Get(ctx, c.serviceClient, id).Extract()
 }
 
-func (c networkClient) UpdateRouter(id string, opts routers.UpdateOptsBuilder) (*routers.Router, error) {
+func (c networkClient) UpdateRouter(ctx context.Context, id string, opts routers.UpdateOptsBuilder) (*routers.Router, error) {
 	return routers.Update(context.TODO(), c.serviceClient, id, opts).Extract()
 }
 
