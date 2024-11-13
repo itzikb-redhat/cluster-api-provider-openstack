@@ -240,8 +240,6 @@ spec:
                       type: object
                     type: array
                     x-kubernetes-list-type: atomic
-                  highlyAvailable:
-                    type: boolean
                   name:
                     description: Name is the human-readable name of the subnet. Might
                       not be unique.
@@ -377,14 +375,6 @@ spec:
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
-                  availabilityZones:
-                    items:
-                      type: string
-                    type: array
-                    x-kubernetes-list-type: atomic
-                  createdAt:
-                    format: date-time
-                    type: string
                   description:
                     description: Description is a human-readable description for the
                       resource.
@@ -399,8 +389,6 @@ spec:
                       type: object
                     type: array
                     x-kubernetes-list-type: atomic
-                  highlyAvailable:
-                    type: boolean
                   name:
                     description: Name is the human-readable name of the resource.
                       Might not be unique.
@@ -408,10 +396,6 @@ spec:
                   projectID:
                     description: ProjectID is the project owner of the resource.
                     type: string
-                  revisionNumber:
-                    description: RevisionNumber optionally set via extensions/standard-attr-revisions
-                    format: int64
-                    type: integer
                   status:
                     description: Status indicates the current status of the resource.
                     type: string
@@ -421,12 +405,8 @@ spec:
                       type: string
                     type: array
                     x-kubernetes-list-type: atomic
-                  updatedAt:
-                    format: date-time
-                    type: string
                 required:
                 - adminStateUp
-                - highlyAvailable
                 type: object
             type: object
         type: object

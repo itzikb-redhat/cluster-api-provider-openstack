@@ -18,24 +18,17 @@ limitations under the License.
 
 package v1alpha1
 
-import (
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // RouterResourceStatusApplyConfiguration represents a declarative configuration of the RouterResourceStatus type for use
 // with apply.
 type RouterResourceStatusApplyConfiguration struct {
-	Name                                    *string  `json:"name,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	ProjectID                               *string  `json:"projectID,omitempty"`
-	Status                                  *string  `json:"status,omitempty"`
-	Tags                                    []string `json:"tags,omitempty"`
-	NeutronStatusMetadataApplyConfiguration `json:",inline"`
-	AdminStateUp                            *bool                                     `json:"adminStateUp,omitempty"`
-	ExternalGateways                        []ExternalGatewayStatusApplyConfiguration `json:"externalGateways,omitempty"`
-	HighlyAvailable                         *bool                                     `json:"highlyAvailable,omitempty"`
-	AvailabilityZoneHints                   []string                                  `json:"availabilityZoneHints,omitempty"`
-	AvailabilityZones                       []string                                  `json:"availabilityZones,omitempty"`
+	Name                  *string                                   `json:"name,omitempty"`
+	Description           *string                                   `json:"description,omitempty"`
+	ProjectID             *string                                   `json:"projectID,omitempty"`
+	Status                *string                                   `json:"status,omitempty"`
+	Tags                  []string                                  `json:"tags,omitempty"`
+	AdminStateUp          *bool                                     `json:"adminStateUp,omitempty"`
+	ExternalGateways      []ExternalGatewayStatusApplyConfiguration `json:"externalGateways,omitempty"`
+	AvailabilityZoneHints []string                                  `json:"availabilityZoneHints,omitempty"`
 }
 
 // RouterResourceStatusApplyConfiguration constructs a declarative configuration of the RouterResourceStatus type for use with
@@ -86,30 +79,6 @@ func (b *RouterResourceStatusApplyConfiguration) WithTags(values ...string) *Rou
 	return b
 }
 
-// WithCreatedAt sets the CreatedAt field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the CreatedAt field is set to the value of the last call.
-func (b *RouterResourceStatusApplyConfiguration) WithCreatedAt(value v1.Time) *RouterResourceStatusApplyConfiguration {
-	b.CreatedAt = &value
-	return b
-}
-
-// WithUpdatedAt sets the UpdatedAt field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the UpdatedAt field is set to the value of the last call.
-func (b *RouterResourceStatusApplyConfiguration) WithUpdatedAt(value v1.Time) *RouterResourceStatusApplyConfiguration {
-	b.UpdatedAt = &value
-	return b
-}
-
-// WithRevisionNumber sets the RevisionNumber field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the RevisionNumber field is set to the value of the last call.
-func (b *RouterResourceStatusApplyConfiguration) WithRevisionNumber(value int64) *RouterResourceStatusApplyConfiguration {
-	b.RevisionNumber = &value
-	return b
-}
-
 // WithAdminStateUp sets the AdminStateUp field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the AdminStateUp field is set to the value of the last call.
@@ -131,30 +100,12 @@ func (b *RouterResourceStatusApplyConfiguration) WithExternalGateways(values ...
 	return b
 }
 
-// WithHighlyAvailable sets the HighlyAvailable field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the HighlyAvailable field is set to the value of the last call.
-func (b *RouterResourceStatusApplyConfiguration) WithHighlyAvailable(value bool) *RouterResourceStatusApplyConfiguration {
-	b.HighlyAvailable = &value
-	return b
-}
-
 // WithAvailabilityZoneHints adds the given value to the AvailabilityZoneHints field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the AvailabilityZoneHints field.
 func (b *RouterResourceStatusApplyConfiguration) WithAvailabilityZoneHints(values ...string) *RouterResourceStatusApplyConfiguration {
 	for i := range values {
 		b.AvailabilityZoneHints = append(b.AvailabilityZoneHints, values[i])
-	}
-	return b
-}
-
-// WithAvailabilityZones adds the given value to the AvailabilityZones field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the AvailabilityZones field.
-func (b *RouterResourceStatusApplyConfiguration) WithAvailabilityZones(values ...string) *RouterResourceStatusApplyConfiguration {
-	for i := range values {
-		b.AvailabilityZones = append(b.AvailabilityZones, values[i])
 	}
 	return b
 }

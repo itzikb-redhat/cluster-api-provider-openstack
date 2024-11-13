@@ -2262,12 +2262,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(
 							Format: "",
 						},
 					},
-					"highlyAvailable": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"boolean"},
-							Format: "",
-						},
-					},
 					"availabilityZoneHints": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -2367,23 +2361,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatu
 							},
 						},
 					},
-					"createdAt": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
-						},
-					},
-					"updatedAt": {
-						SchemaProps: spec.SchemaProps{
-							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
-						},
-					},
-					"revisionNumber": {
-						SchemaProps: spec.SchemaProps{
-							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
-							Type:        []string{"integer"},
-							Format:      "int64",
-						},
-					},
 					"adminStateUp": {
 						SchemaProps: spec.SchemaProps{
 							Default: false,
@@ -2409,13 +2386,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatu
 							},
 						},
 					},
-					"highlyAvailable": {
-						SchemaProps: spec.SchemaProps{
-							Default: false,
-							Type:    []string{"boolean"},
-							Format:  "",
-						},
-					},
 					"availabilityZoneHints": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -2435,31 +2405,12 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatu
 							},
 						},
 					},
-					"availabilityZones": {
-						VendorExtensible: spec.VendorExtensible{
-							Extensions: spec.Extensions{
-								"x-kubernetes-list-type": "atomic",
-							},
-						},
-						SchemaProps: spec.SchemaProps{
-							Type: []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
-						},
-					},
 				},
-				Required: []string{"adminStateUp", "highlyAvailable"},
+				Required: []string{"adminStateUp"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGatewayStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGatewayStatus"},
 	}
 }
 

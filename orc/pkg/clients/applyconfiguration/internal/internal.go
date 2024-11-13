@@ -629,9 +629,6 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGateway
           elementRelationship: atomic
-    - name: highlyAvailable
-      type:
-        scalar: boolean
     - name: name
       type:
         scalar: string
@@ -660,15 +657,6 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
-    - name: availabilityZones
-      type:
-        list:
-          elementType:
-            scalar: string
-          elementRelationship: atomic
-    - name: createdAt
-      type:
-        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
     - name: description
       type:
         scalar: string
@@ -678,19 +666,12 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ExternalGatewayStatus
           elementRelationship: atomic
-    - name: highlyAvailable
-      type:
-        scalar: boolean
-      default: false
     - name: name
       type:
         scalar: string
     - name: projectID
       type:
         scalar: string
-    - name: revisionNumber
-      type:
-        scalar: numeric
     - name: status
       type:
         scalar: string
@@ -700,9 +681,6 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
-    - name: updatedAt
-      type:
-        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterSpec
   map:
     fields:

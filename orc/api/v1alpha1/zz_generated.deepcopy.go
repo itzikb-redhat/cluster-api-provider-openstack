@@ -1093,11 +1093,6 @@ func (in *RouterResourceSpec) DeepCopyInto(out *RouterResourceSpec) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.HighlyAvailable != nil {
-		in, out := &in.HighlyAvailable, &out.HighlyAvailable
-		*out = new(bool)
-		**out = **in
-	}
 	if in.AvailabilityZoneHints != nil {
 		in, out := &in.AvailabilityZoneHints, &out.AvailabilityZoneHints
 		*out = make([]AvailabilityZoneHint, len(*in))
@@ -1124,7 +1119,6 @@ func (in *RouterResourceStatus) DeepCopyInto(out *RouterResourceStatus) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
-	in.NeutronStatusMetadata.DeepCopyInto(&out.NeutronStatusMetadata)
 	if in.ExternalGateways != nil {
 		in, out := &in.ExternalGateways, &out.ExternalGateways
 		*out = make([]ExternalGatewayStatus, len(*in))
@@ -1132,11 +1126,6 @@ func (in *RouterResourceStatus) DeepCopyInto(out *RouterResourceStatus) {
 	}
 	if in.AvailabilityZoneHints != nil {
 		in, out := &in.AvailabilityZoneHints, &out.AvailabilityZoneHints
-		*out = make([]string, len(*in))
-		copy(*out, *in)
-	}
-	if in.AvailabilityZones != nil {
-		in, out := &in.AvailabilityZones, &out.AvailabilityZones
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}

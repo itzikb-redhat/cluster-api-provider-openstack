@@ -32,7 +32,6 @@ type RouterResourceSpecApplyConfiguration struct {
 	AdminStateUp                            *bool                               `json:"adminStateUp,omitempty"`
 	ExternalGateways                        []ExternalGatewayApplyConfiguration `json:"externalGateways,omitempty"`
 	Distributed                             *bool                               `json:"distributed,omitempty"`
-	HighlyAvailable                         *bool                               `json:"highlyAvailable,omitempty"`
 	AvailabilityZoneHints                   []v1alpha1.AvailabilityZoneHint     `json:"availabilityZoneHints,omitempty"`
 	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
@@ -95,14 +94,6 @@ func (b *RouterResourceSpecApplyConfiguration) WithExternalGateways(values ...*E
 // If called multiple times, the Distributed field is set to the value of the last call.
 func (b *RouterResourceSpecApplyConfiguration) WithDistributed(value bool) *RouterResourceSpecApplyConfiguration {
 	b.Distributed = &value
-	return b
-}
-
-// WithHighlyAvailable sets the HighlyAvailable field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the HighlyAvailable field is set to the value of the last call.
-func (b *RouterResourceSpecApplyConfiguration) WithHighlyAvailable(value bool) *RouterResourceSpecApplyConfiguration {
-	b.HighlyAvailable = &value
 	return b
 }
 

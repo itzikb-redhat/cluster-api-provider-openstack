@@ -54,8 +54,6 @@ type RouterResourceSpec struct {
 
 	Distributed *bool `json:"distributed,omitempty"`
 
-	HighlyAvailable *bool `json:"highlyAvailable,omitempty"`
-
 	// +listType=set
 	// +optional
 	AvailabilityZoneHints []AvailabilityZoneHint `json:"availabilityZoneHints,omitempty"`
@@ -85,21 +83,13 @@ type RouterResourceStatus struct {
 	// +optional
 	Tags []string `json:"tags,omitempty"`
 
-	NeutronStatusMetadata `json:",inline"`
-
 	AdminStateUp bool `json:"adminStateUp"`
 
 	// +listType=atomic
 	// +optional
 	ExternalGateways []ExternalGatewayStatus `json:"externalGateways,omitempty"`
 
-	HighlyAvailable bool `json:"highlyAvailable"`
-
 	// +listType=atomic
 	// +optional
 	AvailabilityZoneHints []string `json:"availabilityZoneHints,omitempty"`
-
-	// +listType=atomic
-	// +optional
-	AvailabilityZones []string `json:"availabilityZones,omitempty"`
 }
