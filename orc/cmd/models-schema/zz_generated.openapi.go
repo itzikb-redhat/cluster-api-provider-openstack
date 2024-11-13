@@ -2201,7 +2201,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(
 					"name": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Name is the human-readable name of the subnet. Might not be unique.",
-							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
 						},

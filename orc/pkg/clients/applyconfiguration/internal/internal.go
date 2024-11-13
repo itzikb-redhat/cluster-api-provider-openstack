@@ -635,7 +635,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: name
       type:
         scalar: string
-      default: ""
     - name: revisionNumber
       type:
         scalar: numeric
