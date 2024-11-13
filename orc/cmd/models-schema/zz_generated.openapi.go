@@ -2299,7 +2299,6 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(
 						},
 					},
 				},
-				Required: []string{"name"},
 			},
 		},
 		Dependencies: []string{

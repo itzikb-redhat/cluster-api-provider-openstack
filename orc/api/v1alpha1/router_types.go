@@ -36,7 +36,8 @@ type ExternalGatewayStatus struct {
 
 type RouterResourceSpec struct {
 	// Name is the human-readable name of the subnet. Might not be unique.
-	Name *OpenStackName `json:"name"`
+	// +optional
+	Name *OpenStackName `json:"name,omitempty"`
 
 	// Description for the subnet.
 	// +optional

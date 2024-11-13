@@ -264,8 +264,6 @@ spec:
                   updatedAt:
                     format: date-time
                     type: string
-                required:
-                - name
                 type: object
             required:
             - cloudCredentialsRef
