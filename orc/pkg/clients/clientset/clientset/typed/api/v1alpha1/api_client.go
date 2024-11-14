@@ -30,6 +30,7 @@ type OpenstackV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	ImagesGetter
 	NetworksGetter
+	PortsGetter
 	RoutersGetter
 	SubnetsGetter
 }
@@ -45,6 +46,10 @@ func (c *OpenstackV1alpha1Client) Images(namespace string) ImageInterface {
 
 func (c *OpenstackV1alpha1Client) Networks(namespace string) NetworkInterface {
 	return newNetworks(c, namespace)
+}
+
+func (c *OpenstackV1alpha1Client) Ports(namespace string) PortInterface {
+	return newPorts(c, namespace)
 }
 
 func (c *OpenstackV1alpha1Client) Routers(namespace string) RouterInterface {

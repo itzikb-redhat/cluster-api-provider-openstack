@@ -36,6 +36,10 @@ func (c *FakeOpenstackV1alpha1) Networks(namespace string) v1alpha1.NetworkInter
 	return &FakeNetworks{c, namespace}
 }
 
+func (c *FakeOpenstackV1alpha1) Ports(namespace string) v1alpha1.PortInterface {
+	return &FakePorts{c, namespace}
+}
+
 func (c *FakeOpenstackV1alpha1) Routers(namespace string) v1alpha1.RouterInterface {
 	return &FakeRouters{c, namespace}
 }

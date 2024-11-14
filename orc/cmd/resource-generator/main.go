@@ -53,6 +53,11 @@ var allResources []templateFields = []templateFields{
 	{
 		Name: "Router",
 	},
+	{
+		Name:            "Port",
+		SpecExtraType:   "PortRefs",
+		StatusExtraType: "PortStatusExtra",
+	},
 }
 
 func main() {

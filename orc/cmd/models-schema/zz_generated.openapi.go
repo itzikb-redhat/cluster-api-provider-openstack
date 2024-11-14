@@ -63,6 +63,16 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NeutronStatusMetadata":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Port":                       schema_k_orc_openstack_resource_controller_api_v1alpha1_Port(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortList":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortRefs":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatusExtra":            schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties":         schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Router(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterFilter(ref),
@@ -1920,6 +1930,536 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetada
 		},
 		Dependencies: []string{
 			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_Port(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Port is the Schema for an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortFilter(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PortFilter specifies a filter to select a port. At least one parameter must be specified.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags to filter by. If specified, the resource must have all of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"tagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "TagsAny is a list of tags to filter by. If specified, the resource must have at least one of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTags is a list of tags to filter by. If specified, resources which contain all of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTagsAny is a list of tags to filter by. If specified, resources which contain any of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortImport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PortImport specifies an existing resource which will be imported instead of creating a new one",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID contains the unique identifier of an existing OpenStack resource. Note that when specifying an import by ID, the resource MUST already exist. The ORC object will enter an error state if the resource does not exist.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"filter": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Filter contains a resource query which is expected to return a single result. The controller will continue to retry if filter returns no results. If filter returns multiple results the controller will set an error state and will not continue to retry.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PortList contains a list of Port.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.Port"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Port", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkRef is a reference to the ORC Network which this port is associated with.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"networkRef"},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is a human-readable name of the port. If not set, the object's name will be used.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description of the port.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags which will be applied to the port.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID is the unique ID of the project which owns the Port. Only administrative users can specify a project UUID other than their own.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the human-readable name of the resource. Might not be unique.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description is a human-readable description for the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID is the project owner of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status indicates the current status of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is the list of tags on the resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"adminStateUp": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"revisionNumber": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+				},
+				Required: []string{"adminStateUp"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PortSpec defines the desired state of an ORC object.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkRef is a reference to the ORC Network which this port is associated with.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"import": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Import refers to an existing OpenStack resource which will be imported instead of creating a new one.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport"),
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource specifies the desired state of the resource.\n\nResource may not be specified if the management policy is `unmanaged`.\n\nResource must be specified if the management policy is `managed`.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec"),
+						},
+					},
+					"managementPolicy": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagementPolicy defines how ORC will treat the object. Valid values are `managed`: ORC will create, update, and delete the resource; `unmanaged`: ORC will import an existing resource, and will not apply updates to it or delete it.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"managedOptions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagedOptions specifies options which may be applied to managed objects.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions"),
+						},
+					},
+					"cloudCredentialsRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CloudCredentialsRef points to a secret containing OpenStack credentials",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference"),
+						},
+					},
+				},
+				Required: []string{"networkRef", "cloudCredentialsRef"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PortStatus defines the observed state of an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-map-keys": []interface{}{
+									"type",
+								},
+								"x-kubernetes-list-type":       "map",
+								"x-kubernetes-patch-merge-key": "type",
+								"x-kubernetes-patch-strategy":  "merge",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represents the observed status of the object. Known .status.conditions.type are: \"Available\", \"Progressing\"\n\nAvailable represents the availability of the OpenStack resource. If it is true then the resource is ready for use.\n\nProgressing indicates whether the controller is still attempting to reconcile the current state of the OpenStack resource to the desired state. Progressing will be False either because the desired state has been achieved, or because some terminal error prevents it from ever being achieved and the controller is no longer attempting to reconcile. If Progressing is True, an observer waiting on the resource should continue to wait.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the unique identifier of the OpenStack resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource contains the observed state of the OpenStack resource.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus"),
+						},
+					},
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

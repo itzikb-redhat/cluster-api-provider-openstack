@@ -9,6 +9,7 @@ rules:
   resources:
   - images
   - networks
+  - ports
   - subnets
   verbs:
   - create
@@ -23,6 +24,7 @@ rules:
   resources:
   - images/status
   - networks/status
+  - ports/status
   - subnets/status
   verbs:
   - get

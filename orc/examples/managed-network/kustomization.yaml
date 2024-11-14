@@ -9,3 +9,4 @@ resources:
 - ../credentials
 - network.yaml
 - subnet.yaml
+- port.yaml
