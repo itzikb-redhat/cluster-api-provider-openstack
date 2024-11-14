@@ -111,16 +111,13 @@ To generate the `managed-network` example:
 ```bash
 $ cd orc/examples/managed-network
 $ kustomize build . | kubectl apply -f - --server-side
-secret/mbooth-dev-test-cloud-config-g4ckbm986f serverside-applied
 network.openstack.k-orc.cloud/mbooth-orc-managed-network serverside-applied
 ```
 
+NOTE: This will not create the required secret! To do this, see the section
+above on creating credentials.
+
 To cleanup the `managed-network` example:
 ```bash
-# Will hang, you'll need to Ctl-C
-kubectl kustomize . | kubectl delete -f -
-# Reapply to re-create the secret so deletion can happen
-kubectl kustomize . | kubectl apply -f - --server-side
-# Now delete the secret
-kubectl kustomize . | kubectl delete -f -
+$ kubectl delete -k .
 ```
