@@ -6,7 +6,7 @@ We will:
   * Load the ORC CRDs
   * Run the ORC manager locally directly from source
 * Create an example ORC resource:
-  * Define some credentials
+  * Create some credentials
   * Generate `dev-settings` containing our own username as a name prefix
   * Create an ORC resource using the above
 
@@ -71,11 +71,23 @@ To recompile, kill the process with ctrl-C and re-run it.
 
 ## Create an example ORC resource
 
-### Define some OpenStack credentials
+### Define and create OpenStack credentials
 
 Create a `clouds.yaml` file in `orc/examples/credentials`. The name of the cloud in this clouds.yaml must be `openstack`.
 
 This file is in both `.gitignore` and `.dockerignore`, so should not be accidentally added to the git repo or a container build.
+
+Create a credentials secret in your development cluster by loading the
+`credentials-only` kustomize resource:
+
+```bash
+$ kubectl apply -k orc/examples/credentials-only --server-side
+secret/mbooth-dev-test-cloud-config-g4ckbm986f serverside-applied
+```
+
+Note that we intentionally create credentials separately from other modules.
+This allows us to delete an entire example kustomize module without also
+deleting the credentials, which would prevent the deletion from completing.
 
 ### Generate `dev-settings`
 

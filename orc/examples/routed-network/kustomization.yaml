@@ -11,3 +11,12 @@ resources:
 - provider-network.yaml
 - subnet.yaml
 - router.yaml
+
+patches:
+- target:
+    kind: Secret
+    name: dev-test-cloud-config
+  patch: |-
+    - op: add
+      path: /metadata/annotations/config.kubernetes.io~1local-config
+      value: "true"
