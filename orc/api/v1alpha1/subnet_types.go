@@ -103,6 +103,10 @@ type SubnetResourceSpec struct {
 	// IPv6 contains IPv6-specific options. It may only be set if IPVersion is 6.
 	IPv6 *IPv6Options `json:"ipv6,omitempty"`
 
+	// RouterRef specifies a router to attach the subnet to
+	// +optional
+	RouterRef *ORCNameRef `json:"routerRef,omitempty"`
+
 	// TODO: Support service types
 	// TODO: Support subnet pools
 }

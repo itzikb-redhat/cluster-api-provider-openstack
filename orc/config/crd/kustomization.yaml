@@ -7,6 +7,7 @@ resources:
 - bases/openstack.k-orc.cloud_ports.yaml
 - bases/openstack.k-orc.cloud_subnets.yaml
 - bases/openstack.k-orc.cloud_routers.yaml
+- bases/openstack.k-orc.cloud_routerinterfaces.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patches:

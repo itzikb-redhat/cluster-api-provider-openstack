@@ -26,4 +26,6 @@ type PortExpansion interface{}
 
 type RouterExpansion interface{}
 
+type RouterInterfaceExpansion interface{}
+
 type SubnetExpansion interface{}

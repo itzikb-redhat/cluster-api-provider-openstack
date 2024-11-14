@@ -10,6 +10,7 @@ rules:
   - images
   - networks
   - ports
+  - routers
   - subnets
   verbs:
   - create
@@ -25,6 +26,7 @@ rules:
   - images/status
   - networks/status
   - ports/status
+  - routers/status
   - subnets/status
   verbs:
   - get

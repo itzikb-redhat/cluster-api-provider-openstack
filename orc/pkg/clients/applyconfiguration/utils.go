@@ -120,6 +120,12 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.RouterFilterApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("RouterImport"):
 		return &apiv1alpha1.RouterImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterInterface"):
+		return &apiv1alpha1.RouterInterfaceApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterInterfaceSpec"):
+		return &apiv1alpha1.RouterInterfaceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("RouterInterfaceStatus"):
+		return &apiv1alpha1.RouterInterfaceStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("RouterResourceSpec"):
 		return &apiv1alpha1.RouterResourceSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("RouterResourceStatus"):

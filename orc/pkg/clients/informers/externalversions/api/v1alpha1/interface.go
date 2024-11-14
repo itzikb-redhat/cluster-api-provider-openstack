@@ -32,6 +32,8 @@ type Interface interface {
 	Ports() PortInformer
 	// Routers returns a RouterInformer.
 	Routers() RouterInformer
+	// RouterInterfaces returns a RouterInterfaceInformer.
+	RouterInterfaces() RouterInterfaceInformer
 	// Subnets returns a SubnetInformer.
 	Subnets() SubnetInformer
 }
@@ -65,6 +67,11 @@ func (v *version) Ports() PortInformer {
 // Routers returns a RouterInformer.
 func (v *version) Routers() RouterInformer {
 	return &routerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// RouterInterfaces returns a RouterInterfaceInformer.
+func (v *version) RouterInterfaces() RouterInterfaceInformer {
+	return &routerInterfaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Subnets returns a SubnetInformer.

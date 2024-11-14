@@ -763,6 +763,52 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: id
       type:
         scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterInterface
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterInterfaceSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterInterfaceStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterInterfaceSpec
+  map:
+    fields:
+    - name: routerRef
+      type:
+        scalar: string
+      default: ""
+    - name: subnetRef
+      type:
+        scalar: string
+    - name: type
+      type:
+        scalar: string
+      default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterInterfaceStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceSpec
   map:
     fields:
@@ -1014,6 +1060,9 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
     - name: projectID
+      type:
+        scalar: string
+    - name: routerRef
       type:
         scalar: string
     - name: tags

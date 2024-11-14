@@ -77,6 +77,10 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Router(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterFilter(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterface":            schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterface(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceList":        schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceSpec":        schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterList(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatus(ref),
@@ -2683,6 +2687,173 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterImport(ref co
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterface(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Router is the Schema for an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceSpec", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "RouterList contains a list of Router.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"routerRef": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"subnetRef": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"type", "routerRef"},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-map-keys": []interface{}{
+									"type",
+								},
+								"x-kubernetes-list-type":       "map",
+								"x-kubernetes-patch-merge-key": "type",
+								"x-kubernetes-patch-strategy":  "merge",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represents the observed status of the object. Known .status.conditions.type are: \"Available\", \"Progressing\"\n\nAvailable represents the availability of the OpenStack resource. If it is true then the resource is ready for use.\n\nProgressing indicates whether the controller is still attempting to reconcile the current state of the OpenStack resource to the desired state. Progressing will be False either because the desired state has been achieved, or because some terminal error prevents it from ever being achieved and the controller is no longer attempting to reconcile. If Progressing is True, an observer waiting on the resource should continue to wait.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -3507,6 +3678,13 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(
 						SchemaProps: spec.SchemaProps{
 							Description: "IPv6 contains IPv6-specific options. It may only be set if IPVersion is 6.",
 							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.IPv6Options"),
+						},
+					},
+					"routerRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RouterRef specifies a router to attach the subnet to",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 				},

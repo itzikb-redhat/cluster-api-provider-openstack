@@ -38,6 +38,7 @@ type SubnetResourceSpecApplyConfiguration struct {
 	DNSPublishFixedIP *bool                              `json:"dnsPublishFixedIP,omitempty"`
 	HostRoutes        []HostRouteApplyConfiguration      `json:"hostRoutes,omitempty"`
 	IPv6              *IPv6OptionsApplyConfiguration     `json:"ipv6,omitempty"`
+	RouterRef         *v1alpha1.ORCNameRef               `json:"routerRef,omitempty"`
 }
 
 // SubnetResourceSpecApplyConfiguration constructs a declarative configuration of the SubnetResourceSpec type for use with
@@ -161,5 +162,13 @@ func (b *SubnetResourceSpecApplyConfiguration) WithHostRoutes(values ...*HostRou
 // If called multiple times, the IPv6 field is set to the value of the last call.
 func (b *SubnetResourceSpecApplyConfiguration) WithIPv6(value *IPv6OptionsApplyConfiguration) *SubnetResourceSpecApplyConfiguration {
 	b.IPv6 = value
+	return b
+}
+
+// WithRouterRef sets the RouterRef field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the RouterRef field is set to the value of the last call.
+func (b *SubnetResourceSpecApplyConfiguration) WithRouterRef(value v1alpha1.ORCNameRef) *SubnetResourceSpecApplyConfiguration {
+	b.RouterRef = &value
 	return b
 }
