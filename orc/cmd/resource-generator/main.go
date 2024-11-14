@@ -54,7 +54,9 @@ var allResources []templateFields = []templateFields{
 		Name: "Router",
 	},
 	{
-		Name: "Port",
+		Name:            "Port",
+		SpecExtraType:   "PortRefs",
+		StatusExtraType: "PortStatusExtra",
 	},
 }
 

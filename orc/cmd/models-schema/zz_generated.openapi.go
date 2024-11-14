@@ -67,10 +67,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortFilter(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortImport(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortList":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortRefs":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatusExtra":            schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties":         schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Router(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterFilter(ref),
@@ -2166,6 +2168,27 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref common
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkRef is a reference to the ORC Network which this port is associated with.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"networkRef"},
+			},
+		},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -2313,6 +2336,14 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref common
 				Description: "PortSpec defines the desired state of an ORC object.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"networkRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkRef is a reference to the ORC Network which this port is associated with.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 					"import": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Import refers to an existing OpenStack resource which will be imported instead of creating a new one.",
@@ -2346,7 +2377,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref common
 						},
 					},
 				},
-				Required: []string{"cloudCredentialsRef"},
+				Required: []string{"networkRef", "cloudCredentialsRef"},
 			},
 		},
 		Dependencies: []string{
@@ -2398,11 +2429,37 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref comm
 							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus"),
 						},
 					},
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
 			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the UUID of the parent network.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

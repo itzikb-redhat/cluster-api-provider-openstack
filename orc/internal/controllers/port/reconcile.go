@@ -95,6 +95,34 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 		}
 	}()
 
+	orcNetwork := &orcv1alpha1.Network{}
+	if err := r.client.Get(ctx, client.ObjectKey{Name: string(orcObject.Spec.NetworkRef), Namespace: orcObject.Namespace}, orcNetwork); err != nil {
+		if apierrors.IsNotFound(err) {
+			addStatus(withProgressMessage(fmt.Sprintf("waiting for network object %s to be created", orcObject.Spec.NetworkRef)))
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	if !orcv1alpha1.IsAvailable(orcNetwork) {
+		addStatus(withProgressMessage(fmt.Sprintf("waiting for network object %s to be available", orcObject.Spec.NetworkRef)))
+		return ctrl.Result{}, nil
+	}
+
+	if orcNetwork.Status.ID == nil {
+		return ctrl.Result{}, fmt.Errorf("network %s is available but status.ID is not set", orcNetwork.Name)
+	}
+	networkID := orcv1alpha1.UUID(*orcNetwork.Status.ID)
+
+	if orcObject.Status.NetworkID == nil {
+		return ctrl.Result{}, r.setStatusNetworkID(ctx, orcObject, networkID)
+	}
+
+	if *orcObject.Status.NetworkID != networkID {
+		return ctrl.Result{}, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "Parent network ID has changed")
+	}
+
+	// Don't add finalizer until parent network is available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
 		patch := common.SetFinalizerPatch(orcObject, Finalizer)
 		return ctrl.Result{}, r.client.Patch(ctx, orcObject, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
@@ -105,7 +133,7 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 		return ctrl.Result{}, err
 	}
 
-	osResource, waitingOnExternal, err := getOSResourceFromObject(ctx, log, orcObject, networkClient)
+	osResource, waitingOnExternal, err := getOSResourceFromObject(ctx, log, orcObject, networkID, networkClient)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -117,7 +145,7 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 
 	if osResource == nil {
 		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-			osResource, err = createResource(ctx, orcObject, networkClient)
+			osResource, err = createResource(ctx, orcObject, networkID, networkClient)
 			if err != nil {
 				return ctrl.Result{}, nil
 			}
@@ -151,13 +179,11 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 	return ctrl.Result{}, nil
 }
 
-func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Port, networkClient osclients.NetworkClient) (*ports.Port, bool, error) {
+func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*ports.Port, bool, error) {
 	switch {
 	case orcObject.Status.ID != nil:
 		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource := &ports.Port{}
-		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
-		err := getResult.ExtractInto(osResource)
+		osResource, err := networkClient.GetPort(ctx, *orcObject.Status.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
@@ -169,9 +195,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
 		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource := &ports.Port{}
-		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
-		err := getResult.ExtractInto(osResource)
+		osResource, err := networkClient.GetPort(ctx, *orcObject.Spec.Import.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
@@ -183,7 +207,7 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil:
 		log.V(4).Info("Importing existing OpenStack resource by filter")
-		listOpts := listOptsFromImportFilter(orcObject.Spec.Import.Filter)
+		listOpts := listOptsFromImportFilter(orcObject.Spec.Import.Filter, networkID)
 		osResource, err := getResourceFromList(ctx, listOpts, networkClient)
 		if err != nil {
 			return nil, false, err
@@ -279,7 +303,7 @@ func (r *orcPortReconciler) deleteResource(ctx context.Context, log logr.Logger,
 				return false, 0, nil
 			}
 
-			err := networkClient.DeleteNetwork(ctx, *orcObject.Status.ID).ExtractErr()
+			err := networkClient.DeletePort(ctx, *orcObject.Status.ID)
 			if err != nil {
 				return false, 0, err
 			}
@@ -314,10 +338,11 @@ func getResourceName(orcObject *orcv1alpha1.Port) orcv1alpha1.OpenStackName {
 	return orcv1alpha1.OpenStackName(orcObject.Name)
 }
 
-func listOptsFromImportFilter(filter *orcv1alpha1.PortFilter) ports.ListOptsBuilder {
+func listOptsFromImportFilter(filter *orcv1alpha1.PortFilter, networkID orcv1alpha1.UUID) ports.ListOptsBuilder {
 	listOpts := ports.ListOpts{
 		Name:        string(ptr.Deref(filter.Name, "")),
 		Description: string(ptr.Deref(filter.Description, "")),
+		NetworkID:   string(networkID),
 		Tags:        neutrontags.Join(filter.FilterByNeutronTags.Tags),
 		TagsAny:     neutrontags.Join(filter.FilterByNeutronTags.TagsAny),
 		NotTags:     neutrontags.Join(filter.FilterByNeutronTags.NotTags),
@@ -355,7 +380,7 @@ func getResourceFromList(ctx context.Context, listOpts ports.ListOptsBuilder, ne
 }
 
 // createResource creates an OpenStack resource for an ORC object.
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkClient osclients.NetworkClient) (*ports.Port, error) {
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*ports.Port, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
@@ -371,18 +396,13 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkCli
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
 	}
 
-	var createOpts ports.CreateOptsBuilder
-	{
-		createOptsBase := ports.CreateOpts{
-			Name:        string(getResourceName(orcObject)),
-			Description: string(*resource.Description),
-		}
-
-		createOpts = createOptsBase
+	createOpts := ports.CreateOpts{
+		NetworkID:   string(networkID),
+		Name:        string(getResourceName(orcObject)),
+		Description: string(ptr.Deref(resource.Description, "")),
 	}
 
-	osResource := &ports.Port{}
-	_, err := networkClient.CreatePort(ctx, createOpts)
+	osResource, err := networkClient.CreatePort(ctx, &createOpts)
 	if err != nil {
 		// We should require the spec to be updated before retrying a create which returned a conflict
 		if orcerrors.IsConflict(err) {

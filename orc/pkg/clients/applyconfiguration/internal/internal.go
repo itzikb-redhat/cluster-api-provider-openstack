@@ -658,6 +658,10 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: managementPolicy
       type:
         scalar: string
+    - name: networkRef
+      type:
+        scalar: string
+      default: ""
     - name: resource
       type:
         namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceSpec
@@ -673,6 +677,9 @@ var schemaYAML = typed.YAMLObject(`types:
           keys:
           - type
     - name: id
+      type:
+        scalar: string
+    - name: networkID
       type:
         scalar: string
     - name: resource

@@ -228,17 +228,17 @@ func (mr *MockNetworkClientMockRecorder) DeleteNetwork(ctx, id any) *gomock.Call
 }
 
 // DeletePort mocks base method.
-func (m *MockNetworkClient) DeletePort(id string) error {
+func (m *MockNetworkClient) DeletePort(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePort", id)
+	ret := m.ctrl.Call(m, "DeletePort", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeletePort indicates an expected call of DeletePort.
-func (mr *MockNetworkClientMockRecorder) DeletePort(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) DeletePort(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePort", reflect.TypeOf((*MockNetworkClient)(nil).DeletePort), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePort", reflect.TypeOf((*MockNetworkClient)(nil).DeletePort), ctx, id)
 }
 
 // DeleteRouter mocks base method.

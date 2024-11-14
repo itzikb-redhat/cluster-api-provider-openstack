@@ -5,8 +5,12 @@ nameReference:
     kind: Network
   - path: spec/cloudCredentialsRef/secretName
     kind: Subnet
+  - path: spec/cloudCredentialsRef/secretName
+    kind: Port
 
 - kind: Network
   fieldSpecs:
   - path: spec/networkRef
     kind: Subnet
+  - path: spec/networkRef
+    kind: Port

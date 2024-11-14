@@ -19,15 +19,17 @@ limitations under the License.
 package v1alpha1
 
 import (
+	apiv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	v1 "k8s.io/client-go/applyconfigurations/meta/v1"
 )
 
 // PortStatusApplyConfiguration represents a declarative configuration of the PortStatus type for use
 // with apply.
 type PortStatusApplyConfiguration struct {
-	Conditions []v1.ConditionApplyConfiguration      `json:"conditions,omitempty"`
-	ID         *string                               `json:"id,omitempty"`
-	Resource   *PortResourceStatusApplyConfiguration `json:"resource,omitempty"`
+	Conditions                        []v1.ConditionApplyConfiguration      `json:"conditions,omitempty"`
+	ID                                *string                               `json:"id,omitempty"`
+	Resource                          *PortResourceStatusApplyConfiguration `json:"resource,omitempty"`
+	PortStatusExtraApplyConfiguration `json:",inline"`
 }
 
 // PortStatusApplyConfiguration constructs a declarative configuration of the PortStatus type for use with
@@ -62,5 +64,13 @@ func (b *PortStatusApplyConfiguration) WithID(value string) *PortStatusApplyConf
 // If called multiple times, the Resource field is set to the value of the last call.
 func (b *PortStatusApplyConfiguration) WithResource(value *PortResourceStatusApplyConfiguration) *PortStatusApplyConfiguration {
 	b.Resource = value
+	return b
+}
+
+// WithNetworkID sets the NetworkID field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NetworkID field is set to the value of the last call.
+func (b *PortStatusApplyConfiguration) WithNetworkID(value apiv1alpha1.UUID) *PortStatusApplyConfiguration {
+	b.NetworkID = &value
 	return b
 }

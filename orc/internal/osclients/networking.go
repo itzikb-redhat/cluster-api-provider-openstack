@@ -45,7 +45,7 @@ type NetworkClient interface {
 
 	ListPort(ctx context.Context, opts ports.ListOptsBuilder) ([]ports.Port, error)
 	CreatePort(ctx context.Context, opts ports.CreateOptsBuilder) (*ports.Port, error)
-	DeletePort(id string) error
+	DeletePort(ctx context.Context, id string) error
 	GetPort(ctx context.Context, id string) (*ports.Port, error)
 	UpdatePort(id string, opts ports.UpdateOptsBuilder) (*ports.Port, error)
 
@@ -171,8 +171,8 @@ func (c networkClient) CreatePort(ctx context.Context, opts ports.CreateOptsBuil
 	return ports.Create(ctx, c.serviceClient, opts).Extract()
 }
 
-func (c networkClient) DeletePort(id string) error {
-	return ports.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeletePort(ctx context.Context, id string) error {
+	return ports.Delete(ctx, c.serviceClient, id).ExtractErr()
 }
 
 func (c networkClient) GetPort(ctx context.Context, id string) (*ports.Port, error) {

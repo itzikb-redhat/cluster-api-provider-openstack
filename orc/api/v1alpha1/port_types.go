@@ -16,6 +16,12 @@ limitations under the License.
 
 package v1alpha1
 
+type PortRefs struct {
+	// NetworkRef is a reference to the ORC Network which this port is associated with.
+	// +required
+	NetworkRef ORCNameRef `json:"networkRef"`
+}
+
 // PortFilter specifies a filter to select a port. At least one parameter must be specified.
 // +kubebuilder:validation:MinProperties:=1
 type PortFilter struct {
@@ -71,4 +77,9 @@ type PortResourceStatus struct {
 	AdminStateUp bool `json:"adminStateUp"`
 
 	NeutronStatusMetadata `json:",inline"`
+}
+
+type PortStatusExtra struct {
+	// NetworkID is the UUID of the parent network.
+	NetworkID *UUID `json:"networkID,omitempty"`
 }

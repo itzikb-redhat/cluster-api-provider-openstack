@@ -1,0 +1,15 @@
+apiVersion: openstack.k-orc.cloud/v1alpha1
+kind: Port
+metadata:
+  name: orc-managed-port
+spec:
+  cloudCredentialsRef:
+    cloudName: openstack
+    secretName: dev-test-cloud-config
+  managementPolicy: managed
+  networkRef: orc-managed-network
+  resource:
+    description: |
+      Blah blah blah
+    tags:
+    - orc-test

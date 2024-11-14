@@ -22,7 +22,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/go-logr/logr"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,6 +44,16 @@ func (r *orcPortReconciler) setStatusID(ctx context.Context, obj client.Object, 
 			WithID(id))
 
 	return r.client.Status().Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
+}
+
+// setStatusNetworkID sets status.NetworkID in its own SSA transaction.
+func (r *orcPortReconciler) setStatusNetworkID(ctx context.Context, obj client.Object, id orcv1alpha1.UUID) error {
+	applyConfig := orcapplyconfigv1alpha1.Port(obj.GetName(), obj.GetNamespace()).
+		WithUID(obj.GetUID()).
+		WithStatus(orcapplyconfigv1alpha1.PortStatus().
+			WithNetworkID(id))
+
+	return r.client.Status().Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSANetworkIDTxn))
 }
 
 type updateStatusOpts struct {
@@ -74,8 +83,8 @@ func withProgressMessage(message string) updateStatusOpt {
 	}
 }
 
-func getOSResourceStatus(log logr.Logger, osResource *ports.Port) *orcapplyconfigv1alpha1.PortResourceStatusApplyConfiguration {
-	networkResourceStatus := (&orcapplyconfigv1alpha1.PortResourceStatusApplyConfiguration{}).
+func getOSResourceStatus(osResource *ports.Port) *orcapplyconfigv1alpha1.PortResourceStatusApplyConfiguration {
+	status := orcapplyconfigv1alpha1.PortResourceStatus().
 		WithName(osResource.Name).
 		WithDescription(osResource.Description).
 		WithAdminStateUp(osResource.AdminStateUp).
@@ -86,10 +95,8 @@ func getOSResourceStatus(log logr.Logger, osResource *ports.Port) *orcapplyconfi
 		WithCreatedAt(metav1.NewTime(osResource.CreatedAt)).
 		WithUpdatedAt(metav1.NewTime(osResource.UpdatedAt))
 
-	return networkResourceStatus
+	return status
 }
-
-const PortStatusActive = "ACTIVE"
 
 // createStatusUpdate computes a complete status update based on the given
 // observed state. This is separated from updateStatus to facilitate unit
@@ -111,7 +118,7 @@ func createStatusUpdate(ctx context.Context, orcPort *orcv1alpha1.Port, now meta
 	applyConfig := orcapplyconfigv1alpha1.Port(orcPort.Name, orcPort.Namespace).WithStatus(applyConfigStatus)
 
 	if osResource != nil {
-		resourceStatus := getOSResourceStatus(log, osResource)
+		resourceStatus := getOSResourceStatus(osResource)
 		applyConfigStatus.WithResource(resourceStatus)
 	}
 
@@ -122,8 +129,8 @@ func createStatusUpdate(ctx context.Context, orcPort *orcv1alpha1.Port, now meta
 		WithType(orcv1alpha1.OpenStackConditionProgressing).
 		WithObservedGeneration(orcPort.Generation)
 
-	// A port is available when it has a status of ACTIVE
-	available := osResource != nil && osResource.Status == PortStatusActive
+	// A port is available as soon as it exists
+	available := osResource != nil
 	if available {
 		availableCondition.
 			WithStatus(metav1.ConditionTrue).
