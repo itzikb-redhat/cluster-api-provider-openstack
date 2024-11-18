@@ -95,8 +95,7 @@ func (r *orcPortReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manag
 	const networkRefPath = "spec.resource.networkRef"
 
 	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Port{}, networkRefPath, func(obj client.Object) []string {
-		networks := getNetworkRefsForPort(obj)
-		return networks
+		return getNetworkRefsForPort(obj)
 	}); err != nil {
 		return fmt.Errorf("adding ports by network index: %w", err)
 	}

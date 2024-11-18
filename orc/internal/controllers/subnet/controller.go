@@ -96,8 +96,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 	const networkRefPath = "spec.resource.networkRef"
 
 	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Subnet{}, networkRefPath, func(obj client.Object) []string {
-		networks := getNetworkRefsForSubnet(obj)
-		return networks
+		return getNetworkRefsForSubnet(obj)
 	}); err != nil {
 		return fmt.Errorf("adding subnets by network index: %w", err)
 	}
