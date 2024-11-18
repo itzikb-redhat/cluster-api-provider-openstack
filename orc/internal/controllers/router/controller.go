@@ -100,11 +100,10 @@ func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 	}
 
 	// Index routers by referenced external gateway
-	const networkRefPath = "spec.resource.externalGateways.networkRef"
+	const routerNetworkRefPath = "spec.resource.externalGateways.networkRef"
 
-	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Router{}, networkRefPath, func(obj client.Object) []string {
-		networks := getExternalGatewayRefsForResource(obj)
-		return networks
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Router{}, routerNetworkRefPath, func(obj client.Object) []string {
+		return getExternalGatewayRefsForResource(obj)
 	}); err != nil {
 		return fmt.Errorf("adding networks by router index: %w", err)
 	}
@@ -112,7 +111,7 @@ func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 	getRoutersForExternalGateway := func(obj *orcv1alpha1.Network) ([]orcv1alpha1.Router, error) {
 		k8sClient := mgr.GetClient()
 		routerList := &orcv1alpha1.RouterList{}
-		if err := k8sClient.List(ctx, routerList, client.InNamespace(obj.Namespace), client.MatchingFields{networkRefPath: obj.Name}); err != nil {
+		if err := k8sClient.List(ctx, routerList, client.InNamespace(obj.Namespace), client.MatchingFields{routerNetworkRefPath: obj.Name}); err != nil {
 			return nil, err
 		}
 
