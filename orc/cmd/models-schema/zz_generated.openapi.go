@@ -2691,7 +2691,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterface(ref
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "Router is the Schema for an ORC resource.",
+				Description: "RouterInterface is the Schema for an ORC resource.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -2738,7 +2738,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "RouterList contains a list of Router.",
+				Description: "RouterInterfaceList contains a list of Router.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -2768,7 +2768,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router"),
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterface"),
 									},
 								},
 							},
@@ -2779,7 +2779,7 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList
 			},
 		},
 		Dependencies: []string{
-			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterface", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 

@@ -30,7 +30,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Router is the Schema for an ORC resource.
+        description: RouterInterface is the Schema for an ORC resource.
         properties:
           apiVersion:
             description: |-
