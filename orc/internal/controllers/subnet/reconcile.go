@@ -115,13 +115,12 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	if orcNetwork.Status.ID == nil {
 		return ctrl.Result{}, fmt.Errorf("network %s is available but status.ID is not set", orcNetwork.Name)
 	}
-	networkID := orcv1alpha1.UUID(*orcNetwork.Status.ID)
 
 	if orcObject.Status.NetworkID == nil {
-		return ctrl.Result{}, r.setStatusNetworkID(ctx, orcObject, networkID)
+		return ctrl.Result{}, r.setStatusNetworkID(ctx, orcObject, *orcNetwork.Status.ID)
 	}
 
-	if *orcObject.Status.NetworkID != networkID {
+	if *orcObject.Status.NetworkID != *orcNetwork.Status.ID {
 		return ctrl.Result{}, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "Parent network ID has changed")
 	}
 
@@ -135,6 +134,8 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+
+	networkID := orcv1alpha1.UUID(*orcNetwork.Status.ID)
 
 	osResource, waitingOnExternal, err := getOSResourceFromObject(ctx, log, orcObject, networkID, networkClient)
 	if err != nil {

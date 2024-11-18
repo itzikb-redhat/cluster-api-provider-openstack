@@ -517,8 +517,6 @@ spec:
                 type: string
               networkID:
                 description: NetworkID is the UUID of the parent network.
-                format: uuid
-                maxLength: 36
                 type: string
               resource:
                 description: Resource contains the observed state of the OpenStack

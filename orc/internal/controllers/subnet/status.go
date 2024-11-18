@@ -44,7 +44,7 @@ func (r *orcSubnetReconciler) setStatusID(ctx context.Context, obj client.Object
 }
 
 // setStatusNetworkID sets status.NetworkID in its own SSA transaction.
-func (r *orcSubnetReconciler) setStatusNetworkID(ctx context.Context, obj client.Object, id orcv1alpha1.UUID) error {
+func (r *orcSubnetReconciler) setStatusNetworkID(ctx context.Context, obj client.Object, id string) error {
 	applyConfig := orcapplyconfigv1alpha1.Subnet(obj.GetName(), obj.GetNamespace()).
 		WithUID(obj.GetUID()).
 		WithStatus(orcapplyconfigv1alpha1.SubnetStatus().

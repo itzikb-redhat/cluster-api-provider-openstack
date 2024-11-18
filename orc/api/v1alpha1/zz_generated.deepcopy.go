@@ -1927,7 +1927,7 @@ func (in *SubnetStatusExtra) DeepCopyInto(out *SubnetStatusExtra) {
 	*out = *in
 	if in.NetworkID != nil {
 		in, out := &in.NetworkID, &out.NetworkID
-		*out = new(UUID)
+		*out = new(string)
 		**out = **in
 	}
 }

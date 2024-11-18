@@ -18,14 +18,10 @@ limitations under the License.
 
 package v1alpha1
 
-import (
-	v1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
-)
-
 // SubnetStatusExtraApplyConfiguration represents a declarative configuration of the SubnetStatusExtra type for use
 // with apply.
 type SubnetStatusExtraApplyConfiguration struct {
-	NetworkID *v1alpha1.UUID `json:"networkID,omitempty"`
+	NetworkID *string `json:"networkID,omitempty"`
 }
 
 // SubnetStatusExtraApplyConfiguration constructs a declarative configuration of the SubnetStatusExtra type for use with
@@ -37,7 +33,7 @@ func SubnetStatusExtra() *SubnetStatusExtraApplyConfiguration {
 // WithNetworkID sets the NetworkID field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the NetworkID field is set to the value of the last call.
-func (b *SubnetStatusExtraApplyConfiguration) WithNetworkID(value v1alpha1.UUID) *SubnetStatusExtraApplyConfiguration {
+func (b *SubnetStatusExtraApplyConfiguration) WithNetworkID(value string) *SubnetStatusExtraApplyConfiguration {
 	b.NetworkID = &value
 	return b
 }
