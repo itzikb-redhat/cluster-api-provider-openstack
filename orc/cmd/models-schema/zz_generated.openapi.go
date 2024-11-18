@@ -2846,6 +2846,13 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceStat
 							},
 						},
 					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the unique identifier of the port created for the router interface",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},

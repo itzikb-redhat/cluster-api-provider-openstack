@@ -87,6 +87,10 @@ type RouterInterfaceStatus struct {
 	// +listType=map
 	// +listMapKey=type
 	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
+
+	// ID is the unique identifier of the port created for the router interface
+	// +optional
+	ID *string `json:"id,omitempty"`
 }
 
 var _ ObjectWithConditions = &Router{}

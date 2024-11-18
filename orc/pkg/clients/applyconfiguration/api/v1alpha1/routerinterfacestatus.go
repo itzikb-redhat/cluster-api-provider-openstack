@@ -26,6 +26,7 @@ import (
 // with apply.
 type RouterInterfaceStatusApplyConfiguration struct {
 	Conditions []v1.ConditionApplyConfiguration `json:"conditions,omitempty"`
+	ID         *string                          `json:"id,omitempty"`
 }
 
 // RouterInterfaceStatusApplyConfiguration constructs a declarative configuration of the RouterInterfaceStatus type for use with
@@ -44,5 +45,13 @@ func (b *RouterInterfaceStatusApplyConfiguration) WithConditions(values ...*v1.C
 		}
 		b.Conditions = append(b.Conditions, *values[i])
 	}
+	return b
+}
+
+// WithID sets the ID field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ID field is set to the value of the last call.
+func (b *RouterInterfaceStatusApplyConfiguration) WithID(value string) *RouterInterfaceStatusApplyConfiguration {
+	b.ID = &value
 	return b
 }
