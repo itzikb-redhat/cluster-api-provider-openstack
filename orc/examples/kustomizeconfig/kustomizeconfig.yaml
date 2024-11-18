@@ -18,3 +18,8 @@ nameReference:
     kind: Router
   - path: spec/networkRef
     kind: Port
+
+- kind: Router
+  fieldSpecs:
+  - path: spec/resource/routerRef
+    kind: Subnet

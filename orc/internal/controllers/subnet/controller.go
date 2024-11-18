@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"time"
 
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -144,6 +145,20 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 				return requests
 			}),
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Network{})),
+		).
+		Watches(&orcv1alpha1.RouterInterface{},
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
+				log := log.WithValues("watch", "RouterInterface", "name", obj.GetName(), "namespace", obj.GetNamespace())
+				routerInterface, ok := obj.(*orcv1alpha1.RouterInterface)
+				if !ok {
+					log.Info("Watch got unexpected object type", "type", fmt.Sprintf("%T", obj))
+					return nil
+				}
+				return []reconcile.Request{
+					{NamespacedName: types.NamespacedName{Namespace: routerInterface.Namespace, Name: string(*routerInterface.Spec.SubnetRef)}},
+				}
+			}),
+			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.RouterInterface{})),
 		).
 		WithOptions(options).
 		Complete(r)

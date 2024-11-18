@@ -18,7 +18,6 @@ package subnet
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -26,8 +25,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
-	"k8s.io/utils/ptr"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
@@ -58,6 +55,7 @@ func (r *orcSubnetReconciler) setStatusNetworkID(ctx context.Context, obj client
 
 type updateStatusOpts struct {
 	resource        *subnets.Subnet
+	routerInterface *orcv1alpha1.RouterInterface
 	progressMessage *string
 	err             error
 }
@@ -67,6 +65,12 @@ type updateStatusOpt func(*updateStatusOpts)
 func withResource(resource *subnets.Subnet) updateStatusOpt {
 	return func(opts *updateStatusOpts) {
 		opts.resource = resource
+	}
+}
+
+func withRouterInterface(routerInterface *orcv1alpha1.RouterInterface) updateStatusOpt {
+	return func(opts *updateStatusOpts) {
+		opts.routerInterface = routerInterface
 	}
 }
 
@@ -122,14 +126,38 @@ func getOSResourceStatus(osResource *subnets.Subnet) *orcapplyconfigv1alpha1.Sub
 	return status
 }
 
+func isAvailable(orcObject *orcv1alpha1.Subnet, opts *updateStatusOpts) bool {
+	if orcObject == nil {
+		return false
+	}
+
+	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
+		resource := orcObject.Spec.Resource
+		if resource == nil {
+			// Should have been caught by validation
+			return false
+		}
+
+		// We should have a matching routerinterface if the spec requires one
+		if !routerInterfaceMatchesSpec(opts.routerInterface, orcObject.Name, resource) {
+			return false
+		}
+
+		// If we have a routerinterface it should be available
+		if opts.routerInterface != nil && !orcv1alpha1.IsAvailable(opts.routerInterface) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // createStatusUpdate computes a complete status update based on the given
 // observed state. This is separated from updateStatus to facilitate unit
 // testing, as the version of k8s we currently import does not support patch
 // apply in the fake client.
 // Needs: https://github.com/kubernetes/kubernetes/pull/125560
-func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now metav1.Time, opts ...updateStatusOpt) *orcapplyconfigv1alpha1.SubnetApplyConfiguration {
-	log := ctrl.LoggerFrom(ctx)
-
+func createStatusUpdate(orcObject *orcv1alpha1.Subnet, now metav1.Time, opts ...updateStatusOpt) *orcapplyconfigv1alpha1.SubnetApplyConfiguration {
 	statusOpts := updateStatusOpts{}
 	for i := range opts {
 		opts[i](&statusOpts)
@@ -153,8 +181,7 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 		WithType(orcv1alpha1.OpenStackConditionProgressing).
 		WithObservedGeneration(orcObject.Generation)
 
-	// A subnet is available as soon as it exists
-	available := osResource != nil
+	available := isAvailable(orcObject, &statusOpts)
 	if available {
 		availableCondition.
 			WithStatus(metav1.ConditionTrue).
@@ -165,7 +192,7 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 		availableCondition.WithStatus(metav1.ConditionFalse)
 	}
 
-	// We are progressing until the OpenStack resource is available or there was an error
+	// We are progressing until the OpenStack resource is available or there was a terminal error
 	if err == nil {
 		if available {
 			progressingCondition.
@@ -184,15 +211,16 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 			}
 		}
 	} else {
-		progressingCondition.WithStatus(metav1.ConditionFalse)
-
+		// We are no longer progressing if the error is terminal
 		var terminalError *orcerrors.TerminalError
 		if errors.As(err, &terminalError) {
 			progressingCondition.
+				WithStatus(metav1.ConditionFalse).
 				WithReason(terminalError.Reason).
 				WithMessage(terminalError.Message)
 		} else {
 			progressingCondition.
+				WithStatus(metav1.ConditionTrue).
 				WithReason(orcv1alpha1.OpenStackConditionReasonTransientError).
 				WithMessage(err.Error())
 		}
@@ -218,31 +246,6 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 
 	applyConfigStatus.WithConditions(availableCondition, progressingCondition)
 
-	if log.V(4).Enabled() {
-		logValues := make([]any, 0, 12)
-		addConditionValues := func(condition *applyconfigv1.ConditionApplyConfiguration) {
-			if condition.Type == nil {
-				bytes, _ := json.Marshal(condition)
-				log.V(0).Info("Attempting to set condition with no type", "condition", string(bytes))
-				return
-			}
-
-			for _, v := range []struct {
-				name  string
-				value *string
-			}{
-				{"status", (*string)(condition.Status)},
-				{"reason", condition.Reason},
-				{"message", condition.Message},
-			} {
-				logValues = append(logValues, *condition.Type+"."+v.name, ptr.Deref(v.value, ""))
-			}
-		}
-		addConditionValues(availableCondition)
-		addConditionValues(progressingCondition)
-		log.V(4).Info("Setting resource status", logValues...)
-	}
-
 	return applyConfig
 }
 
@@ -250,7 +253,7 @@ func createStatusUpdate(ctx context.Context, orcObject *orcv1alpha1.Subnet, now 
 func (r *orcSubnetReconciler) updateStatus(ctx context.Context, orcObject *orcv1alpha1.Subnet, opts ...updateStatusOpt) error {
 	now := metav1.NewTime(time.Now())
 
-	statusUpdate := createStatusUpdate(ctx, orcObject, now, opts...)
+	statusUpdate := createStatusUpdate(orcObject, now, opts...)
 
 	return r.client.Status().Patch(ctx, orcObject, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
 }

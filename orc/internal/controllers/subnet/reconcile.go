@@ -27,6 +27,8 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/subnets"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	"k8s.io/utils/set"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -169,9 +171,8 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	ctx = ctrl.LoggerInto(ctx, log)
 
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-		for _, updateFunc := range needsUpdate(networkClient, orcObject, osResource) {
-			if err := updateFunc(ctx); err != nil {
-				addStatus(withProgressMessage("Updating the OpenStack resource"))
+		for _, updateFunc := range r.needsUpdate(networkClient, orcObject, osResource) {
+			if err := updateFunc(ctx, addStatus); err != nil {
 				return ctrl.Result{}, fmt.Errorf("failed to update the OpenStack resource: %w", err)
 			}
 		}
@@ -257,6 +258,20 @@ func (r *orcSubnetReconciler) reconcileDelete(ctx context.Context, orcObject *or
 		}
 		log.V(4).Info("Not deleting OpenStack resource due to policy", logPolicy...)
 	} else {
+		// Delete any RouterInterface first, as this would prevent deletion of the subnet
+		routerInterface, err := r.getRouterInterface(ctx, orcObject)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		if routerInterface != nil {
+			// We will be reconciled again when it's gone
+			if routerInterface.GetDeletionTimestamp().IsZero() {
+				return ctrl.Result{}, r.client.Delete(ctx, routerInterface)
+			}
+			return ctrl.Result{}, nil
+		}
+
 		deleted, requeue, err := r.deleteResource(ctx, log, orcObject, addStatus)
 		if err != nil {
 			return ctrl.Result{}, err
@@ -464,24 +479,125 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Subnet, networkI
 	return osResource, err
 }
 
+func getRouterInterfaceName(orcObject *orcv1alpha1.Subnet) string {
+	return orcObject.Name + "-subnet"
+}
+
+func routerInterfaceMatchesSpec(routerInterface *orcv1alpha1.RouterInterface, objectName string, resource *orcv1alpha1.SubnetResourceSpec) bool {
+	// No routerRef -> there should be no routerInterface
+	if resource.RouterRef == nil {
+		return routerInterface == nil
+	}
+
+	// The router interface should:
+	// * Exist
+	// * Be of Subnet type
+	// * Reference this subnet
+	// * Reference the router in our spec
+
+	if routerInterface == nil {
+		return false
+	}
+
+	if routerInterface.Spec.Type != orcv1alpha1.RouterInterfaceTypeSubnet {
+		return false
+	}
+
+	if string(ptr.Deref(routerInterface.Spec.SubnetRef, "")) != objectName {
+		return false
+	}
+
+	return routerInterface.Spec.RouterRef == *resource.RouterRef
+}
+
+// getRouterInterface returns the router interface for this subnet, identified by its name
+// returns nil for routerinterface without returning an error if the routerinterface does not exist
+func (r *orcSubnetReconciler) getRouterInterface(ctx context.Context, orcObject *orcv1alpha1.Subnet) (*orcv1alpha1.RouterInterface, error) {
+	routerInterface := &orcv1alpha1.RouterInterface{}
+	err := r.client.Get(ctx, types.NamespacedName{Name: getRouterInterfaceName(orcObject), Namespace: orcObject.GetNamespace()}, routerInterface)
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("fetching RouterInterface: %w", err)
+	}
+
+	return routerInterface, nil
+}
+
 // needsUpdate returns a slice of functions that call the OpenStack API to
 // align the OpenStack resoruce to its representation in the ORC spec object.
 // For network, only the Neutron tags are currently taken into consideration.
-func needsUpdate(networkClient osclients.NetworkClient, orcObject *orcv1alpha1.Subnet, osResource *subnets.Subnet) (updateFuncs []func(context.Context) error) {
-	addUpdateFunc := func(updateFunc func(context.Context) error) {
+func (r *orcSubnetReconciler) needsUpdate(networkClient osclients.NetworkClient, orcObject *orcv1alpha1.Subnet, osResource *subnets.Subnet) (updateFuncs []func(context.Context, func(updateStatusOpt)) error) {
+	addUpdateFunc := func(updateFunc func(context.Context, func(updateStatusOpt)) error) {
 		updateFuncs = append(updateFuncs, updateFunc)
 	}
+
+	resource := orcObject.Spec.Resource
+	if resource == nil {
+		return updateFuncs
+	}
+
 	resourceTagSet := set.New[string](osResource.Tags...)
 	objectTagSet := set.New[string]()
-	for i := range orcObject.Spec.Resource.Tags {
-		objectTagSet.Insert(string(orcObject.Spec.Resource.Tags[i]))
+	for i := range resource.Tags {
+		objectTagSet.Insert(string(resource.Tags[i]))
 	}
 	if !objectTagSet.Equal(resourceTagSet) {
-		addUpdateFunc(func(ctx context.Context) error {
+		addUpdateFunc(func(ctx context.Context, addStatus func(updateStatusOpt)) error {
 			opts := attributestags.ReplaceAllOpts{Tags: objectTagSet.SortedList()}
 			_, err := networkClient.ReplaceAllAttributesTags(ctx, "subnets", osResource.ID, &opts)
 			return err
 		})
 	}
+
+	addUpdateFunc(func(ctx context.Context, addStatus func(updateStatusOpt)) error {
+		routerInterface, err := r.getRouterInterface(ctx, orcObject)
+		if err != nil {
+			return err
+		}
+		addStatus(withRouterInterface(routerInterface))
+
+		if routerInterfaceMatchesSpec(routerInterface, orcObject.Name, resource) {
+			// Nothing to do
+			return nil
+		}
+
+		// If it doesn't match we should delete any existing interface
+		if routerInterface != nil {
+			if routerInterface.GetDeletionTimestamp().IsZero() {
+				if err := r.client.Delete(ctx, routerInterface); err != nil {
+					return fmt.Errorf("deleting RouterInterface %s: %w", client.ObjectKeyFromObject(routerInterface), err)
+				}
+			}
+			return nil
+		}
+
+		// Otherwise create it
+		routerInterface = &orcv1alpha1.RouterInterface{}
+		routerInterface.Name = getRouterInterfaceName(orcObject)
+		routerInterface.Namespace = orcObject.Namespace
+		routerInterface.OwnerReferences = []metav1.OwnerReference{
+			{
+				APIVersion:         orcObject.APIVersion,
+				Kind:               orcObject.Kind,
+				Name:               orcObject.Name,
+				UID:                orcObject.UID,
+				BlockOwnerDeletion: ptr.To(true),
+			},
+		}
+		routerInterface.Spec = orcv1alpha1.RouterInterfaceSpec{
+			Type:      orcv1alpha1.RouterInterfaceTypeSubnet,
+			RouterRef: *resource.RouterRef,
+			SubnetRef: ptr.To(orcv1alpha1.ORCNameRef(orcObject.Name)),
+		}
+
+		if err := r.client.Create(ctx, routerInterface); err != nil {
+			return fmt.Errorf("creating RouterInterface %s: %w", client.ObjectKeyFromObject(orcObject), err)
+		}
+
+		return nil
+	})
+
 	return updateFuncs
 }

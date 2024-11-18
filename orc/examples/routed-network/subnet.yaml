@@ -15,3 +15,4 @@ spec:
     - orc-test
     ipVersion: 4
     cidr: 192.168.0.0/24
+    routerRef: orc-managed-router
