@@ -71,13 +71,13 @@ For the sake of the user experience we should aim to keep the number of dependen
 
 ### Specific models
 
-#### Dependency guard
+#### Deletion guard
 
-The purpose of the dependency guard is to prevent the deletion of an OpenStack resource until all objects which depend on it have been deleted first. It works by adding an additional controller which reconciles a finalizer on the `guarded` object on behalf of `dependency` objects.
+The purpose of the deletion guard is to prevent the deletion of an OpenStack resource until all objects which depend on it have been deleted first. It works by adding an additional controller which reconciles a finalizer on the `guarded` object on behalf of `dependency` objects.
 
-e.g. A subnet cannot exist without its network. The subnet controller adds a dependency guard on network objects. `guarded` is the network. `dependency` is the subnet.
+e.g. A subnet cannot exist without its network. The subnet controller adds a deletion guard on network objects. `guarded` is the network. `dependency` is the subnet.
 
-The dependency guard controller watches `guarded` and automatically adds its finalizer to any `guarded` object which does not have it. If the `guarded` object is deleted, the dependency guard controller checks that there are no `dependency` objects before removing it.
+The deletion guard controller watches `guarded` and automatically adds its finalizer to any `guarded` object which does not have it. If the `guarded` object is deleted, the deletion guard controller checks that there are no `dependency` objects before removing it.
 
 Note that for this model to work in practice, the `guarded` controller must not do any resource cleanup until the only remaining finalizer is its own. Otherwise, while the kubernetes object will not be deleted until all finalizers are removed, we will still attempt to delete the OpenStack resource while it is still in use.
 
@@ -99,6 +99,6 @@ However, because dependencies are only specified in the direction of 'waits on',
 
 In the network/subnet case, the subnet controller adds a field indexer to subnets which returns the name of the referenced network. This allows us to list subnets and filter on referenced network using the custom index. Note that we don't need to worry about namespace collisions, because we additionally filter by namespace.
 
-A controller adding this kind of guard will also typically add a dependency guard.
+A controller adding this kind of guard will also typically add a deletion guard.
 
 Controllers should only add field indexers on their own managed type.
