@@ -101,8 +101,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 		return fmt.Errorf("adding subnets by network index: %w", err)
 	}
 
-	getSubnetsForNetwork := func(obj *orcv1alpha1.Network) ([]orcv1alpha1.Subnet, error) {
-		k8sClient := mgr.GetClient()
+	getSubnetsForNetwork := func(ctx context.Context, k8sClient client.Client, obj *orcv1alpha1.Network) ([]orcv1alpha1.Subnet, error) {
 		subnetList := &orcv1alpha1.SubnetList{}
 		if err := k8sClient.List(ctx, subnetList, client.InNamespace(obj.Namespace), client.MatchingFields{networkRefPath: obj.Name}); err != nil {
 			return nil, err
@@ -128,7 +127,7 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 					return nil
 				}
 
-				subnets, err := getSubnetsForNetwork(network)
+				subnets, err := getSubnetsForNetwork(ctx, mgr.GetClient(), network)
 				if err != nil {
 					log.Error(err, "listing Subnets")
 					return nil

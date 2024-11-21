@@ -100,8 +100,7 @@ func (r *orcPortReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manag
 		return fmt.Errorf("adding ports by network index: %w", err)
 	}
 
-	getPortsForNetwork := func(obj *orcv1alpha1.Network) ([]orcv1alpha1.Port, error) {
-		k8sClient := mgr.GetClient()
+	getPortsForNetwork := func(ctx context.Context, k8sClient client.Client, obj *orcv1alpha1.Network) ([]orcv1alpha1.Port, error) {
 		portList := &orcv1alpha1.PortList{}
 		if err := k8sClient.List(ctx, portList, client.InNamespace(obj.Namespace), client.MatchingFields{networkRefPath: obj.Name}); err != nil {
 			return nil, err
@@ -127,7 +126,7 @@ func (r *orcPortReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manag
 					return nil
 				}
 
-				ports, err := getPortsForNetwork(network)
+				ports, err := getPortsForNetwork(ctx, mgr.GetClient(), network)
 				if err != nil {
 					log.Error(err, "listing Ports")
 					return nil

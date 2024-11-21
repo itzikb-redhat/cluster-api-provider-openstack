@@ -108,8 +108,7 @@ func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 		return fmt.Errorf("adding networks by router index: %w", err)
 	}
 
-	getRoutersForExternalGateway := func(obj *orcv1alpha1.Network) ([]orcv1alpha1.Router, error) {
-		k8sClient := mgr.GetClient()
+	getRoutersForExternalGateway := func(ctx context.Context, k8sClient client.Client, obj *orcv1alpha1.Network) ([]orcv1alpha1.Router, error) {
 		routerList := &orcv1alpha1.RouterList{}
 		if err := k8sClient.List(ctx, routerList, client.InNamespace(obj.Namespace), client.MatchingFields{routerNetworkRefPath: obj.Name}); err != nil {
 			return nil, err
@@ -135,7 +134,7 @@ func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 					return nil
 				}
 
-				routers, err := getRoutersForExternalGateway(network)
+				routers, err := getRoutersForExternalGateway(ctx, mgr.GetClient(), network)
 				if err != nil {
 					log.Error(err, "listing Routers")
 					return nil

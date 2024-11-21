@@ -49,7 +49,7 @@ type pointerToObject[T any] interface {
 func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToObject[dependency], guarded, dependency any](
 	mgr ctrl.Manager, finalizer string, fieldOwner client.FieldOwner,
 	getGuardedFromDependency func(client.Object) []string,
-	getDependenciesFromGuarded func(guardedP) ([]dependency, error),
+	getDependenciesFromGuarded func(context.Context, client.Client, guardedP) ([]dependency, error),
 ) error {
 	// deletionGuard reconciles the guarded object
 	// It adds a finalizer to any guarded object which is not marked as deleted
@@ -83,7 +83,7 @@ func AddDeletionGuard[guardedP pointerToObject[guarded], dependencyP pointerToOb
 
 		log.V(4).Info("Handling delete")
 
-		dependencies, err := getDependenciesFromGuarded(guarded)
+		dependencies, err := getDependenciesFromGuarded(ctx, k8sClient, guarded)
 		if err != nil {
 			return reconcile.Result{}, nil
 		}
