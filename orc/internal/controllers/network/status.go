@@ -18,21 +18,16 @@ package network
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"strconv"
 	"time"
 
 	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
-	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
-	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
@@ -128,7 +123,6 @@ func createStatusUpdate(ctx context.Context, orcNetwork *orcv1alpha1.Network, no
 	}
 
 	osResource := statusOpts.resource
-	err := statusOpts.err
 
 	applyConfigStatus := orcapplyconfigv1alpha1.NetworkStatus()
 	applyConfig := orcapplyconfigv1alpha1.Network(orcNetwork.Name, orcNetwork.Namespace).WithStatus(applyConfigStatus)
@@ -138,102 +132,8 @@ func createStatusUpdate(ctx context.Context, orcNetwork *orcv1alpha1.Network, no
 		applyConfigStatus.WithResource(resourceStatus)
 	}
 
-	availableCondition := applyconfigv1.Condition().
-		WithType(orcv1alpha1.OpenStackConditionAvailable).
-		WithObservedGeneration(orcNetwork.Generation)
-	progressingCondition := applyconfigv1.Condition().
-		WithType(orcv1alpha1.OpenStackConditionProgressing).
-		WithObservedGeneration(orcNetwork.Generation)
-
-	// A network is available when it has a status of ACTIVE
 	available := osResource != nil && osResource.Status == NetworkStatusActive
-	if available {
-		availableCondition.
-			WithStatus(metav1.ConditionTrue).
-			WithReason(orcv1alpha1.OpenStackConditionReasonSuccess).
-			WithMessage("OpenStack resource is available")
-	} else {
-		// Image is not available. Reason and message will be copied from Progressing
-		availableCondition.WithStatus(metav1.ConditionFalse)
-	}
-
-	// We are progressing until the OpenStack resource is available or there was an error
-	if err == nil {
-		if available {
-			progressingCondition.
-				WithStatus(metav1.ConditionFalse).
-				WithReason(orcv1alpha1.OpenStackConditionReasonSuccess).
-				WithMessage(*availableCondition.Message)
-		} else {
-			progressingCondition.
-				WithStatus(metav1.ConditionTrue).
-				WithReason(orcv1alpha1.OpenStackConditionReasonProgressing)
-
-			if statusOpts.progressMessage == nil {
-				progressingCondition.WithMessage("Reconciliation is progressing")
-			} else {
-				progressingCondition.WithMessage(*statusOpts.progressMessage)
-			}
-		}
-	} else {
-		progressingCondition.WithStatus(metav1.ConditionFalse)
-
-		var terminalError *orcerrors.TerminalError
-		if errors.As(err, &terminalError) {
-			progressingCondition.
-				WithReason(terminalError.Reason).
-				WithMessage(terminalError.Message)
-		} else {
-			progressingCondition.
-				WithReason(orcv1alpha1.OpenStackConditionReasonTransientError).
-				WithMessage(err.Error())
-		}
-	}
-
-	// Copy available status from progressing if it's not available yet
-	if !available {
-		availableCondition.
-			WithReason(*progressingCondition.Reason).
-			WithMessage(*progressingCondition.Message)
-	}
-
-	// Maintain condition timestamps if they haven't changed
-	// This also ensures that we don't generate an update event if nothing has changed
-	for _, condition := range []*applyconfigv1.ConditionApplyConfiguration{availableCondition, progressingCondition} {
-		previous := meta.FindStatusCondition(orcNetwork.Status.Conditions, *condition.Type)
-		if previous != nil && ssa.ConditionsEqual(previous, condition) {
-			condition.WithLastTransitionTime(previous.LastTransitionTime)
-		} else {
-			condition.WithLastTransitionTime(now)
-		}
-	}
-
-	applyConfigStatus.WithConditions(availableCondition, progressingCondition)
-
-	if log.V(4).Enabled() {
-		logValues := make([]any, 0, 12)
-		addConditionValues := func(condition *applyconfigv1.ConditionApplyConfiguration) {
-			if condition.Type == nil {
-				bytes, _ := json.Marshal(condition)
-				log.V(0).Info("Attempting to set condition with no type", "condition", string(bytes))
-				return
-			}
-
-			for _, v := range []struct {
-				name  string
-				value *string
-			}{
-				{"status", (*string)(condition.Status)},
-				{"reason", condition.Reason},
-				{"message", condition.Message},
-			} {
-				logValues = append(logValues, *condition.Type+"."+v.name, ptr.Deref(v.value, ""))
-			}
-		}
-		addConditionValues(availableCondition)
-		addConditionValues(progressingCondition)
-		log.V(4).Info("Setting resource status", logValues...)
-	}
+	common.SetCommonConditions(orcNetwork, applyConfigStatus, available, available, statusOpts.progressMessage, statusOpts.err, now)
 
 	return applyConfig
 }

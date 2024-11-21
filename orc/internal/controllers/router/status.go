@@ -18,17 +18,14 @@ package router
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/layer3/routers"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
-	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
@@ -108,7 +105,6 @@ func createStatusUpdate(orcObject *orcv1alpha1.Router, now metav1.Time, opts ...
 	}
 
 	osResource := statusOpts.resource
-	err := statusOpts.err
 
 	applyConfigStatus := orcapplyconfigv1alpha1.RouterStatus()
 	applyConfig := orcapplyconfigv1alpha1.Router(orcObject.Name, orcObject.Namespace).WithStatus(applyConfigStatus)
@@ -118,76 +114,8 @@ func createStatusUpdate(orcObject *orcv1alpha1.Router, now metav1.Time, opts ...
 		applyConfigStatus.WithResource(resourceStatus)
 	}
 
-	availableCondition := applyconfigv1.Condition().
-		WithType(orcv1alpha1.OpenStackConditionAvailable).
-		WithObservedGeneration(orcObject.Generation)
-	progressingCondition := applyconfigv1.Condition().
-		WithType(orcv1alpha1.OpenStackConditionProgressing).
-		WithObservedGeneration(orcObject.Generation)
-
 	available := isAvailable(orcObject, osResource)
-	if available {
-		availableCondition.
-			WithStatus(metav1.ConditionTrue).
-			WithReason(orcv1alpha1.OpenStackConditionReasonSuccess).
-			WithMessage("OpenStack resource is available")
-	} else {
-		// Resource is not available. Reason and message will be copied from Progressing
-		availableCondition.WithStatus(metav1.ConditionFalse)
-	}
-
-	// We are progressing until the OpenStack resource is available or there was an error
-	if err == nil {
-		if available {
-			progressingCondition.
-				WithStatus(metav1.ConditionFalse).
-				WithReason(orcv1alpha1.OpenStackConditionReasonSuccess).
-				WithMessage(*availableCondition.Message)
-		} else {
-			progressingCondition.
-				WithStatus(metav1.ConditionTrue).
-				WithReason(orcv1alpha1.OpenStackConditionReasonProgressing)
-
-			if statusOpts.progressMessage == nil {
-				progressingCondition.WithMessage("Reconciliation is progressing")
-			} else {
-				progressingCondition.WithMessage(*statusOpts.progressMessage)
-			}
-		}
-	} else {
-		progressingCondition.WithStatus(metav1.ConditionFalse)
-
-		var terminalError *orcerrors.TerminalError
-		if errors.As(err, &terminalError) {
-			progressingCondition.
-				WithReason(terminalError.Reason).
-				WithMessage(terminalError.Message)
-		} else {
-			progressingCondition.
-				WithReason(orcv1alpha1.OpenStackConditionReasonTransientError).
-				WithMessage(err.Error())
-		}
-	}
-
-	// Copy available status from progressing if it's not available yet
-	if !available {
-		availableCondition.
-			WithReason(*progressingCondition.Reason).
-			WithMessage(*progressingCondition.Message)
-	}
-
-	// Maintain condition timestamps if they haven't changed
-	// This also ensures that we don't generate an update event if nothing has changed
-	for _, condition := range []*applyconfigv1.ConditionApplyConfiguration{availableCondition, progressingCondition} {
-		previous := meta.FindStatusCondition(orcObject.Status.Conditions, *condition.Type)
-		if previous != nil && ssa.ConditionsEqual(previous, condition) {
-			condition.WithLastTransitionTime(previous.LastTransitionTime)
-		} else {
-			condition.WithLastTransitionTime(now)
-		}
-	}
-
-	applyConfigStatus.WithConditions(availableCondition, progressingCondition)
+	common.SetCommonConditions(orcObject, applyConfigStatus, available, available, statusOpts.progressMessage, statusOpts.err, now)
 
 	return applyConfig
 }
