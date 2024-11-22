@@ -23,6 +23,7 @@ import (
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/network"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/port"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/router"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/routerinterface"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/subnet"
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
 )
@@ -31,6 +32,7 @@ var ImageController = image.New
 var NetworkController = network.New
 var SubnetController = subnet.New
 var RouterController = router.New
+var RouterInterfaceController = routerinterface.New
 var PortController = port.New
 
 var NewScopeFactory = scope.NewFactory

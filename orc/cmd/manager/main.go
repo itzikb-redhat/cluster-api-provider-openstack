@@ -204,6 +204,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := orccontrollers.RouterInterfaceController(
+		mgr.GetClient(),
+		mgr.GetEventRecorderFor("orc-router-interface-controller"),
+		scopeFactory,
+	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ORCRouterInterface")
+		os.Exit(1)
+	}
+
 	if err := orccontrollers.PortController(
 		mgr.GetClient(),
 		mgr.GetEventRecorderFor("orc-port-controller"),

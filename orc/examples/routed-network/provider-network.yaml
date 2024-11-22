@@ -8,4 +8,5 @@ spec:
     secretName: dev-test-cloud-config
   managementPolicy: unmanaged
   import:
-    id: 316eeb47-1498-46b4-b39e-00ddf73bd2a5
+    filter:
+      name: provider_net_dualstack_1
