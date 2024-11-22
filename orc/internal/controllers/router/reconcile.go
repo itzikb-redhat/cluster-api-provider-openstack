@@ -123,7 +123,7 @@ func (r *orcRouterReconciler) reconcileNormal(ctx context.Context, orcObject *or
 			var dependencies []string
 			osResource, dependencies, err = r.createResource(ctx, orcObject, networkClient)
 			if err != nil {
-				return ctrl.Result{}, nil
+				return ctrl.Result{}, err
 			}
 
 			if len(dependencies) > 0 {
@@ -400,7 +400,7 @@ func (r *orcRouterReconciler) createResource(ctx context.Context, orcObject *orc
 		}
 
 		if network.Status.ID == nil {
-			return nil, nil, fmt.Errorf("status.id of available network %v is nil", client.ObjectKeyFromObject(network))
+			return nil, nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "status.id of available external gateway is nil")
 		}
 
 		gatewayInfo = &routers.GatewayInfo{
