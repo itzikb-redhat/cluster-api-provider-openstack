@@ -9,8 +9,9 @@ resources:
 - ../credentials
 - internal-network.yaml
 - provider-network.yaml
-- subnet.yaml
 - router.yaml
+- subnet-ipv4.yaml
+- subnet-ipv6.yaml
 
 patches:
 - target:
