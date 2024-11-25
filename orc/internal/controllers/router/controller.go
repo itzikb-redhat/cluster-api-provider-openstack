@@ -62,6 +62,18 @@ const (
 	deletePollingPeriod = 1 * time.Second
 )
 
+type routerReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return routerReconcilerConstructor{scopeFactory: scopeFactory}
+}
+
+func (routerReconcilerConstructor) GetName() string {
+	return "router"
+}
+
 // orcRouterReconciler reconciles an ORC Router.
 type orcRouterReconciler struct {
 	client       client.Client
@@ -69,17 +81,15 @@ type orcRouterReconciler struct {
 	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcRouterReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
-}
-
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c routerReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger().WithValues("controller", "router")
+
+	reconciler := orcRouterReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-router-controller"),
+		scopeFactory: c.scopeFactory,
+	}
 
 	getExternalGatewayRefsForResource := func(obj client.Object) []string {
 		router, ok := obj.(*orcv1alpha1.Router)
@@ -152,5 +162,5 @@ func (r *orcRouterReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Network{})),
 		).
 		WithOptions(options).
-		Complete(r)
+		Complete(&reconciler)
 }

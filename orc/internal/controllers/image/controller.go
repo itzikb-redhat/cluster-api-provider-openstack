@@ -63,6 +63,18 @@ const (
 	maxDownloadAttempts = 5
 )
 
+type imageReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return imageReconcilerConstructor{scopeFactory: scopeFactory}
+}
+
+func (imageReconcilerConstructor) GetName() string {
+	return "image"
+}
+
 // orcImageReconciler reconciles an ORC Image.
 type orcImageReconciler struct {
 	client       client.Client
@@ -70,22 +82,21 @@ type orcImageReconciler struct {
 	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcImageReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
-}
-
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcImageReconciler) SetupWithManager(_ context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c imageReconcilerConstructor) SetupWithManager(_ context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger()
+
+	reconciler := orcImageReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-image-controller"),
+		scopeFactory: c.scopeFactory,
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&orcv1alpha1.Image{}).
 		WithOptions(options).
 		WithEventFilter(needsReconcilePredicate(log)).
-		Complete(r)
+		Complete(&reconciler)
 }
 
 func needsReconcilePredicate(log logr.Logger) predicate.Predicate {

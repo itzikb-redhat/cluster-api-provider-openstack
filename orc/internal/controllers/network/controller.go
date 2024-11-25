@@ -58,6 +58,20 @@ const (
 	deletePollingPeriod = 5 * time.Second
 )
 
+type networkReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return networkReconcilerConstructor{
+		scopeFactory: scopeFactory,
+	}
+}
+
+func (networkReconcilerConstructor) GetName() string {
+	return "network"
+}
+
 // orcNetworkReconciler reconciles an ORC Subnet.
 type orcNetworkReconciler struct {
 	client       client.Client
@@ -65,20 +79,19 @@ type orcNetworkReconciler struct {
 	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcNetworkReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
-}
-
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcNetworkReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c networkReconcilerConstructor) SetupWithManager(_ context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger()
+
+	reconciler := orcNetworkReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-network-controller"),
+		scopeFactory: c.scopeFactory,
+	}
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&orcv1alpha1.Network{}, builder.WithPredicates(ctrlcommon.NeedsReconcilePredicate(log))).
 		WithOptions(options).
-		Complete(r)
+		Complete(&reconciler)
+
 }

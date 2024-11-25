@@ -64,6 +64,14 @@ const (
 	deletePollingPeriod = 5 * time.Second
 )
 
+type portReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return portReconcilerConstructor{scopeFactory: scopeFactory}
+}
+
 // orcPortReconciler reconciles an ORC Port.
 type orcPortReconciler struct {
 	client       client.Client
@@ -71,17 +79,19 @@ type orcPortReconciler struct {
 	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcPortReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
+func (portReconcilerConstructor) GetName() string {
+	return "port"
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcPortReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger().WithValues("controller", "port")
+
+	reconciler := orcPortReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-port-controller"),
+		scopeFactory: c.scopeFactory,
+	}
 
 	getNetworkRefsForPort := func(obj client.Object) []string {
 		port, ok := obj.(*orcv1alpha1.Port)
@@ -144,5 +154,5 @@ func (r *orcPortReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manag
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Network{})),
 		).
 		WithOptions(options).
-		Complete(r)
+		Complete(&reconciler)
 }

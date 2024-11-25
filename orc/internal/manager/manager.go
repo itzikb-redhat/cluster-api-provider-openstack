@@ -17,6 +17,7 @@ limitations under the License.
 package manager
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 
@@ -26,8 +27,6 @@ import (
 	"k8s.io/client-go/rest"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -37,22 +36,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	"github.com/go-logr/logr"
-	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
-	"github.com/k-orc/openstack-resource-controller/internal/scope"
-	orccontrollers "github.com/k-orc/openstack-resource-controller/pkg/controllers"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/export"
 	// +kubebuilder:scaffold:imports
 )
-
-var (
-	scheme = runtime.NewScheme()
-)
-
-func init() {
-	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-
-	utilruntime.Must(orcv1alpha1.AddToScheme(scheme))
-	// +kubebuilder:scaffold:scheme
-}
 
 type Options struct {
 	MetricsAddr          string
@@ -65,7 +51,7 @@ type Options struct {
 	WatchNamespaces      []string
 }
 
-func Run(opts *Options, restConfig *rest.Config, setupLog logr.Logger, scopeFactory scope.Factory) error {
+func Run(ctx context.Context, opts *Options, restConfig *rest.Config, scheme *runtime.Scheme, setupLog logr.Logger, controllers []export.Controller) error {
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
 	// prevent from being vulnerable to the HTTP/2 Stream Cancellation and
@@ -154,55 +140,10 @@ func Run(opts *Options, restConfig *rest.Config, setupLog logr.Logger, scopeFact
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	// Setup the context that's going to be used in controllers and for the manager.
-	ctx := ctrl.SetupSignalHandler()
-
-	if err := orccontrollers.ImageController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-image-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create image controller: %w", err)
-	}
-
-	if err := orccontrollers.NetworkController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-network-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create network controller: %w", err)
-	}
-
-	if err := orccontrollers.SubnetController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-subnet-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create subnet controller: %w", err)
-	}
-
-	if err := orccontrollers.RouterController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-router-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create router controller: %w", err)
-	}
-
-	if err := orccontrollers.RouterInterfaceController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-router-interface-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create router interface controller: %w", err)
-	}
-
-	if err := orccontrollers.PortController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-port-controller"),
-		scopeFactory,
-	).SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
-		return fmt.Errorf("unable to create port controller: %w", err)
+	for _, c := range controllers {
+		if err := c.SetupWithManager(ctx, mgr, controller.Options{}); err != nil {
+			return fmt.Errorf("unable to create %s controller: %w", c.GetName(), err)
+		}
 	}
 
 	setupLog.Info("starting manager")

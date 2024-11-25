@@ -27,7 +27,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/export"
 	internalmanager "github.com/k-orc/openstack-resource-controller/internal/manager"
+	"github.com/k-orc/openstack-resource-controller/internal/scheme"
 	orccontrollers "github.com/k-orc/openstack-resource-controller/pkg/controllers"
 	// +kubebuilder:scaffold:imports
 )
@@ -57,13 +59,24 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&zapOpts)))
+	// Setup the context that's going to be used in controllers and for the manager.
+	ctx := ctrl.SetupSignalHandler()
 
 	// TODO: Implement custom caCerts
 	var caCerts []byte
 	scopeFactory := orccontrollers.NewScopeFactory(orcOpts.ScopeCacheMaxSize, caCerts)
 
+	controllers := []export.Controller{
+		orccontrollers.ImageController(scopeFactory),
+		orccontrollers.NetworkController(scopeFactory),
+		orccontrollers.SubnetController(scopeFactory),
+		orccontrollers.RouterController(scopeFactory),
+		orccontrollers.RouterInterfaceController(scopeFactory),
+		orccontrollers.PortController(scopeFactory),
+	}
+
 	restConfig := ctrl.GetConfigOrDie()
-	err := internalmanager.Run(&orcOpts, restConfig, setupLog, scopeFactory)
+	err := internalmanager.Run(ctx, &orcOpts, restConfig, scheme.New(), setupLog, controllers)
 	if err != nil {
 		setupLog.Error(err, "Error starting manager")
 		os.Exit(1)

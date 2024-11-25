@@ -58,19 +58,23 @@ const (
 	portStatusPollingPeriod = 1 * time.Second
 )
 
+type routerInterfaceReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return routerInterfaceReconcilerConstructor{scopeFactory: scopeFactory}
+}
+
+func (routerInterfaceReconcilerConstructor) GetName() string {
+	return "router interface"
+}
+
 // orcRouterInterfaceReconciler reconciles an ORC Subnet.
 type orcRouterInterfaceReconciler struct {
 	client       client.Client
 	recorder     record.EventRecorder
 	scopeFactory scope.Factory
-}
-
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcRouterInterfaceReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
 }
 
 // Index subnets by referenced network
@@ -86,8 +90,14 @@ func getRouterInterfacesForRouter(ctx context.Context, k8sClient client.Client, 
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcRouterInterfaceReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c routerInterfaceReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger().WithValues("controller", "router interface")
+
+	reconciler := orcRouterInterfaceReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-router-interface-controller"),
+		scopeFactory: c.scopeFactory,
+	}
 
 	getRouterRefsForRouterInterface := func(obj client.Object) []string {
 		routerInterface, ok := obj.(*orcv1alpha1.RouterInterface)
@@ -183,5 +193,5 @@ func (r *orcRouterInterfaceReconciler) SetupWithManager(ctx context.Context, mgr
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Subnet{})),
 		).
 		WithOptions(options).
-		Complete(r)
+		Complete(&reconciler)
 }

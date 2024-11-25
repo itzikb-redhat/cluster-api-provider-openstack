@@ -65,6 +65,18 @@ const (
 	deletePollingPeriod = 1 * time.Second
 )
 
+type subnetReconcilerConstructor struct {
+	scopeFactory scope.Factory
+}
+
+func New(scopeFactory scope.Factory) ctrlexport.Controller {
+	return subnetReconcilerConstructor{scopeFactory: scopeFactory}
+}
+
+func (subnetReconcilerConstructor) GetName() string {
+	return "subnet"
+}
+
 // orcSubnetReconciler reconciles an ORC Subnet.
 type orcSubnetReconciler struct {
 	client       client.Client
@@ -72,17 +84,15 @@ type orcSubnetReconciler struct {
 	scopeFactory scope.Factory
 }
 
-func New(client client.Client, recorder record.EventRecorder, scopeFactory scope.Factory) ctrlexport.SetupWithManager {
-	return &orcSubnetReconciler{
-		client:       client,
-		recorder:     recorder,
-		scopeFactory: scopeFactory,
-	}
-}
-
 // SetupWithManager sets up the controller with the Manager.
-func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+func (c subnetReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
 	log := mgr.GetLogger().WithValues("controller", "subnet")
+
+	reconciler := orcSubnetReconciler{
+		client:       mgr.GetClient(),
+		recorder:     mgr.GetEventRecorderFor("orc-subnet-controller"),
+		scopeFactory: c.scopeFactory,
+	}
 
 	getNetworkRefsForSubnet := func(obj client.Object) []string {
 		subnet, ok := obj.(*orcv1alpha1.Subnet)
@@ -159,5 +169,5 @@ func (r *orcSubnetReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Man
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.RouterInterface{})),
 		).
 		WithOptions(options).
-		Complete(r)
+		Complete(&reconciler)
 }
