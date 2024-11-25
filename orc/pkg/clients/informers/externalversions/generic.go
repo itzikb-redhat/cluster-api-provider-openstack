@@ -53,6 +53,8 @@ func (f *genericInformer) Lister() cache.GenericLister {
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
 	// Group=openstack.k-orc.cloud, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithResource("flavors"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Openstack().V1alpha1().Flavors().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("images"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Openstack().V1alpha1().Images().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("networks"):

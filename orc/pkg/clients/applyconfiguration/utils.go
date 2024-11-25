@@ -48,6 +48,20 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.FilterByNeutronTagsApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("FixedIPStatus"):
 		return &apiv1alpha1.FixedIPStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Flavor"):
+		return &apiv1alpha1.FlavorApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorFilter"):
+		return &apiv1alpha1.FlavorFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorImport"):
+		return &apiv1alpha1.FlavorImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorResourceSpec"):
+		return &apiv1alpha1.FlavorResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorResourceStatus"):
+		return &apiv1alpha1.FlavorResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorSpec"):
+		return &apiv1alpha1.FlavorSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorStatus"):
+		return &apiv1alpha1.FlavorStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRoute"):
 		return &apiv1alpha1.HostRouteApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRouteStatus"):

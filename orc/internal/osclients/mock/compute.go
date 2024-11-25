@@ -25,6 +25,7 @@ limitations under the License.
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	attachinterfaces "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/attachinterfaces"
@@ -32,6 +33,7 @@ import (
 	flavors "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	servergroups "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	servers "github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -56,6 +58,21 @@ func NewMockComputeClient(ctrl *gomock.Controller) *MockComputeClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockComputeClient) EXPECT() *MockComputeClientMockRecorder {
 	return m.recorder
+}
+
+// CreateFlavor mocks base method.
+func (m *MockComputeClient) CreateFlavor(ctx context.Context, opts flavors.CreateOptsBuilder) (*flavors.Flavor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateFlavor", ctx, opts)
+	ret0, _ := ret[0].(*flavors.Flavor)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateFlavor indicates an expected call of CreateFlavor.
+func (mr *MockComputeClientMockRecorder) CreateFlavor(ctx, opts any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFlavor", reflect.TypeOf((*MockComputeClient)(nil).CreateFlavor), ctx, opts)
 }
 
 // CreateServer mocks base method.
@@ -87,6 +104,20 @@ func (mr *MockComputeClientMockRecorder) DeleteAttachedInterface(serverID, portI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAttachedInterface", reflect.TypeOf((*MockComputeClient)(nil).DeleteAttachedInterface), serverID, portID)
 }
 
+// DeleteFlavor mocks base method.
+func (m *MockComputeClient) DeleteFlavor(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteFlavor", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteFlavor indicates an expected call of DeleteFlavor.
+func (mr *MockComputeClientMockRecorder) DeleteFlavor(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFlavor", reflect.TypeOf((*MockComputeClient)(nil).DeleteFlavor), ctx, id)
+}
+
 // DeleteServer mocks base method.
 func (m *MockComputeClient) DeleteServer(serverID string) error {
 	m.ctrl.T.Helper()
@@ -99,6 +130,21 @@ func (m *MockComputeClient) DeleteServer(serverID string) error {
 func (mr *MockComputeClientMockRecorder) DeleteServer(serverID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteServer", reflect.TypeOf((*MockComputeClient)(nil).DeleteServer), serverID)
+}
+
+// GetFlavor mocks base method.
+func (m *MockComputeClient) GetFlavor(ctx context.Context, id string) (*flavors.Flavor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFlavor", ctx, id)
+	ret0, _ := ret[0].(*flavors.Flavor)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFlavor indicates an expected call of GetFlavor.
+func (mr *MockComputeClientMockRecorder) GetFlavor(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlavor", reflect.TypeOf((*MockComputeClient)(nil).GetFlavor), ctx, id)
 }
 
 // GetFlavorFromName mocks base method.
@@ -159,6 +205,20 @@ func (m *MockComputeClient) ListAvailabilityZones() ([]availabilityzones.Availab
 func (mr *MockComputeClientMockRecorder) ListAvailabilityZones() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAvailabilityZones", reflect.TypeOf((*MockComputeClient)(nil).ListAvailabilityZones))
+}
+
+// ListFlavors mocks base method.
+func (m *MockComputeClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan osclients.FlavorResult {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListFlavors", ctx, listOpts)
+	ret0, _ := ret[0].(<-chan osclients.FlavorResult)
+	return ret0
+}
+
+// ListFlavors indicates an expected call of ListFlavors.
+func (mr *MockComputeClientMockRecorder) ListFlavors(ctx, listOpts any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlavors", reflect.TypeOf((*MockComputeClient)(nil).ListFlavors), ctx, listOpts)
 }
 
 // ListServerGroups mocks base method.

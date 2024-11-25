@@ -19,6 +19,7 @@ package controllers
 // This file provides a minimal exported interface to non-exported controllers.
 
 import (
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/flavor"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/image"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/network"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/port"
@@ -34,5 +35,6 @@ var SubnetController = subnet.New
 var RouterController = router.New
 var RouterInterfaceController = routerinterface.New
 var PortController = port.New
+var FlavorController = flavor.New
 
 var NewScopeFactory = scope.NewFactory

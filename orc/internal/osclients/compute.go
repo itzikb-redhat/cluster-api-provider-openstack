@@ -27,6 +27,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servergroups"
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	"github.com/gophercloud/utils/v2/openstack/clientconfig"
 	uflavors "github.com/gophercloud/utils/v2/openstack/compute/v2/flavors"
 )
@@ -45,6 +46,11 @@ const NovaMinimumMicroversion = "2.60"
 
 type ComputeClient interface {
 	ListAvailabilityZones() ([]availabilityzones.AvailabilityZone, error)
+
+	CreateFlavor(ctx context.Context, opts flavors.CreateOptsBuilder) (*flavors.Flavor, error)
+	GetFlavor(ctx context.Context, id string) (*flavors.Flavor, error)
+	DeleteFlavor(ctx context.Context, id string) error
+	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (FlavorResult)
 
 	GetFlavorFromName(flavor string) (*flavors.Flavor, error)
 	CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error)
@@ -80,6 +86,49 @@ func (c computeClient) ListAvailabilityZones() ([]availabilityzones.Availability
 		return nil, err
 	}
 	return availabilityzones.ExtractAvailabilityZones(allPages)
+}
+
+func (c computeClient) GetFlavor(ctx context.Context, id string) (*flavors.Flavor, error) {
+	return flavors.Get(ctx, c.client, id).Extract()
+}
+
+func (c computeClient) CreateFlavor(ctx context.Context, opts flavors.CreateOptsBuilder) (*flavors.Flavor, error) {
+	return flavors.Create(ctx, c.client, opts).Extract()
+}
+
+func (c computeClient) DeleteFlavor(ctx context.Context, id string) error {
+	return flavors.Delete(ctx, c.client, id).ExtractErr()
+}
+
+// FlavorResult carries either a flavor or a non-nil error.
+type FlavorResult struct {
+	Flavor *flavors.Flavor
+	Error  error
+}
+
+func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBuilder) <-chan (FlavorResult) {
+	ch := make(chan (FlavorResult))
+	go func() {
+		defer close(ch)
+		if err := flavors.ListDetail(c.client, opts).EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
+			pageFlavors, err := flavors.ExtractFlavors(page)
+			if err != nil {
+				return false, err
+			}
+			for i := range pageFlavors {
+				select {
+				case <-ctx.Done():
+					return false, ctx.Err()
+				default:
+					ch <- FlavorResult{&pageFlavors[i], nil}
+				}
+			}
+			return true, nil
+		}); err != nil {
+			ch <- FlavorResult{nil, err}
+		}
+	}()
+	return ch
 }
 
 func (c computeClient) GetFlavorFromName(flavor string) (*flavors.Flavor, error) {
@@ -144,6 +193,23 @@ type computeErrorClient struct{ error }
 // NewComputeErrorClient returns a ComputeClient in which every method returns the given error.
 func NewComputeErrorClient(e error) ComputeClient {
 	return computeErrorClient{e}
+}
+func (e computeErrorClient) CreateFlavor(ctx context.Context, opts flavors.CreateOptsBuilder) (*flavors.Flavor, error) {
+	return nil, e.error
+}
+func (e computeErrorClient) GetFlavor(ctx context.Context, id string) (*flavors.Flavor, error) {
+	return nil, e.error
+}
+func (e computeErrorClient) DeleteFlavor(ctx context.Context, id string) error {
+	return e.error
+}
+func (e computeErrorClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (FlavorResult) {
+	ch := make(chan (FlavorResult))
+	go func() {
+		defer close(ch)
+		ch <- FlavorResult{nil, e.error}
+	}()
+	return ch
 }
 
 func (e computeErrorClient) ListAvailabilityZones() ([]availabilityzones.AvailabilityZone, error) {

@@ -28,6 +28,7 @@ import (
 
 type OpenstackV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	FlavorsGetter
 	ImagesGetter
 	NetworksGetter
 	PortsGetter
@@ -39,6 +40,10 @@ type OpenstackV1alpha1Interface interface {
 // OpenstackV1alpha1Client is used to interact with features provided by the openstack.k-orc.cloud group.
 type OpenstackV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *OpenstackV1alpha1Client) Flavors(namespace string) FlavorInterface {
+	return newFlavors(c, namespace)
 }
 
 func (c *OpenstackV1alpha1Client) Images(namespace string) ImageInterface {

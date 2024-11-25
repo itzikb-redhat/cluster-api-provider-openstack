@@ -106,6 +106,138 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: subnetID
       type:
         scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Flavor
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorFilter
+  map:
+    fields:
+    - name: disk
+      type:
+        scalar: numeric
+    - name: name
+      type:
+        scalar: string
+    - name: ram
+      type:
+        scalar: numeric
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorImport
+  map:
+    fields:
+    - name: filter
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorFilter
+    - name: id
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorResourceSpec
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: disk
+      type:
+        scalar: numeric
+    - name: ephemeral
+      type:
+        scalar: numeric
+    - name: isPublic
+      type:
+        scalar: boolean
+    - name: name
+      type:
+        scalar: string
+    - name: ram
+      type:
+        scalar: numeric
+    - name: swap
+      type:
+        scalar: numeric
+    - name: vcpus
+      type:
+        scalar: numeric
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorResourceStatus
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: disk
+      type:
+        scalar: numeric
+    - name: ephemeral
+      type:
+        scalar: numeric
+    - name: isPublic
+      type:
+        scalar: boolean
+    - name: name
+      type:
+        scalar: string
+    - name: ram
+      type:
+        scalar: numeric
+    - name: swap
+      type:
+        scalar: numeric
+    - name: vcpus
+      type:
+        scalar: numeric
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorSpec
+  map:
+    fields:
+    - name: cloudCredentialsRef
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
+      default: {}
+    - name: import
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorImport
+    - name: managedOptions
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ManagedOptions
+    - name: managementPolicy
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorResourceSpec
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
+    - name: id
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FlavorResourceStatus
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
   map:
     fields:

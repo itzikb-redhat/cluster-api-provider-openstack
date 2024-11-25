@@ -28,6 +28,10 @@ type FakeOpenstackV1alpha1 struct {
 	*testing.Fake
 }
 
+func (c *FakeOpenstackV1alpha1) Flavors(namespace string) v1alpha1.FlavorInterface {
+	return &FakeFlavors{c, namespace}
+}
+
 func (c *FakeOpenstackV1alpha1) Images(namespace string) v1alpha1.ImageInterface {
 	return &FakeImages{c, namespace}
 }

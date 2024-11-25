@@ -18,6 +18,14 @@ limitations under the License.
 
 package v1alpha1
 
+// FlavorListerExpansion allows custom methods to be added to
+// FlavorLister.
+type FlavorListerExpansion interface{}
+
+// FlavorNamespaceListerExpansion allows custom methods to be added to
+// FlavorNamespaceLister.
+type FlavorNamespaceListerExpansion interface{}
+
 // ImageListerExpansion allows custom methods to be added to
 // ImageLister.
 type ImageListerExpansion interface{}

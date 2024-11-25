@@ -9,6 +9,8 @@ nameReference:
     kind: Router
   - path: spec/cloudCredentialsRef/secretName
     kind: Port
+  - path: spec/cloudCredentialsRef/secretName
+    kind: Flavor
 
 - kind: Network
   fieldSpecs:

@@ -18,6 +18,8 @@ limitations under the License.
 
 package v1alpha1
 
+type FlavorExpansion interface{}
+
 type ImageExpansion interface{}
 
 type NetworkExpansion interface{}
