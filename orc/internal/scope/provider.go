@@ -100,11 +100,10 @@ func getScopeCacheKey(cloud clientconfig.Cloud) (string, error) {
 type providerScope struct {
 	providerClient     *gophercloud.ProviderClient
 	providerClientOpts *clientconfig.ClientOpts
-	projectID          string
 }
 
 func NewProviderScope(cloud clientconfig.Cloud, caCert []byte, logger logr.Logger) (Scope, error) {
-	providerClient, clientOpts, projectID, err := NewProviderClient(cloud, caCert, logger)
+	providerClient, clientOpts, err := NewProviderClient(cloud, caCert, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +111,6 @@ func NewProviderScope(cloud clientconfig.Cloud, caCert []byte, logger logr.Logge
 	return &providerScope{
 		providerClient:     providerClient,
 		providerClientOpts: clientOpts,
-		projectID:          projectID,
 	}, nil
 }
 
@@ -144,10 +142,6 @@ func NewCachedProviderScope(cache *cache.LRUExpireCache, cloud clientconfig.Clou
 	return scope, nil
 }
 
-func (s *providerScope) ProjectID() string {
-	return s.projectID
-}
-
 func (s *providerScope) NewComputeClient() (clients.ComputeClient, error) {
 	return clients.NewComputeClient(s.providerClient, s.providerClientOpts)
 }
@@ -176,7 +170,7 @@ func (s *providerScope) ExtractToken() (*tokens.Token, error) {
 	return tokens.Get(context.TODO(), client, s.providerClient.Token()).ExtractToken()
 }
 
-func NewProviderClient(cloud clientconfig.Cloud, caCert []byte, logger logr.Logger) (*gophercloud.ProviderClient, *clientconfig.ClientOpts, string, error) {
+func NewProviderClient(cloud clientconfig.Cloud, caCert []byte, logger logr.Logger) (*gophercloud.ProviderClient, *clientconfig.ClientOpts, error) {
 	clientOpts := new(clientconfig.ClientOpts)
 
 	// We explicitly disable reading auth data from env variables by setting an invalid EnvPrefix.
@@ -193,13 +187,13 @@ func NewProviderClient(cloud clientconfig.Cloud, caCert []byte, logger logr.Logg
 
 	opts, err := clientconfig.AuthOptions(clientOpts)
 	if err != nil {
-		return nil, nil, "", fmt.Errorf("auth option failed for cloud %v: %v", cloud.Cloud, err)
+		return nil, nil, fmt.Errorf("auth option failed for cloud %v: %v", cloud.Cloud, err)
 	}
 	opts.AllowReauth = true
 
 	provider, err := openstack.NewClient(opts.IdentityEndpoint)
 	if err != nil {
-		return nil, nil, "", fmt.Errorf("create providerClient err: %v", err)
+		return nil, nil, fmt.Errorf("create providerClient err: %v", err)
 	}
 
 	ua := gophercloud.UserAgent{}
@@ -230,15 +224,10 @@ func NewProviderClient(cloud clientconfig.Cloud, caCert []byte, logger logr.Logg
 	}
 	err = openstack.Authenticate(context.TODO(), provider, *opts)
 	if err != nil {
-		return nil, nil, "", fmt.Errorf("providerClient authentication err: %v", err)
+		return nil, nil, fmt.Errorf("providerClient authentication err: %v", err)
 	}
 
-	projectID, err := getProjectIDFromAuthResult(provider.GetAuthResult())
-	if err != nil {
-		return nil, nil, "", err
-	}
-
-	return provider, clientOpts, projectID, nil
+	return provider, clientOpts, nil
 }
 
 type gophercloudLogger struct {
@@ -288,22 +277,4 @@ func getCloudFromSecret(ctx context.Context, ctrlClient client.Client, secretNam
 	}
 
 	return clouds.Clouds[cloudName], caCert, nil
-}
-
-// getProjectIDFromAuthResult handles different auth mechanisms to retrieve the
-// current project id. Usually we use the Identity v3 Token mechanism that
-// returns the project id in the response to the initial auth request.
-func getProjectIDFromAuthResult(authResult gophercloud.AuthResult) (string, error) {
-	switch authResult := authResult.(type) {
-	case tokens.CreateResult:
-		project, err := authResult.ExtractProject()
-		if err != nil {
-			return "", fmt.Errorf("unable to extract project from CreateResult: %v", err)
-		}
-
-		return project.ID, nil
-
-	default:
-		return "", fmt.Errorf("unable to get the project id from auth response with type %T", authResult)
-	}
 }

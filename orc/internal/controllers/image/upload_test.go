@@ -168,7 +168,7 @@ var _ = Describe("Upload tests", Ordered, func() {
 		})
 
 		mockCtrl = gomock.NewController(GinkgoT())
-		scopeFactory = scope.NewMockScopeFactory(mockCtrl, "")
+		scopeFactory = scope.NewMockScopeFactory(mockCtrl)
 		reconciler = &orcImageReconciler{
 			client:       k8sClient,
 			scopeFactory: scopeFactory,

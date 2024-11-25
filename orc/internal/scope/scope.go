@@ -53,7 +53,6 @@ type Scope interface {
 	NewImageClient() (osclients.ImageClient, error)
 	NewNetworkClient() (osclients.NetworkClient, error)
 	NewLbClient() (osclients.LbClient, error)
-	ProjectID() string
 	ExtractToken() (*tokens.Token, error)
 }
 

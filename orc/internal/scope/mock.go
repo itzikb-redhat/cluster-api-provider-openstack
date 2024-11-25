@@ -40,11 +40,10 @@ type MockScopeFactory struct {
 	ImageClient   *mock.MockImageClient
 	LbClient      *mock.MockLbClient
 
-	projectID              string
 	clientScopeCreateError error
 }
 
-func NewMockScopeFactory(mockCtrl *gomock.Controller, projectID string) *MockScopeFactory {
+func NewMockScopeFactory(mockCtrl *gomock.Controller) *MockScopeFactory {
 	computeClient := mock.NewMockComputeClient(mockCtrl)
 	volumeClient := mock.NewMockVolumeClient(mockCtrl)
 	imageClient := mock.NewMockImageClient(mockCtrl)
@@ -57,7 +56,6 @@ func NewMockScopeFactory(mockCtrl *gomock.Controller, projectID string) *MockSco
 		ImageClient:   imageClient,
 		NetworkClient: networkClient,
 		LbClient:      lbClient,
-		projectID:     projectID,
 	}
 }
 
@@ -90,10 +88,6 @@ func (f *MockScopeFactory) NewNetworkClient() (osclients.NetworkClient, error) {
 
 func (f *MockScopeFactory) NewLbClient() (osclients.LbClient, error) {
 	return f.LbClient, nil
-}
-
-func (f *MockScopeFactory) ProjectID() string {
-	return f.projectID
 }
 
 func (f *MockScopeFactory) ExtractToken() (*tokens.Token, error) {
