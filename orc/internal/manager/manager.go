@@ -51,7 +51,7 @@ type Options struct {
 	WatchNamespaces      []string
 }
 
-func Run(ctx context.Context, opts *Options, restConfig *rest.Config, scheme *runtime.Scheme, setupLog logr.Logger, controllers []export.Controller) error {
+func Run(ctx context.Context, opts *Options, restConfig *rest.Config, scheme *runtime.Scheme, setupLog, log logr.Logger, controllers []export.Controller) error {
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
 	// prevent from being vulnerable to the HTTP/2 Stream Cancellation and
@@ -108,6 +108,7 @@ func Run(ctx context.Context, opts *Options, restConfig *rest.Config, scheme *ru
 		Metrics:                metricsServerOptions,
 		WebhookServer:          webhookServer,
 		HealthProbeBindAddress: opts.ProbeAddr,
+		Logger:                 log,
 
 		Cache: cache.Options{
 			DefaultNamespaces: watchNamespaces,

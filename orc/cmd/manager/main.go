@@ -58,7 +58,9 @@ func main() {
 	zapOpts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&zapOpts)))
+	log := zap.New(zap.UseFlagOptions(&zapOpts))
+	ctrl.SetLogger(log)
+
 	// Setup the context that's going to be used in controllers and for the manager.
 	ctx := ctrl.SetupSignalHandler()
 
@@ -76,7 +78,7 @@ func main() {
 	}
 
 	restConfig := ctrl.GetConfigOrDie()
-	err := internalmanager.Run(ctx, &orcOpts, restConfig, scheme.New(), setupLog, controllers)
+	err := internalmanager.Run(ctx, &orcOpts, restConfig, scheme.New(), setupLog, log, controllers)
 	if err != nil {
 		setupLog.Error(err, "Error starting manager")
 		os.Exit(1)
