@@ -32,10 +32,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 	return map[string]common.OpenAPIDefinition{
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool":             schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus":   schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPairStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference":  schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGateway":            schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGateway(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGatewayStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGatewayStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FilterByNeutronTags":        schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FixedIPStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_FixedIPStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRoute(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus":            schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRouteStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.IPv6Options":                schema_k_orc_openstack_resource_controller_api_v1alpha1_IPv6Options(ref),
@@ -436,6 +438,32 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatu
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPairStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ip": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"mac": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"ip"},
+			},
+		},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -593,6 +621,32 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags
 						},
 					},
 				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_FixedIPStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ip": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"subnetID": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"ip"},
 			},
 		},
 	}
@@ -2302,9 +2356,95 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(
 					},
 					"adminStateUp": {
 						SchemaProps: spec.SchemaProps{
-							Default: false,
-							Type:    []string{"boolean"},
-							Format:  "",
+							Description: "AdminStateUp is the administrative state of the port, which is up (true) or down (false).",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"macAddress": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MACAddress is the MAC address of the port.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"deviceID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeviceID is the ID of the device that uses this port.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"deviceOwner": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeviceOwner is the entity type that uses this port.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"allowedAddressPairs": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "AllowedAddressPairs is a set of zero or more allowed address pair objects each where address pair object contains an IP address and MAC address.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus"),
+									},
+								},
+							},
+						},
+					},
+					"fixedIPs": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "FixedIPs is a set of zero or more fixed IP objects each where fixed IP object contains an IP address and subnet ID from which the IP address is assigned.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.FixedIPStatus"),
+									},
+								},
+							},
+						},
+					},
+					"securityGroups": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "SecurityGroups contains the IDs of security groups applied to the port.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"propagateUplinkStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PropagateUplinkStatus represents the uplink status propagation of the port.",
+							Type:        []string{"boolean"},
+							Format:      "",
 						},
 					},
 					"createdAt": {
@@ -2325,11 +2465,10 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(
 						},
 					},
 				},
-				Required: []string{"adminStateUp"},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.FixedIPStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 

@@ -36,6 +36,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.AllocationPoolApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPoolStatus"):
 		return &apiv1alpha1.AllocationPoolStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AllowedAddressPairStatus"):
+		return &apiv1alpha1.AllowedAddressPairStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("CloudCredentialsReference"):
 		return &apiv1alpha1.CloudCredentialsReferenceApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ExternalGateway"):
@@ -44,6 +46,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.ExternalGatewayStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("FilterByNeutronTags"):
 		return &apiv1alpha1.FilterByNeutronTagsApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FixedIPStatus"):
+		return &apiv1alpha1.FixedIPStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRoute"):
 		return &apiv1alpha1.HostRouteApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRouteStatus"):

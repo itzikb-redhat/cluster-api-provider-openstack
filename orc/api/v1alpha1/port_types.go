@@ -32,6 +32,16 @@ type PortFilter struct {
 	FilterByNeutronTags `json:",inline"`
 }
 
+type AllowedAddressPairStatus struct {
+	IP  string `json:"ip"`
+	MAC string `json:"mac,omitempty"`
+}
+
+type FixedIPStatus struct {
+	IP       string `json:"ip"`
+	SubnetID string `json:"subnetID,omitempty"`
+}
+
 type PortResourceSpec struct {
 	// Name is a human-readable name of the port. If not set, the object's name will be used.
 	// +optional
@@ -74,7 +84,46 @@ type PortResourceStatus struct {
 	// +optional
 	Tags []string `json:"tags,omitempty"`
 
-	AdminStateUp bool `json:"adminStateUp"`
+	// AdminStateUp is the administrative state of the port,
+	// which is up (true) or down (false).
+	// +optional
+	AdminStateUp bool `json:"adminStateUp,omitempty"`
+
+	// MACAddress is the MAC address of the port.
+	// +optional
+	MACAddress string `json:"macAddress,omitempty"`
+
+	// DeviceID is the ID of the device that uses this port.
+	// +optional
+	DeviceID string `json:"deviceID,omitempty"`
+
+	// DeviceOwner is the entity type that uses this port.
+	// +optional
+	DeviceOwner string `json:"deviceOwner,omitempty"`
+
+	// AllowedAddressPairs is a set of zero or more allowed address pair
+	// objects each where address pair object contains an IP address and
+	// MAC address.
+	// +listType=atomic
+	// +optional
+	AllowedAddressPairs []AllowedAddressPairStatus `json:"allowedAddressPairs,omitempty"`
+
+	// FixedIPs is a set of zero or more fixed IP objects each where fixed
+	// IP object contains an IP address and subnet ID from which the IP
+	// address is assigned.
+	// +listType=atomic
+	// +optional
+	FixedIPs []FixedIPStatus `json:"fixedIPs,omitempty"`
+
+	// SecurityGroups contains the IDs of security groups applied to the port.
+	// +listType=atomic
+	// +optional
+	SecurityGroups []string `json:"securityGroups,omitempty"`
+
+	// PropagateUplinkStatus represents the uplink status propagation of
+	// the port.
+	// +optional
+	PropagateUplinkStatus bool `json:"propagateUplinkStatus,omitempty"`
 
 	NeutronStatusMetadata `json:",inline"`
 }

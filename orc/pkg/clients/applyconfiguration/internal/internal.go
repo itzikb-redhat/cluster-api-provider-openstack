@@ -61,6 +61,16 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllowedAddressPairStatus
+  map:
+    fields:
+    - name: ip
+      type:
+        scalar: string
+      default: ""
+    - name: mac
+      type:
+        scalar: string
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
   map:
     fields:
@@ -86,6 +96,16 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FixedIPStatus
+  map:
+    fields:
+    - name: ip
+      type:
+        scalar: string
+      default: ""
+    - name: subnetID
+      type:
+        scalar: string
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.HostRoute
   map:
     fields:
@@ -614,11 +634,31 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: adminStateUp
       type:
         scalar: boolean
-      default: false
+    - name: allowedAddressPairs
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllowedAddressPairStatus
+          elementRelationship: atomic
     - name: createdAt
       type:
         namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
     - name: description
+      type:
+        scalar: string
+    - name: deviceID
+      type:
+        scalar: string
+    - name: deviceOwner
+      type:
+        scalar: string
+    - name: fixedIPs
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.FixedIPStatus
+          elementRelationship: atomic
+    - name: macAddress
       type:
         scalar: string
     - name: name
@@ -627,9 +667,18 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: projectID
       type:
         scalar: string
+    - name: propagateUplinkStatus
+      type:
+        scalar: boolean
     - name: revisionNumber
       type:
         scalar: numeric
+    - name: securityGroups
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
     - name: status
       type:
         scalar: string
