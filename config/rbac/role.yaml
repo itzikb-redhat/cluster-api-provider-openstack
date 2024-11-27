@@ -103,6 +103,7 @@ rules:
   - images
   - networks
   - ports
+  - routerinterfaces
   - routers
   - subnets
   verbs:
@@ -119,6 +120,7 @@ rules:
   - images/status
   - networks/status
   - ports/status
+  - routerinterfaces/status
   - routers/status
   - subnets/status
   verbs:
