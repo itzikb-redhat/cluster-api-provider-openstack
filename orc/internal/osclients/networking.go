@@ -64,11 +64,11 @@ type NetworkClient interface {
 	AddRouterInterface(ctx context.Context, id string, opts routers.AddInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
 	RemoveRouterInterface(ctx context.Context, id string, opts routers.RemoveInterfaceOptsBuilder) (*routers.InterfaceInfo, error)
 
-	ListSecGroup(opts groups.ListOpts) ([]groups.SecGroup, error)
-	CreateSecGroup(opts groups.CreateOptsBuilder) (*groups.SecGroup, error)
-	DeleteSecGroup(id string) error
-	GetSecGroup(id string) (*groups.SecGroup, error)
-	UpdateSecGroup(id string, opts groups.UpdateOptsBuilder) (*groups.SecGroup, error)
+	ListSecGroup(ctx context.Context, opts groups.ListOpts) ([]groups.SecGroup, error)
+	CreateSecGroup(ctx context.Context, opts groups.CreateOptsBuilder) (*groups.SecGroup, error)
+	DeleteSecGroup(ctx context.Context, id string) error
+	GetSecGroup(ctx context.Context, id string) (*groups.SecGroup, error)
+	UpdateSecGroup(ctx context.Context, id string, opts groups.UpdateOptsBuilder) (*groups.SecGroup, error)
 
 	ListSecGroupRule(opts rules.ListOpts) ([]rules.SecGroupRule, error)
 	CreateSecGroupRule(opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error)
@@ -224,28 +224,28 @@ func (c networkClient) UpdateRouter(ctx context.Context, id string, opts routers
 	return routers.Update(context.TODO(), c.serviceClient, id, opts).Extract()
 }
 
-func (c networkClient) ListSecGroup(opts groups.ListOpts) ([]groups.SecGroup, error) {
-	allPages, err := groups.List(c.serviceClient, opts).AllPages(context.TODO())
+func (c networkClient) ListSecGroup(ctx context.Context, opts groups.ListOpts) ([]groups.SecGroup, error) {
+	allPages, err := groups.List(c.serviceClient, opts).AllPages(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return groups.ExtractGroups(allPages)
 }
 
-func (c networkClient) CreateSecGroup(opts groups.CreateOptsBuilder) (*groups.SecGroup, error) {
-	return groups.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreateSecGroup(ctx context.Context, opts groups.CreateOptsBuilder) (*groups.SecGroup, error) {
+	return groups.Create(ctx, c.serviceClient, opts).Extract()
 }
 
-func (c networkClient) DeleteSecGroup(id string) error {
-	return groups.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeleteSecGroup(ctx context.Context, id string) error {
+	return groups.Delete(ctx, c.serviceClient, id).ExtractErr()
 }
 
-func (c networkClient) GetSecGroup(id string) (*groups.SecGroup, error) {
-	return groups.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetSecGroup(ctx context.Context, id string) (*groups.SecGroup, error) {
+	return groups.Get(ctx, c.serviceClient, id).Extract()
 }
 
-func (c networkClient) UpdateSecGroup(id string, opts groups.UpdateOptsBuilder) (*groups.SecGroup, error) {
-	return groups.Update(context.TODO(), c.serviceClient, id, opts).Extract()
+func (c networkClient) UpdateSecGroup(ctx context.Context, id string, opts groups.UpdateOptsBuilder) (*groups.SecGroup, error) {
+	return groups.Update(ctx, c.serviceClient, id, opts).Extract()
 }
 
 func (c networkClient) ListSecGroupRule(opts rules.ListOpts) ([]rules.SecGroupRule, error) {

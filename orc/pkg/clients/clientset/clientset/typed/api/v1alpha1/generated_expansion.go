@@ -30,4 +30,6 @@ type RouterExpansion interface{}
 
 type RouterInterfaceExpansion interface{}
 
+type SecurityGroupExpansion interface{}
+
 type SubnetExpansion interface{}

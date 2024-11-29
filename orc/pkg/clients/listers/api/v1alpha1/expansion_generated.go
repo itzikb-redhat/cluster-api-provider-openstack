@@ -66,6 +66,14 @@ type RouterInterfaceListerExpansion interface{}
 // RouterInterfaceNamespaceLister.
 type RouterInterfaceNamespaceListerExpansion interface{}
 
+// SecurityGroupListerExpansion allows custom methods to be added to
+// SecurityGroupLister.
+type SecurityGroupListerExpansion interface{}
+
+// SecurityGroupNamespaceListerExpansion allows custom methods to be added to
+// SecurityGroupNamespaceLister.
+type SecurityGroupNamespaceListerExpansion interface{}
+
 // SubnetListerExpansion allows custom methods to be added to
 // SubnetLister.
 type SubnetListerExpansion interface{}

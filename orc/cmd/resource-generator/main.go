@@ -62,6 +62,9 @@ var allResources []templateFields = []templateFields{
 		SpecExtraType:   "PortRefs",
 		StatusExtraType: "PortStatusExtra",
 	},
+	{
+		Name: "SecurityGroup",
+	},
 }
 
 func main() {

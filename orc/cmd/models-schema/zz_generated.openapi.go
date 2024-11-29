@@ -30,86 +30,94 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Address":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_Address(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool":             schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPair":         schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPair(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus":   schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPairStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference":  schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGateway":            schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGateway(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGatewayStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGatewayStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FilterByNeutronTags":        schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FixedIPStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_FixedIPStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Flavor":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Flavor(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorSpec":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRoute(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus":            schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRouteStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.IPv6Options":                schema_k_orc_openstack_resource_controller_api_v1alpha1_IPv6Options(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Image":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Image(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageContent":               schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageContent(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageContentSourceDownload": schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageContentSourceDownload(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageFilter":                schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageHash":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageHash(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageImport":                schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageList":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageProperties":            schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageProperties(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImagePropertiesHardware":    schema_k_orc_openstack_resource_controller_api_v1alpha1_ImagePropertiesHardware(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageResourceSpec":          schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageResourceStatus":        schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageSpec":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatus":                schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatusExtra":           schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatusExtra(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions":             schema_k_orc_openstack_resource_controller_api_v1alpha1_ManagedOptions(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Network":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_Network(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkFilter":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkImport":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkList":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec":        schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":              schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NeutronStatusMetadata":      schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Port":                       schema_k_orc_openstack_resource_controller_api_v1alpha1_Port(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortList":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortRefs":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatusExtra":            schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties":         schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Router(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterface":            schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterface(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceList":        schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceSpec":        schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceStatus":      schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterSpec":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Subnet":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Subnet(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetFilter(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetGateway":              schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetGateway(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetImport(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetList(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetRefs":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetRefs(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetSpec":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetSpec(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatus(ref),
-		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatusExtra":          schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatusExtra(ref),
-		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                    schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Address":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Address(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool":              schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus":        schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPair":          schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPair(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus":    schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPairStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference":   schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGateway":             schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGateway(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGatewayStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGatewayStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FilterByNeutronTags":         schema_k_orc_openstack_resource_controller_api_v1alpha1_FilterByNeutronTags(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FixedIPStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_FixedIPStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Flavor":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Flavor(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorFilter":                schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorImport":                schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorList":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorResourceSpec":          schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorResourceStatus":        schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorSpec":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.FlavorStatus":                schema_k_orc_openstack_resource_controller_api_v1alpha1_FlavorStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRoute":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRoute(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.HostRouteStatus":             schema_k_orc_openstack_resource_controller_api_v1alpha1_HostRouteStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.IPv6Options":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_IPv6Options(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Image":                       schema_k_orc_openstack_resource_controller_api_v1alpha1_Image(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageContent":                schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageContent(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageContentSourceDownload":  schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageContentSourceDownload(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageFilter":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageHash":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageHash(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageImport":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageList":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageProperties":             schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageProperties(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImagePropertiesHardware":     schema_k_orc_openstack_resource_controller_api_v1alpha1_ImagePropertiesHardware(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageResourceSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageResourceStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageSpec":                   schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatus":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ImageStatusExtra":            schema_k_orc_openstack_resource_controller_api_v1alpha1_ImageStatusExtra(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions":              schema_k_orc_openstack_resource_controller_api_v1alpha1_ManagedOptions(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Network":                     schema_k_orc_openstack_resource_controller_api_v1alpha1_Network(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkFilter":               schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkImport":               schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkList":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkResourceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkSpec":                 schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NetworkStatus":               schema_k_orc_openstack_resource_controller_api_v1alpha1_NetworkStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.NeutronStatusMetadata":       schema_k_orc_openstack_resource_controller_api_v1alpha1_NeutronStatusMetadata(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Port":                        schema_k_orc_openstack_resource_controller_api_v1alpha1_Port(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortFilter":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_PortFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortImport":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_PortImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortList":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_PortList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortRefs":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_PortRefs(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceSpec":            schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortResourceStatus":          schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortSpec":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_PortSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatus":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.PortStatusExtra":             schema_k_orc_openstack_resource_controller_api_v1alpha1_PortStatusExtra(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ProviderProperties":          schema_k_orc_openstack_resource_controller_api_v1alpha1_ProviderProperties(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Router":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Router(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterFilter":                schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterImport":                schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterface":             schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterface(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceList":         schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceSpec":         schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterInterfaceStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterInterfaceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterList":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceSpec":          schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceStatus":        schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterSpec":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterStatus":                schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroup":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroup(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupFilter":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupImport":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupList":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceSpec":   schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceStatus": schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Subnet":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Subnet(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetFilter":                schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetFilter(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetGateway":               schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetGateway(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetImport":                schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetImport(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetList":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetList(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetRefs":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetRefs(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceSpec":          schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetResourceStatus":        schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetSpec":                  schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetSpec(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatus":                schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SubnetStatusExtra":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SubnetStatusExtra(ref),
+		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                     schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AppArmorProfile":                             schema_k8sio_api_core_v1_AppArmorProfile(ref),
 		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
@@ -3862,6 +3870,477 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_RouterStatus(ref co
 		},
 		Dependencies: []string{
 			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.RouterResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroup(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroup is the Schema for an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupSpec", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupFilter(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupFilter defines an existing resource by its properties",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID specifies the ID of the project which owns the security group.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags to filter by. If specified, the resource must have all of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"tagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "TagsAny is a list of tags to filter by. If specified, the resource must have at least one of the tags specified to be included in the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTags is a list of tags to filter by. If specified, resources which contain all of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notTagsAny": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "NotTagsAny is a list of tags to filter by. If specified, resources which contain any of the given tags will be excluded from the result.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupImport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupImport specifies an existing resource which will be imported instead of creating a new one",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID contains the unique identifier of an existing OpenStack resource. Note that when specifying an import by ID, the resource MUST already exist. The ORC object will enter an error state if the resource does not exist.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"filter": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Filter contains a resource query which is expected to return a single result. The controller will continue to retry if filter returns no results. If filter returns multiple results the controller will set an error state and will not continue to retry.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupFilter"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupFilter"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupList contains a list of SecurityGroup.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroup"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroup", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupResourceSpec contains the desired state of a security group",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name will be the name of the created resource. If not specified, the name of the ORC object will be used.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "set",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is a list of tags which will be applied to the security group.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"stateful": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Stateful indicates if the security group is stateful or stateless.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupResourceStatus represents the observed state of the resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Human-readable name for the security group. Might not be unique.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description is a human-readable description for the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"projectID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProjectID is the project owner of the security group.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tags": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Tags is the list of tags on the resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"stateful": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Stateful indicates if the security group is stateful or stateless.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"updatedAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"revisionNumber": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RevisionNumber optionally set via extensions/standard-attr-revisions",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupSpec defines the desired state of an ORC object.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"import": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Import refers to an existing OpenStack resource which will be imported instead of creating a new one.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupImport"),
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource specifies the desired state of the resource.\n\nResource may not be specified if the management policy is `unmanaged`.\n\nResource must be specified if the management policy is `managed`.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceSpec"),
+						},
+					},
+					"managementPolicy": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagementPolicy defines how ORC will treat the object. Valid values are `managed`: ORC will create, update, and delete the resource; `unmanaged`: ORC will import an existing resource, and will not apply updates to it or delete it.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"managedOptions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ManagedOptions specifies options which may be applied to managed objects.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions"),
+						},
+					},
+					"cloudCredentialsRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CloudCredentialsRef points to a secret containing OpenStack credentials",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference"),
+						},
+					},
+				},
+				Required: []string{"cloudCredentialsRef"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.ManagedOptions", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupImport", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceSpec"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupStatus defines the observed state of an ORC resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-map-keys": []interface{}{
+									"type",
+								},
+								"x-kubernetes-list-type":       "map",
+								"x-kubernetes-patch-merge-key": "type",
+								"x-kubernetes-patch-strategy":  "merge",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represents the observed status of the object. Known .status.conditions.type are: \"Available\", \"Progressing\"\n\nAvailable represents the availability of the OpenStack resource. If it is true then the resource is ready for use.\n\nProgressing indicates whether the controller is still attempting to reconcile the current state of the OpenStack resource to the desired state. Progressing will be False either because the desired state has been achieved, or because some terminal error prevents it from ever being achieved and the controller is no longer attempting to reconcile. If Progressing is True, an observer waiting on the resource should continue to wait.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the unique identifier of the OpenStack resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"resource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resource contains the observed state of the OpenStack resource.",
+							Ref:         ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Condition"},
 	}
 }
 

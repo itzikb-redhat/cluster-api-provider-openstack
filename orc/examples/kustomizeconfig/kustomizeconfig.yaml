@@ -11,6 +11,8 @@ nameReference:
     kind: Port
   - path: spec/cloudCredentialsRef/secretName
     kind: Flavor
+  - path: spec/cloudCredentialsRef/secretName
+    kind: SecurityGroup
 
 - kind: Network
   fieldSpecs:

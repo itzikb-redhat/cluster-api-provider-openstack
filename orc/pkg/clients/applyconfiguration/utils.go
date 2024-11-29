@@ -156,6 +156,20 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.RouterSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("RouterStatus"):
 		return &apiv1alpha1.RouterStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroup"):
+		return &apiv1alpha1.SecurityGroupApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupFilter"):
+		return &apiv1alpha1.SecurityGroupFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupImport"):
+		return &apiv1alpha1.SecurityGroupImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupResourceSpec"):
+		return &apiv1alpha1.SecurityGroupResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupResourceStatus"):
+		return &apiv1alpha1.SecurityGroupResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupSpec"):
+		return &apiv1alpha1.SecurityGroupSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupStatus"):
+		return &apiv1alpha1.SecurityGroupStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Subnet"):
 		return &apiv1alpha1.SubnetApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SubnetFilter"):

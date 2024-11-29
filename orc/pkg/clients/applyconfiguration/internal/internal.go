@@ -1138,6 +1138,156 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: resource
       type:
         namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.RouterResourceStatus
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroup
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupSpec
+      default: {}
+    - name: status
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupStatus
+      default: {}
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupFilter
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: notTags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: notTagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: projectID
+      type:
+        scalar: string
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+    - name: tagsAny
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupImport
+  map:
+    fields:
+    - name: filter
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupFilter
+    - name: id
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupResourceSpec
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: stateful
+      type:
+        scalar: boolean
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: associative
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupResourceStatus
+  map:
+    fields:
+    - name: createdAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+    - name: description
+      type:
+        scalar: string
+    - name: name
+      type:
+        scalar: string
+    - name: projectID
+      type:
+        scalar: string
+    - name: revisionNumber
+      type:
+        scalar: numeric
+    - name: stateful
+      type:
+        scalar: boolean
+    - name: tags
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
+    - name: updatedAt
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupSpec
+  map:
+    fields:
+    - name: cloudCredentialsRef
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.CloudCredentialsReference
+      default: {}
+    - name: import
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupImport
+    - name: managedOptions
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.ManagedOptions
+    - name: managementPolicy
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupResourceSpec
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupStatus
+  map:
+    fields:
+    - name: conditions
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Condition
+          elementRelationship: associative
+          keys:
+          - type
+    - name: id
+      type:
+        scalar: string
+    - name: resource
+      type:
+        namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupResourceStatus
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Subnet
   map:
     fields:

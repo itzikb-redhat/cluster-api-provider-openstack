@@ -30,7 +30,8 @@ Create the following files, based on existing files:
 make generate
 ```
 
-When the code compiles, enable the controller by starting it from `cmd/manager/main.go`
+When the code compiles, enable the controller by starting it from `cmd/manager/main.go`.
+Add the controller's name to `pkg/controllers/alias.go`.
 
 ## CRD
 

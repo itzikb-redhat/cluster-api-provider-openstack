@@ -34,6 +34,7 @@ type OpenstackV1alpha1Interface interface {
 	PortsGetter
 	RoutersGetter
 	RouterInterfacesGetter
+	SecurityGroupsGetter
 	SubnetsGetter
 }
 
@@ -64,6 +65,10 @@ func (c *OpenstackV1alpha1Client) Routers(namespace string) RouterInterface {
 
 func (c *OpenstackV1alpha1Client) RouterInterfaces(namespace string) RouterInterfaceInterface {
 	return newRouterInterfaces(c, namespace)
+}
+
+func (c *OpenstackV1alpha1Client) SecurityGroups(namespace string) SecurityGroupInterface {
+	return newSecurityGroups(c, namespace)
 }
 
 func (c *OpenstackV1alpha1Client) Subnets(namespace string) SubnetInterface {
