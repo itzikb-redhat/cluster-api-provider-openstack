@@ -25,10 +25,12 @@ import (
 // PortResourceSpecApplyConfiguration represents a declarative configuration of the PortResourceSpec type for use
 // with apply.
 type PortResourceSpecApplyConfiguration struct {
-	Name        *v1alpha1.OpenStackName        `json:"name,omitempty"`
-	Description *v1alpha1.OpenStackDescription `json:"description,omitempty"`
-	Tags        []v1alpha1.NeutronTag          `json:"tags,omitempty"`
-	ProjectID   *v1alpha1.UUID                 `json:"projectID,omitempty"`
+	Name                *v1alpha1.OpenStackName                `json:"name,omitempty"`
+	Description         *v1alpha1.OpenStackDescription         `json:"description,omitempty"`
+	Tags                []v1alpha1.NeutronTag                  `json:"tags,omitempty"`
+	ProjectID           *v1alpha1.UUID                         `json:"projectID,omitempty"`
+	AllowedAddressPairs []AllowedAddressPairApplyConfiguration `json:"allowedAddressPairs,omitempty"`
+	Addresses           []AddressApplyConfiguration            `json:"addresses,omitempty"`
 }
 
 // PortResourceSpecApplyConfiguration constructs a declarative configuration of the PortResourceSpec type for use with
@@ -68,5 +70,31 @@ func (b *PortResourceSpecApplyConfiguration) WithTags(values ...v1alpha1.Neutron
 // If called multiple times, the ProjectID field is set to the value of the last call.
 func (b *PortResourceSpecApplyConfiguration) WithProjectID(value v1alpha1.UUID) *PortResourceSpecApplyConfiguration {
 	b.ProjectID = &value
+	return b
+}
+
+// WithAllowedAddressPairs adds the given value to the AllowedAddressPairs field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AllowedAddressPairs field.
+func (b *PortResourceSpecApplyConfiguration) WithAllowedAddressPairs(values ...*AllowedAddressPairApplyConfiguration) *PortResourceSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAllowedAddressPairs")
+		}
+		b.AllowedAddressPairs = append(b.AllowedAddressPairs, *values[i])
+	}
+	return b
+}
+
+// WithAddresses adds the given value to the Addresses field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Addresses field.
+func (b *PortResourceSpecApplyConfiguration) WithAddresses(values ...*AddressApplyConfiguration) *PortResourceSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAddresses")
+		}
+		b.Addresses = append(b.Addresses, *values[i])
+	}
 	return b
 }

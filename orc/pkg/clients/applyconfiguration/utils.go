@@ -32,10 +32,14 @@ import (
 func ForKind(kind schema.GroupVersionKind) interface{} {
 	switch kind {
 	// Group=openstack.k-orc.cloud, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithKind("Address"):
+		return &apiv1alpha1.AddressApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPool"):
 		return &apiv1alpha1.AllocationPoolApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPoolStatus"):
 		return &apiv1alpha1.AllocationPoolStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AllowedAddressPair"):
+		return &apiv1alpha1.AllowedAddressPairApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllowedAddressPairStatus"):
 		return &apiv1alpha1.AllowedAddressPairStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("CloudCredentialsReference"):

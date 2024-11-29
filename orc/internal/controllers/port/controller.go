@@ -119,7 +119,41 @@ func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctr
 		return portList.Items, nil
 	}
 
+	getSubnetRefsForPort := func(obj client.Object) []string {
+		port, ok := obj.(*orcv1alpha1.Port)
+		if !ok {
+			return nil
+		}
+		subnets := make([]string, len(port.Spec.Resource.Addresses))
+		for i := range port.Spec.Resource.Addresses {
+			subnets[i] = string(*port.Spec.Resource.Addresses[i].Subnet)
+		}
+		return subnets
+	}
+
+	// Index ports by referenced subnet
+	const subnetRefPath = "spec.resource.addresses[].subnet"
+
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Port{}, subnetRefPath, func(obj client.Object) []string {
+		return getSubnetRefsForPort(obj)
+	}); err != nil {
+		return fmt.Errorf("adding ports by subnet index: %w", err)
+	}
+
+	getPortsForSubnet := func(ctx context.Context, k8sClient client.Client, obj *orcv1alpha1.Subnet) ([]orcv1alpha1.Port, error) {
+		portList := &orcv1alpha1.PortList{}
+		if err := k8sClient.List(ctx, portList, client.InNamespace(obj.Namespace), client.MatchingFields{subnetRefPath: obj.Name}); err != nil {
+			return nil, err
+		}
+
+		return portList.Items, nil
+	}
+
 	err := ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getNetworkRefsForPort, getPortsForNetwork)
+	if err != nil {
+		return err
+	}
+	err = ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getSubnetRefsForPort, getPortsForSubnet)
 	if err != nil {
 		return err
 	}
@@ -152,6 +186,33 @@ func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctr
 				return requests
 			}),
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Network{})),
+		).
+		Watches(&orcv1alpha1.Subnet{},
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
+				log := log.WithValues("watch", "Subnet", "name", obj.GetName(), "namespace", obj.GetNamespace())
+
+				subnet, ok := obj.(*orcv1alpha1.Subnet)
+				if !ok {
+					log.Info("Watch got unexpected object type", "type", fmt.Sprintf("%T", obj))
+					return nil
+				}
+
+				ports, err := getPortsForSubnet(ctx, mgr.GetClient(), subnet)
+				if err != nil {
+					log.Error(err, "listing Ports")
+					return nil
+				}
+				requests := make([]reconcile.Request, len(ports))
+				for i := range ports {
+					port := &ports[i]
+					request := &requests[i]
+
+					request.Name = port.Name
+					request.Namespace = port.Namespace
+				}
+				return requests
+			}),
+			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Subnet{})),
 		).
 		WithOptions(options).
 		Complete(&reconciler)

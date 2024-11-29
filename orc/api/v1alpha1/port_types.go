@@ -32,9 +32,19 @@ type PortFilter struct {
 	FilterByNeutronTags `json:",inline"`
 }
 
+type AllowedAddressPair struct {
+	IP  *IPvAny `json:"ip"`
+	MAC *MAC    `json:"mac,omitempty"`
+}
+
 type AllowedAddressPairStatus struct {
 	IP  string `json:"ip"`
 	MAC string `json:"mac,omitempty"`
+}
+
+type Address struct {
+	IP     *IPvAny        `json:"ip,omitempty"`
+	Subnet *OpenStackName `json:"subnet"`
 }
 
 type FixedIPStatus struct {
@@ -54,12 +64,25 @@ type PortResourceSpec struct {
 	// Tags is a list of tags which will be applied to the port.
 	// +kubebuilder:validation:MaxItems:=32
 	// +listType=set
+	// +optional
 	Tags []NeutronTag `json:"tags,omitempty"`
 
 	// ProjectID is the unique ID of the project which owns the Port. Only
 	// administrative users can specify a project UUID other than their own.
 	// +optional
 	ProjectID *UUID `json:"projectID,omitempty"`
+
+	// AllowedAddressPairs are allowed addresses associated with this port.
+	// +kubebuilder:validation:MaxItems:=32
+	// +listType=atomic
+	// +optional
+	AllowedAddressPairs []AllowedAddressPair `json:"allowedAddressPairs,omitempty"`
+
+	// Addresses are the IP addresses for the port.
+	// +kubebuilder:validation:MaxItems:=32
+	// +listType=atomic
+	// +optional
+	Addresses []Address `json:"addresses,omitempty"`
 }
 
 type PortResourceStatus struct {

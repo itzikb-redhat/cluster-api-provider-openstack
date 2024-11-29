@@ -215,6 +215,43 @@ spec:
 
                   Resource must be specified if the management policy is `managed`.
                 properties:
+                  addresses:
+                    description: Addresses are the IP addresses for the port.
+                    items:
+                      properties:
+                        ip:
+                          maxLength: 45
+                          minLength: 1
+                          type: string
+                        subnet:
+                          maxLength: 1024
+                          minLength: 1
+                          type: string
+                      required:
+                      - subnet
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  allowedAddressPairs:
+                    description: AllowedAddressPairs are allowed addresses associated
+                      with this port.
+                    items:
+                      properties:
+                        ip:
+                          maxLength: 45
+                          minLength: 1
+                          type: string
+                        mac:
+                          maxLength: 17
+                          minLength: 1
+                          type: string
+                      required:
+                      - ip
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-type: atomic
                   description:
                     description: Description of the port.
                     maxLength: 1024

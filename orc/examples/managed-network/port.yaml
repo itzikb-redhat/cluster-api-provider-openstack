@@ -9,7 +9,14 @@ spec:
   managementPolicy: managed
   networkRef: orc-managed-network
   resource:
-    description: |
-      Blah blah blah
+    description: Blah blah blah
     tags:
-    - orc-test
+      - orc-test
+    allowedAddressPairs:
+      - ip: 192.168.3.3
+        mac: 00:00:00:00:00:01
+      - ip: 192.168.4.4
+    addresses:
+      - subnet: orc-managed-subnet
+      - ip: 192.168.0.8
+        subnet: orc-managed-subnet

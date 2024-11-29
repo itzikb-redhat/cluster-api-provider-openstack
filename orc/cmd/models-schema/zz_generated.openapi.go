@@ -30,8 +30,10 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Address":                    schema_k_orc_openstack_resource_controller_api_v1alpha1_Address(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPool":             schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllocationPoolStatus":       schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPair":         schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPair(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPairStatus":   schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPairStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.CloudCredentialsReference":  schema_k_orc_openstack_resource_controller_api_v1alpha1_CloudCredentialsReference(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.ExternalGateway":            schema_k_orc_openstack_resource_controller_api_v1alpha1_ExternalGateway(ref),
@@ -392,6 +394,31 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 	}
 }
 
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_Address(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ip": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"subnet": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"subnet"},
+			},
+		},
+	}
+}
+
 func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPool(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -441,6 +468,31 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllocationPoolStatu
 					},
 				},
 				Required: []string{"start", "end"},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_AllowedAddressPair(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ip": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"mac": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"ip"},
 			},
 		},
 	}
@@ -2697,9 +2749,49 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_PortResourceSpec(re
 							Format:      "",
 						},
 					},
+					"allowedAddressPairs": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "AllowedAddressPairs are allowed addresses associated with this port.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPair"),
+									},
+								},
+							},
+						},
+					},
+					"addresses": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Addresses are the IP addresses for the port.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.Address"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Address", "github.com/k-orc/openstack-resource-controller/api/v1alpha1.AllowedAddressPair"},
 	}
 }
 

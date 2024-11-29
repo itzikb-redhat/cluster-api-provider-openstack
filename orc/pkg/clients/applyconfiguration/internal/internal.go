@@ -39,6 +39,15 @@ func Parser() *typed.Parser {
 var parserOnce sync.Once
 var parser *typed.Parser
 var schemaYAML = typed.YAMLObject(`types:
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Address
+  map:
+    fields:
+    - name: ip
+      type:
+        scalar: string
+    - name: subnet
+      type:
+        scalar: string
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllocationPool
   map:
     fields:
@@ -61,6 +70,15 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllowedAddressPair
+  map:
+    fields:
+    - name: ip
+      type:
+        scalar: string
+    - name: mac
+      type:
+        scalar: string
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllowedAddressPairStatus
   map:
     fields:
@@ -745,6 +763,18 @@ var schemaYAML = typed.YAMLObject(`types:
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceSpec
   map:
     fields:
+    - name: addresses
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.Address
+          elementRelationship: atomic
+    - name: allowedAddressPairs
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.AllowedAddressPair
+          elementRelationship: atomic
     - name: description
       type:
         scalar: string
