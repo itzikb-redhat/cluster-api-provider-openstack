@@ -18,7 +18,7 @@ func specToFilter(resourceSpec v1alpha1.FlavorResourceSpec) v1alpha1.FlavorFilte
 	}
 }
 
-func GetFlavorByFilter(ctx context.Context, osClient osclients.ComputeClient, filter v1alpha1.FlavorFilter) (*flavors.Flavor, error) {
+func GetByFilter(ctx context.Context, osClient osclients.ComputeClient, filter v1alpha1.FlavorFilter) (*flavors.Flavor, error) {
 	filterFuncs := make([]func(*flavors.Flavor) bool, 0, 3)
 
 	if filter.Name != nil {

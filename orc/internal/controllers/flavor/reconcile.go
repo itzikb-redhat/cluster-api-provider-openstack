@@ -165,11 +165,11 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil:
 		log.V(4).Info("Importing existing OpenStack resource by filter")
-		return GetFlavorByFilter(ctx, osClient, *orcObject.Spec.Import.Filter)
+		return GetByFilter(ctx, osClient, *orcObject.Spec.Import.Filter)
 
 	default:
 		log.V(4).Info("Checking for previously created OpenStack resource")
-		osResource, err := GetFlavorByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
+		osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
 		if err != nil {
 			return nil, err
 		}
@@ -266,7 +266,7 @@ func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logge
 	// resource. If we don't find one, assume success and continue,
 	// otherwise set status.ID and let the controller delete by ID.
 
-	osResource, err := GetFlavorByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
+	osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
 	if err != nil {
 		return false, 0, err
 	}
