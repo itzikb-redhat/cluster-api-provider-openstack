@@ -36,6 +36,17 @@ func TestGetFlavorByFilter(t *testing.T) {
 		}
 		return nil
 	}
+	errorMessage := func(want string) checkFunc {
+		return func(_ *flavors.Flavor, err error) error {
+			if err == nil {
+				return fmt.Errorf("expected error, got nil")
+			}
+			if have := err.Error(); want != have {
+				return fmt.Errorf("unexpected error message: %q", have)
+			}
+			return nil
+		}
+	}
 	terminalError := func(_ *flavors.Flavor, have error) error {
 		if have == nil {
 			return fmt.Errorf("expected terminal error, got nil")
@@ -63,51 +74,54 @@ func TestGetFlavorByFilter(t *testing.T) {
 			return nil
 		}
 	}
+	type lister interface {
+		ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (osclients.FlavorResult)
+	}
 
 	for _, tc := range [...]struct {
-		name             string
-		filter           v1alpha1.FlavorFilter
-		availableFlavors []flavors.Flavor
-		checks           []checkFunc
+		name   string
+		filter v1alpha1.FlavorFilter
+		lister lister
+		checks []checkFunc
 	}{
 		{
 			"finds one by name",
 			v1alpha1.FlavorFilter{Name: ptr.To[v1alpha1.OpenStackName]("one")},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one"},
 				{ID: "2", Name: "two"},
 				{ID: "3", Name: "three"},
-			},
+			}},
 			checks(noError, findsID("1")),
 		},
 		{
 			"finds none by name",
 			v1alpha1.FlavorFilter{Name: ptr.To[v1alpha1.OpenStackName]("four")},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one"},
 				{ID: "2", Name: "two"},
 				{ID: "3", Name: "three"},
-			},
+			}},
 			checks(noError, findsNone),
 		},
 		{
 			"errors if multiple when finding by name",
 			v1alpha1.FlavorFilter{Name: ptr.To[v1alpha1.OpenStackName]("one")},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one"},
 				{ID: "2", Name: "two"},
 				{ID: "3", Name: "one"},
-			},
+			}},
 			checks(terminalError),
 		},
 		{
 			"finds one by RAM and disk",
 			v1alpha1.FlavorFilter{RAM: ptr.To[int32](2), Disk: ptr.To[int32](2)},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", RAM: 1, Disk: 1},
 				{ID: "2", RAM: 2, Disk: 2},
 				{ID: "3", RAM: 3, Disk: 3},
-			},
+			}},
 			checks(noError, findsID("2")),
 		},
 		{
@@ -117,11 +131,11 @@ func TestGetFlavorByFilter(t *testing.T) {
 				RAM:  ptr.To[int32](2),
 				Disk: ptr.To[int32](2),
 			},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one", RAM: 1, Disk: 1},
 				{ID: "2", Name: "two", RAM: 2, Disk: 2},
 				{ID: "3", Name: "three", RAM: 3, Disk: 3},
-			},
+			}},
 			checks(noError, findsID("2")),
 		},
 		{
@@ -131,11 +145,11 @@ func TestGetFlavorByFilter(t *testing.T) {
 				RAM:  ptr.To[int32](2),
 				Disk: ptr.To[int32](2),
 			},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one", RAM: 1, Disk: 1},
 				{ID: "2", Name: "two", RAM: 200, Disk: 2},
 				{ID: "3", Name: "three", RAM: 3, Disk: 3},
-			},
+			}},
 			checks(noError, findsNone),
 		},
 		{
@@ -145,18 +159,26 @@ func TestGetFlavorByFilter(t *testing.T) {
 				RAM:  ptr.To[int32](2),
 				Disk: ptr.To[int32](2),
 			},
-			[]flavors.Flavor{
+			&flavorLister{[]flavors.Flavor{
 				{ID: "1", Name: "one", RAM: 1, Disk: 1},
 				{ID: "2", Name: "two", RAM: 2, Disk: -12},
 				{ID: "3", Name: "three", RAM: 3, Disk: 3},
-			},
+			}},
 			checks(noError, findsNone),
+		},
+		{
+			"returns lister errors",
+			v1alpha1.FlavorFilter{
+				Name: ptr.To[v1alpha1.OpenStackName]("one"),
+			},
+			osclients.NewComputeErrorClient(errors.New("don't panic")),
+			checks(errorMessage("don't panic")),
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := context.Background()
 
-			f, err := flavor.GetByFilter(ctx, &flavorLister{tc.availableFlavors}, tc.filter)
+			f, err := flavor.GetByFilter(ctx, tc.lister, tc.filter)
 
 			for _, check := range tc.checks {
 				if e := check(f, err); e != nil {
