@@ -29,7 +29,6 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/v2/pagination"
 	"github.com/gophercloud/utils/v2/openstack/clientconfig"
-	uflavors "github.com/gophercloud/utils/v2/openstack/compute/v2/flavors"
 )
 
 /*
@@ -52,7 +51,6 @@ type ComputeClient interface {
 	DeleteFlavor(ctx context.Context, id string) error
 	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (FlavorResult)
 
-	GetFlavorFromName(flavor string) (*flavors.Flavor, error)
 	CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error)
 	DeleteServer(serverID string) error
 	GetServer(serverID string) (*servers.Server, error)
@@ -131,15 +129,6 @@ func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBui
 	return ch
 }
 
-func (c computeClient) GetFlavorFromName(flavor string) (*flavors.Flavor, error) {
-	flavorID, err := uflavors.IDFromName(context.TODO(), c.client, flavor)
-	if err != nil {
-		return nil, err
-	}
-
-	return flavors.Get(context.TODO(), c.client, flavorID).Extract()
-}
-
 func (c computeClient) CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error) {
 	return servers.Create(context.TODO(), c.client, createOpts, schedulerHints).Extract()
 }
@@ -213,10 +202,6 @@ func (e computeErrorClient) ListFlavors(ctx context.Context, listOpts flavors.Li
 }
 
 func (e computeErrorClient) ListAvailabilityZones() ([]availabilityzones.AvailabilityZone, error) {
-	return nil, e.error
-}
-
-func (e computeErrorClient) GetFlavorFromName(_ string) (*flavors.Flavor, error) {
 	return nil, e.error
 }
 
