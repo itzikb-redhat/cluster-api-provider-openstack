@@ -147,21 +147,6 @@ func (mr *MockComputeClientMockRecorder) GetFlavor(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlavor", reflect.TypeOf((*MockComputeClient)(nil).GetFlavor), ctx, id)
 }
 
-// GetFlavorFromName mocks base method.
-func (m *MockComputeClient) GetFlavorFromName(flavor string) (*flavors.Flavor, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFlavorFromName", flavor)
-	ret0, _ := ret[0].(*flavors.Flavor)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetFlavorFromName indicates an expected call of GetFlavorFromName.
-func (mr *MockComputeClientMockRecorder) GetFlavorFromName(flavor any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlavorFromName", reflect.TypeOf((*MockComputeClient)(nil).GetFlavorFromName), flavor)
-}
-
 // GetServer mocks base method.
 func (m *MockComputeClient) GetServer(serverID string) (*servers.Server, error) {
 	m.ctrl.T.Helper()

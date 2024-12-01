@@ -105,6 +105,7 @@ rules:
   - ports
   - routerinterfaces
   - routers
+  - securitygroups
   - subnets
   verbs:
   - create
@@ -122,6 +123,7 @@ rules:
   - ports/status
   - routerinterfaces/status
   - routers/status
+  - securitygroups/status
   - subnets/status
   verbs:
   - get
