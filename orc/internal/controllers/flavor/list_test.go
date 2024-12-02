@@ -18,11 +18,11 @@ type flavorLister struct {
 	flavors []flavors.Flavor
 }
 
-func (l flavorLister) ListFlavors(_ context.Context, _ flavors.ListOptsBuilder) <-chan (osclients.FlavorResult) {
-	ch := make(chan (osclients.FlavorResult), len(l.flavors))
+func (l flavorLister) ListFlavors(_ context.Context, _ flavors.ListOptsBuilder) <-chan (osclients.Result[*flavors.Flavor]) {
+	ch := make(chan (osclients.Result[*flavors.Flavor]), len(l.flavors))
 	defer close(ch)
 	for i := range l.flavors {
-		ch <- osclients.FlavorResult{Flavor: &l.flavors[i]}
+		ch <- osclients.NewResultOk(&l.flavors[i])
 	}
 	return ch
 }
@@ -75,7 +75,7 @@ func TestGetFlavorByFilter(t *testing.T) {
 		}
 	}
 	type lister interface {
-		ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (osclients.FlavorResult)
+		ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (osclients.Result[*flavors.Flavor])
 	}
 
 	for _, tc := range [...]struct {

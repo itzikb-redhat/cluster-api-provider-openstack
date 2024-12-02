@@ -112,12 +112,12 @@ func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBui
 				case <-ctx.Done():
 					return false, ctx.Err()
 				default:
-					ch <- NewResult(&pageFlavors[i], nil)
+					ch <- NewResultOk(&pageFlavors[i])
 				}
 			}
 			return true, nil
 		}); err != nil {
-			ch <- NewResult[*flavors.Flavor](nil, err)
+			ch <- NewResultErr[*flavors.Flavor](err)
 		}
 	}()
 	return ch
@@ -190,7 +190,7 @@ func (e computeErrorClient) ListFlavors(ctx context.Context, listOpts flavors.Li
 	ch := make(chan (Result[*flavors.Flavor]))
 	go func() {
 		defer close(ch)
-		ch <- NewResult[*flavors.Flavor](nil, e.error)
+		ch <- NewResultErr[*flavors.Flavor](e.error)
 	}()
 	return ch
 }

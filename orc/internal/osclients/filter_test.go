@@ -29,8 +29,8 @@ func TestFilter(t *testing.T) {
 				return fmt.Errorf("expected %d results, got %d: %v", len(want), len(have), have)
 			}
 			for i := range want {
-				if want[i] != have[i].OK() {
-					return fmt.Errorf("expected element %d to be %d, got %d", i, want[i], have[i].OK())
+				if want[i] != have[i].Ok() {
+					return fmt.Errorf("expected element %d to be %d, got %d", i, want[i], have[i].Ok())
 				}
 			}
 			return nil
@@ -47,9 +47,9 @@ func TestFilter(t *testing.T) {
 				}
 				select {
 				case <-ctx.Done():
-					ch <- osclients.NewResult(0, ctx.Err())
+					ch <- osclients.NewResultErr[int](ctx.Err())
 					return
-				case ch <- osclients.NewResult(i, nil):
+				case ch <- osclients.NewResultOk(i):
 				}
 			}
 		}()
@@ -130,14 +130,14 @@ func TestFilter(t *testing.T) {
 				}
 
 				if i == 123 {
-					ch <- osclients.NewResult(0, fmt.Errorf("test error"))
+					ch <- osclients.NewResultErr[int](fmt.Errorf("test error"))
 					continue
 				}
 				select {
 				case <-ctx.Done():
-					ch <- osclients.NewResult(0, ctx.Err())
+					ch <- osclients.NewResultErr[int](ctx.Err())
 					return
-				case ch <- osclients.NewResult(i, nil):
+				case ch <- osclients.NewResultOk(i):
 				}
 			}
 		}()
