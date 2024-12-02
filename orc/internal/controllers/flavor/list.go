@@ -41,10 +41,13 @@ func GetByFilter(ctx context.Context, osClient flavorLister, filter v1alpha1.Fla
 	defer cancel()
 
 	return osclients.JustOne(
-		osclients.Filter(osClient.ListFlavors(ctx, flavors.ListOpts{
-			MinDisk: int(ptr.Deref(filter.Disk, 0)),
-			MinRAM:  int(ptr.Deref(filter.RAM, 0)),
-		}), filterFuncs...),
+		osclients.Filter(
+			osClient.ListFlavors(
+				ctx, flavors.ListOpts{
+					MinDisk: int(ptr.Deref(filter.Disk, 0)),
+					MinRAM:  int(ptr.Deref(filter.RAM, 0)),
+				}),
+			filterFuncs...),
 		orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "found more than one matching flavor in OpenStack"),
 	)
 }

@@ -75,6 +75,7 @@ func main() {
 		orccontrollers.PortController(scopeFactory),
 		orccontrollers.FlavorController(scopeFactory),
 		orccontrollers.SecurityGroupController(scopeFactory),
+		orccontrollers.ServerController(scopeFactory),
 	}
 
 	restConfig := ctrl.GetConfigOrDie()

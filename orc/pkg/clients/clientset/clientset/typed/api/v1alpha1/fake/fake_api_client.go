@@ -56,6 +56,10 @@ func (c *FakeOpenstackV1alpha1) SecurityGroups(namespace string) v1alpha1.Securi
 	return &FakeSecurityGroups{c, namespace}
 }
 
+func (c *FakeOpenstackV1alpha1) Servers(namespace string) v1alpha1.ServerInterface {
+	return &FakeServers{c, namespace}
+}
+
 func (c *FakeOpenstackV1alpha1) Subnets(namespace string) v1alpha1.SubnetInterface {
 	return &FakeSubnets{c, namespace}
 }

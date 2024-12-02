@@ -32,4 +32,6 @@ type RouterInterfaceExpansion interface{}
 
 type SecurityGroupExpansion interface{}
 
+type ServerExpansion interface{}
+
 type SubnetExpansion interface{}

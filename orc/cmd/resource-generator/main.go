@@ -65,6 +65,9 @@ var allResources []templateFields = []templateFields{
 	{
 		Name: "SecurityGroup",
 	},
+	{
+		Name: "Server",
+	},
 }
 
 func main() {

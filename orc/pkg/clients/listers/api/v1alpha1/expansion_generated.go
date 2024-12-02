@@ -74,6 +74,14 @@ type SecurityGroupListerExpansion interface{}
 // SecurityGroupNamespaceLister.
 type SecurityGroupNamespaceListerExpansion interface{}
 
+// ServerListerExpansion allows custom methods to be added to
+// ServerLister.
+type ServerListerExpansion interface{}
+
+// ServerNamespaceListerExpansion allows custom methods to be added to
+// ServerNamespaceLister.
+type ServerNamespaceListerExpansion interface{}
+
 // SubnetListerExpansion allows custom methods to be added to
 // SubnetLister.
 type SubnetListerExpansion interface{}

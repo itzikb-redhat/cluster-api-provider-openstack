@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package flavor
+package server
 
 import (
 	"context"
@@ -23,14 +23,13 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
-	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/flavors"
+	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	"github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
 	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
@@ -38,11 +37,11 @@ import (
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
 
-// +kubebuilder:rbac:groups=openstack.k-orc.cloud,resources=flavors,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=openstack.k-orc.cloud,resources=flavors/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=openstack.k-orc.cloud,resources=servers,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=openstack.k-orc.cloud,resources=servers/status,verbs=get;update;patch
 
-func (r *orcFlavorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	orcObject := &orcv1alpha1.Flavor{}
+func (r *orcServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	orcObject := &v1alpha1.Server{}
 	err := r.client.Get(ctx, req.NamespacedName, orcObject)
 	if err != nil {
 		if apierrors.IsNotFound(err) {
@@ -58,7 +57,7 @@ func (r *orcFlavorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	return r.reconcileNormal(ctx, orcObject)
 }
 
-func (r *orcFlavorReconciler) getOpenStackClient(ctx context.Context, orcObject *orcv1alpha1.Flavor) (osclients.ComputeClient, error) {
+func (r *orcServerReconciler) getOpenStackClient(ctx context.Context, orcObject *v1alpha1.Server) (osclients.ComputeClient, error) {
 	log := ctrl.LoggerFrom(ctx)
 
 	clientScope, err := r.scopeFactory.NewClientScopeFromObject(ctx, r.client, log, orcObject)
@@ -68,9 +67,9 @@ func (r *orcFlavorReconciler) getOpenStackClient(ctx context.Context, orcObject 
 	return clientScope.NewComputeClient()
 }
 
-func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *orcv1alpha1.Flavor) (_ ctrl.Result, err error) {
+func (r *orcServerReconciler) reconcileNormal(ctx context.Context, orcObject *v1alpha1.Server) (_ ctrl.Result, err error) {
 	log := ctrl.LoggerFrom(ctx)
-	log.V(3).Info("Reconciling resource")
+	log.V(3).Info("Reconciling server")
 
 	var statusOpts []updateStatusOpt
 	addStatus := func(opt updateStatusOpt) {
@@ -92,17 +91,21 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 		}
 	}()
 
+	// Don't add finalizer until parent network is available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
 		patch := common.SetFinalizerPatch(orcObject, Finalizer)
 		return ctrl.Result{}, r.client.Patch(ctx, orcObject, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 	}
 
-	osClient, err := r.getOpenStackClient(ctx, orcObject)
+	computeClient, err := r.getOpenStackClient(ctx, orcObject)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 
-	osResource, err := getOSResourceFromObject(ctx, log, orcObject, osClient)
+	// TODO: fetch from the dependencies' status
+	var flavorID, imageID string
+
+	osResource, err := getOSResourceFromObject(ctx, log, orcObject, computeClient, flavorID, imageID)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -125,8 +128,8 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	log.V(4).Info("Got resource")
 	ctx = ctrl.LoggerInto(ctx, log)
 
-	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-		for _, updateFunc := range needsUpdate(osClient, orcObject, osResource) {
+	if orcObject.Spec.ManagementPolicy == v1alpha1.ManagementPolicyManaged {
+		for _, updateFunc := range needsUpdate(computeClient, orcObject, osResource) {
 			if err := updateFunc(ctx); err != nil {
 				addStatus(withProgressMessage("Updating the OpenStack resource"))
 				return ctrl.Result{}, fmt.Errorf("failed to update the OpenStack resource: %w", err)
@@ -137,15 +140,15 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	return ctrl.Result{}, nil
 }
 
-func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Flavor, osClient osclients.ComputeClient) (*flavors.Flavor, error) {
+func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *v1alpha1.Server, osClient osclients.ComputeClient, flavorID, imageID string) (*servers.Server, error) {
 	switch {
 	case orcObject.Status.ID != nil:
 		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource, err := osClient.GetFlavor(ctx, *orcObject.Status.ID)
+		osResource, err := osClient.GetServer(ctx, *orcObject.Status.ID)
 		if err != nil {
 			if orcerrors.IsNotFound(err) {
 				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
-				return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "resource has been deleted from OpenStack")
+				return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonUnrecoverableError, "resource has been deleted from OpenStack")
 			}
 			return nil, err
 		}
@@ -153,32 +156,33 @@ func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *or
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
 		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource, err := osClient.GetFlavor(ctx, *orcObject.Spec.Import.ID)
+		osResource, err := osClient.GetServer(ctx, *orcObject.Spec.Import.ID)
 		if orcerrors.IsNotFound(err) {
 			// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
-			return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "referenced resource does not exist in OpenStack")
+			return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonUnrecoverableError, "referenced resource does not exist in OpenStack")
 		}
 		return osResource, err
 
 	case orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil:
 		log.V(4).Info("Importing existing OpenStack resource by filter")
-		return GetByFilter(ctx, osClient, *orcObject.Spec.Import.Filter)
+		return GetByFilter(ctx, osClient, *orcObject.Spec.Import.Filter, flavorID, imageID)
 
 	default:
 		log.V(4).Info("Checking for previously created OpenStack resource")
-		osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
+		osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource), flavorID, imageID)
 		if err != nil {
 			return nil, err
 		}
 
 		if osResource == nil {
-			return createResource(ctx, orcObject, osClient)
+			return createResource(ctx, orcObject, osClient, flavorID, imageID)
 		}
+
 		return osResource, nil
 	}
 }
 
-func (r *orcFlavorReconciler) reconcileDelete(ctx context.Context, orcObject *orcv1alpha1.Flavor) (_ ctrl.Result, err error) {
+func (r *orcServerReconciler) reconcileDelete(ctx context.Context, orcObject *v1alpha1.Server) (_ ctrl.Result, err error) {
 	log := ctrl.LoggerFrom(ctx)
 	log.V(3).Info("Reconciling OpenStack resource delete")
 
@@ -199,9 +203,9 @@ func (r *orcFlavorReconciler) reconcileDelete(ctx context.Context, orcObject *or
 	}()
 
 	// We won't delete the resource for an unmanaged object, or if onDelete is detach
-	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged || orcObject.Spec.ManagedOptions.GetOnDelete() == orcv1alpha1.OnDeleteDetach {
+	if orcObject.Spec.ManagementPolicy == v1alpha1.ManagementPolicyUnmanaged || orcObject.Spec.ManagedOptions.GetOnDelete() == v1alpha1.OnDeleteDetach {
 		logPolicy := []any{"managementPolicy", orcObject.Spec.ManagementPolicy}
-		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
+		if orcObject.Spec.ManagementPolicy == v1alpha1.ManagementPolicyManaged {
 			logPolicy = append(logPolicy, "onDelete", orcObject.Spec.ManagedOptions.GetOnDelete())
 		}
 		log.V(4).Info("Not deleting OpenStack resource due to policy", logPolicy...)
@@ -220,12 +224,12 @@ func (r *orcFlavorReconciler) reconcileDelete(ctx context.Context, orcObject *or
 	deleted = true
 
 	// Clear the finalizer
-	applyConfig := orcapplyconfigv1alpha1.Flavor(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
+	applyConfig := orcapplyconfigv1alpha1.Server(orcObject.Name, orcObject.Namespace).WithUID(orcObject.UID)
 	return ctrl.Result{}, r.client.Patch(ctx, orcObject, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
 }
 
-func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Flavor, addStatus func(updateStatusOpt)) (bool, time.Duration, error) {
-	osClient, err := r.getOpenStackClient(ctx, orcObject)
+func (r *orcServerReconciler) deleteResource(ctx context.Context, log logr.Logger, orcObject *v1alpha1.Server, addStatus func(updateStatusOpt)) (bool, time.Duration, error) {
+	computeClient, err := r.getOpenStackClient(ctx, orcObject)
 	if err != nil {
 		return false, 0, err
 	}
@@ -234,7 +238,7 @@ func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logge
 		// This GET is technically redundant because we could just check the
 		// result from DELETE, but it's necessary if we want to report
 		// status while deleting
-		osResource, err := osClient.GetFlavor(ctx, *orcObject.Status.ID)
+		osResource, err := computeClient.GetServer(ctx, *orcObject.Status.ID)
 
 		switch {
 		case orcerrors.IsNotFound(err):
@@ -252,7 +256,8 @@ func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logge
 				return false, 0, nil
 			}
 
-			if err := osClient.DeleteFlavor(ctx, *orcObject.Status.ID); err != nil {
+			err := computeClient.DeleteServer(ctx, *orcObject.Status.ID)
+			if err != nil {
 				return false, 0, err
 			}
 			return false, deletePollingPeriod, nil
@@ -263,7 +268,10 @@ func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logge
 	// resource. If we don't find one, assume success and continue,
 	// otherwise set status.ID and let the controller delete by ID.
 
-	osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
+	// TODO: fetch from the dependencies' status
+	var flavorID, imageID string
+
+	osResource, err := GetByFilter(ctx, computeClient, specToFilter(*orcObject.Spec.Resource), flavorID, imageID)
 	if err != nil {
 		return false, 0, err
 	}
@@ -278,18 +286,26 @@ func (r *orcFlavorReconciler) deleteResource(ctx context.Context, log logr.Logge
 }
 
 // getResourceName returns the name of the OpenStack resource we should use.
-func getResourceName(orcObject *orcv1alpha1.Flavor) orcv1alpha1.OpenStackName {
+func getResourceName(orcObject *v1alpha1.Server) v1alpha1.OpenStackName {
 	if orcObject.Spec.Resource.Name != nil {
 		return *orcObject.Spec.Resource.Name
 	}
-	return orcv1alpha1.OpenStackName(orcObject.Name)
+	return v1alpha1.OpenStackName(orcObject.Name)
 }
 
-// createResource creates an OpenStack resource for an ORC object.
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Flavor, osClient osclients.ComputeClient) (*flavors.Flavor, error) {
-	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
+func waitingOnCreationMsg(kind string, name v1alpha1.KubernetesNameRef) string {
+	return fmt.Sprintf("Waiting for %s/%s to exist", kind, name)
+}
+
+func waitingOnAvailableMsg(kind string, name v1alpha1.KubernetesNameRef) string {
+	return fmt.Sprintf("Waiting for %s/%s to be available", kind, name)
+}
+
+// createResource creates an OpenStack resource from an ORC object
+func createResource(ctx context.Context, orcObject *v1alpha1.Server, computeClient osclients.ComputeClient, flavorID, imageID string) (*servers.Server, error) {
+	if orcObject.Spec.ManagementPolicy == v1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
-		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
+		return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
 	}
 
 	log := ctrl.LoggerFrom(ctx)
@@ -299,35 +315,30 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Flavor, osClient
 
 	if resource == nil {
 		// Should have been caught by API validation
-		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
+		return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "Creation requested, but spec.resource is not set")
 	}
 
-	createOpts := flavors.CreateOpts{
-		Name:        string(getResourceName(orcObject)),
-		RAM:         int(resource.RAM),
-		VCPUs:       int(resource.Vcpus),
-		Disk:        ptr.To(int(resource.Disk)),
-		Swap:        ptr.To(int(resource.Swap)),
-		IsPublic:    resource.IsPublic,
-		Ephemeral:   ptr.To(int(resource.Ephemeral)),
-		Description: string(ptr.Deref(resource.Description, "")),
+	createOpts := servers.CreateOpts{
+		Name:      string(getResourceName(orcObject)),
+		ImageRef:  imageID,
+		FlavorRef: flavorID,
 	}
 
-	osResource, err := osClient.CreateFlavor(ctx, createOpts)
-	if err != nil {
-		// We should require the spec to be updated before retrying a create which returned a conflict
-		if orcerrors.IsConflict(err) {
-			err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
-		}
-		return nil, err
+	schedulerHints := servers.SchedulerHintOpts{}
+
+	osResource, err := computeClient.CreateServer(ctx, &createOpts, schedulerHints)
+
+	// We should require the spec to be updated before retrying a create which returned a conflict
+	if orcerrors.IsConflict(err) {
+		return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
 	}
 
-	return osResource, nil
+	return osResource, err
 }
 
 // needsUpdate returns a slice of functions that call the OpenStack API to
-// align the OpenStack resoruce to its representation in the ORC spec object.
-// Flavor does not support update yet.
-func needsUpdate(osClient osclients.ComputeClient, orcObject *orcv1alpha1.Flavor, osResource *flavors.Flavor) (updateFuncs []func(context.Context) error) {
+// align the OpenStack resource to its representation in the ORC spec object.
+// For server, updates are not implemented.
+func needsUpdate(computeClient osclients.ComputeClient, orcObject *v1alpha1.Server, osResource *servers.Server) (updateFuncs []func(context.Context) error) {
 	return nil
 }

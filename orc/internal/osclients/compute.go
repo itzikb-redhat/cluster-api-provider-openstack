@@ -51,10 +51,10 @@ type ComputeClient interface {
 	DeleteFlavor(ctx context.Context, id string) error
 	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (Result[*flavors.Flavor])
 
-	CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error)
-	DeleteServer(serverID string) error
-	GetServer(serverID string) (*servers.Server, error)
-	ListServers(listOpts servers.ListOptsBuilder) ([]servers.Server, error)
+	CreateServer(ctx context.Context, createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error)
+	DeleteServer(ctx context.Context, serverID string) error
+	GetServer(ctx context.Context, serverID string) (*servers.Server, error)
+	ListServers(ctx context.Context, listOpts servers.ListOptsBuilder) <-chan (Result[*servers.Server])
 
 	ListAttachedInterfaces(serverID string) ([]attachinterfaces.Interface, error)
 	DeleteAttachedInterface(serverID, portID string) error
@@ -123,31 +123,41 @@ func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBui
 	return ch
 }
 
-func (c computeClient) CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error) {
-	return servers.Create(context.TODO(), c.client, createOpts, schedulerHints).Extract()
+func (c computeClient) CreateServer(ctx context.Context, createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error) {
+	return servers.Create(ctx, c.client, createOpts, schedulerHints).Extract()
 }
 
-func (c computeClient) DeleteServer(serverID string) error {
-	return servers.Delete(context.TODO(), c.client, serverID).ExtractErr()
+func (c computeClient) DeleteServer(ctx context.Context, serverID string) error {
+	return servers.Delete(ctx, c.client, serverID).ExtractErr()
 }
 
-func (c computeClient) GetServer(serverID string) (*servers.Server, error) {
-	var server servers.Server
-	err := servers.Get(context.TODO(), c.client, serverID).ExtractInto(&server)
-	if err != nil {
-		return nil, err
-	}
-	return &server, nil
+func (c computeClient) GetServer(ctx context.Context, serverID string) (*servers.Server, error) {
+	return servers.Get(ctx, c.client, serverID).Extract()
 }
 
-func (c computeClient) ListServers(listOpts servers.ListOptsBuilder) ([]servers.Server, error) {
-	var serverList []servers.Server
-	allPages, err := servers.List(c.client, listOpts).AllPages(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	err = servers.ExtractServersInto(allPages, &serverList)
-	return serverList, err
+func (c computeClient) ListServers(ctx context.Context, opts servers.ListOptsBuilder) <-chan (Result[*servers.Server]) {
+	ch := make(chan (Result[*servers.Server]))
+	go func() {
+		defer close(ch)
+		if err := servers.List(c.client, opts).EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
+			allItems, err := servers.ExtractServers(page)
+			if err != nil {
+				return false, err
+			}
+			for i := range allItems {
+				select {
+				case <-ctx.Done():
+					return false, ctx.Err()
+				default:
+					ch <- NewResultOk(&allItems[i])
+				}
+			}
+			return true, nil
+		}); err != nil {
+			ch <- NewResultErr[*servers.Server](err)
+		}
+	}()
+	return ch
 }
 
 func (c computeClient) ListAttachedInterfaces(serverID string) ([]attachinterfaces.Interface, error) {
@@ -199,20 +209,25 @@ func (e computeErrorClient) ListAvailabilityZones() ([]availabilityzones.Availab
 	return nil, e.error
 }
 
-func (e computeErrorClient) CreateServer(_ servers.CreateOptsBuilder, _ servers.SchedulerHintOptsBuilder) (*servers.Server, error) {
+func (e computeErrorClient) CreateServer(_ context.Context, _ servers.CreateOptsBuilder, _ servers.SchedulerHintOptsBuilder) (*servers.Server, error) {
 	return nil, e.error
 }
 
-func (e computeErrorClient) DeleteServer(_ string) error {
+func (e computeErrorClient) DeleteServer(_ context.Context, _ string) error {
 	return e.error
 }
 
-func (e computeErrorClient) GetServer(_ string) (*servers.Server, error) {
+func (e computeErrorClient) GetServer(_ context.Context, _ string) (*servers.Server, error) {
 	return nil, e.error
 }
 
-func (e computeErrorClient) ListServers(_ servers.ListOptsBuilder) ([]servers.Server, error) {
-	return nil, e.error
+func (e computeErrorClient) ListServers(ctx context.Context, listOpts servers.ListOptsBuilder) <-chan (Result[*servers.Server]) {
+	ch := make(chan (Result[*servers.Server]))
+	go func() {
+		defer close(ch)
+		ch <- NewResultErr[*servers.Server](e.error)
+	}()
+	return ch
 }
 
 func (e computeErrorClient) ListAttachedInterfaces(_ string) ([]attachinterfaces.Interface, error) {

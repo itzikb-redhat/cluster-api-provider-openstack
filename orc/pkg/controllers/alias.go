@@ -26,6 +26,7 @@ import (
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/router"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/routerinterface"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/securitygroup"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/server"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/subnet"
 	"github.com/k-orc/openstack-resource-controller/internal/scope"
 )
@@ -38,5 +39,6 @@ var RouterInterfaceController = routerinterface.New
 var PortController = port.New
 var FlavorController = flavor.New
 var SecurityGroupController = securitygroup.New
+var ServerController = server.New
 
 var NewScopeFactory = scope.NewFactory

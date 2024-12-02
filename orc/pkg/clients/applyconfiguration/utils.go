@@ -170,6 +170,20 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.SecurityGroupSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupStatus"):
 		return &apiv1alpha1.SecurityGroupStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Server"):
+		return &apiv1alpha1.ServerApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerFilter"):
+		return &apiv1alpha1.ServerFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerImport"):
+		return &apiv1alpha1.ServerImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerResourceSpec"):
+		return &apiv1alpha1.ServerResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerResourceStatus"):
+		return &apiv1alpha1.ServerResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerSpec"):
+		return &apiv1alpha1.ServerSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerStatus"):
+		return &apiv1alpha1.ServerStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Subnet"):
 		return &apiv1alpha1.SubnetApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SubnetFilter"):
