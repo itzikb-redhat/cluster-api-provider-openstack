@@ -49,7 +49,7 @@ type ComputeClient interface {
 	CreateFlavor(ctx context.Context, opts flavors.CreateOptsBuilder) (*flavors.Flavor, error)
 	GetFlavor(ctx context.Context, id string) (*flavors.Flavor, error)
 	DeleteFlavor(ctx context.Context, id string) error
-	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (FlavorResult)
+	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (Result[*flavors.Flavor])
 
 	CreateServer(createOpts servers.CreateOptsBuilder, schedulerHints servers.SchedulerHintOptsBuilder) (*servers.Server, error)
 	DeleteServer(serverID string) error
@@ -98,14 +98,8 @@ func (c computeClient) DeleteFlavor(ctx context.Context, id string) error {
 	return flavors.Delete(ctx, c.client, id).ExtractErr()
 }
 
-// FlavorResult carries either a flavor or a non-nil error.
-type FlavorResult struct {
-	Flavor *flavors.Flavor
-	Error  error
-}
-
-func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBuilder) <-chan (FlavorResult) {
-	ch := make(chan (FlavorResult))
+func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBuilder) <-chan (Result[*flavors.Flavor]) {
+	ch := make(chan (Result[*flavors.Flavor]))
 	go func() {
 		defer close(ch)
 		if err := flavors.ListDetail(c.client, opts).EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
@@ -118,12 +112,12 @@ func (c computeClient) ListFlavors(ctx context.Context, opts flavors.ListOptsBui
 				case <-ctx.Done():
 					return false, ctx.Err()
 				default:
-					ch <- FlavorResult{&pageFlavors[i], nil}
+					ch <- NewResult(&pageFlavors[i], nil)
 				}
 			}
 			return true, nil
 		}); err != nil {
-			ch <- FlavorResult{nil, err}
+			ch <- NewResult[*flavors.Flavor](nil, err)
 		}
 	}()
 	return ch
@@ -192,11 +186,11 @@ func (e computeErrorClient) GetFlavor(ctx context.Context, id string) (*flavors.
 func (e computeErrorClient) DeleteFlavor(ctx context.Context, id string) error {
 	return e.error
 }
-func (e computeErrorClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (FlavorResult) {
-	ch := make(chan (FlavorResult))
+func (e computeErrorClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (Result[*flavors.Flavor]) {
+	ch := make(chan (Result[*flavors.Flavor]))
 	go func() {
 		defer close(ch)
-		ch <- FlavorResult{nil, e.error}
+		ch <- NewResult[*flavors.Flavor](nil, e.error)
 	}()
 	return ch
 }

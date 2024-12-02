@@ -193,10 +193,10 @@ func (mr *MockComputeClientMockRecorder) ListAvailabilityZones() *gomock.Call {
 }
 
 // ListFlavors mocks base method.
-func (m *MockComputeClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan osclients.FlavorResult {
+func (m *MockComputeClient) ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan osclients.Result[*flavors.Flavor] {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListFlavors", ctx, listOpts)
-	ret0, _ := ret[0].(<-chan osclients.FlavorResult)
+	ret0, _ := ret[0].(<-chan osclients.Result[*flavors.Flavor])
 	return ret0
 }
 

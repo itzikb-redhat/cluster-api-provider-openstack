@@ -19,7 +19,7 @@ func specToFilter(resourceSpec v1alpha1.FlavorResourceSpec) v1alpha1.FlavorFilte
 }
 
 type flavorLister interface {
-	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (osclients.FlavorResult)
+	ListFlavors(ctx context.Context, listOpts flavors.ListOptsBuilder) <-chan (osclients.Result[*flavors.Flavor])
 }
 
 func GetByFilter(ctx context.Context, osClient flavorLister, filter v1alpha1.FlavorFilter) (*flavors.Flavor, error) {
@@ -40,28 +40,11 @@ func GetByFilter(ctx context.Context, osClient flavorLister, filter v1alpha1.Fla
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	var flavor *flavors.Flavor
-
-nextflavor:
-	for flavorResult := range osClient.ListFlavors(ctx, flavors.ListOpts{
-		MinDisk: int(ptr.Deref(filter.Disk, 0)),
-		MinRAM:  int(ptr.Deref(filter.RAM, 0)),
-	}) {
-		if err := flavorResult.Error; err != nil {
-			return nil, err
-		}
-		for _, filterFunc := range filterFuncs {
-			if !filterFunc(flavorResult.Flavor) {
-				continue nextflavor
-			}
-		}
-
-		// It's a match! Is it the first match?
-		if flavor != nil {
-			return nil, orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "found more than one matching resource in OpenStack")
-		}
-		flavor = flavorResult.Flavor
-	}
-
-	return flavor, nil
+	return osclients.JustOne(
+		osclients.Filter(osClient.ListFlavors(ctx, flavors.ListOpts{
+			MinDisk: int(ptr.Deref(filter.Disk, 0)),
+			MinRAM:  int(ptr.Deref(filter.RAM, 0)),
+		}), filterFuncs...),
+		orcerrors.Terminal(v1alpha1.OpenStackConditionReasonInvalidConfiguration, "found more than one matching flavor in OpenStack"),
+	)
 }
