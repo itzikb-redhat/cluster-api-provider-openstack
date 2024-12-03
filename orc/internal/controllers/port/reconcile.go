@@ -141,9 +141,6 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 		}
 
 		if orcSubnet.Status.ID == nil {
-			// FIXME(mandre) This throws a lot of errors during
-			// creation, when waiting for the subnet ID to be set.
-			// We'll need to fix it.
 			return ctrl.Result{}, fmt.Errorf("subnet %s is available but status.ID is not set", orcSubnet.Name)
 		}
 		subnetsMapping[subnetName] = orcv1alpha1.UUID(*orcSubnet.Status.ID)

@@ -128,6 +128,10 @@ func isAvailable(orcObject *orcv1alpha1.Subnet, opts *updateStatusOpts) bool {
 		return false
 	}
 
+	if opts.resource == nil {
+		return false
+	}
+
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
 		resource := orcObject.Spec.Resource
 		if resource == nil {
