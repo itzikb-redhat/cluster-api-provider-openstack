@@ -40,6 +40,7 @@ import (
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/generic"
 	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
@@ -120,26 +121,20 @@ func (r *orcNetworkReconciler) reconcileNormal(ctx context.Context, orcObject *o
 		return ctrl.Result{}, err
 	}
 
-	osResource, waitingOnExternal, err := getOSResourceFromObject(ctx, log, orcObject, networkClient)
+	networkActuator := networkActuator{
+		Network:  orcObject,
+		osClient: networkClient,
+	}
+
+	osResource, err := generic.GetOrCreateOSResource(ctx, log, networkActuator)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	if waitingOnExternal {
+
+	if osResource == nil {
 		log.V(3).Info("OpenStack resource does not yet exist")
 		addStatus(withProgressMessage("Waiting for OpenStack resource to be created externally"))
 		return ctrl.Result{RequeueAfter: externalUpdatePollingPeriod}, err
-	}
-
-	if osResource == nil {
-		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-			osResource, err = createResource(ctx, orcObject, networkClient)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-		} else {
-			// Programming error
-			return ctrl.Result{}, fmt.Errorf("unmanaged object does not exist and not waiting on dependency")
-		}
 	}
 
 	addStatus(withResource(osResource))
@@ -164,59 +159,6 @@ func (r *orcNetworkReconciler) reconcileNormal(ctx context.Context, orcObject *o
 	}
 
 	return ctrl.Result{}, nil
-}
-
-func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Network, networkClient osclients.NetworkClient) (*networkExt, bool, error) {
-	switch {
-	case orcObject.Status.ID != nil:
-		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource := &networkExt{}
-		getResult := networkClient.GetNetwork(ctx, *orcObject.Status.ID)
-		err := getResult.ExtractInto(osResource)
-		if err != nil {
-			if orcerrors.IsNotFound(err) {
-				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
-				return nil, false, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "resource has been deleted from OpenStack")
-			}
-			return nil, false, err
-		}
-		return osResource, false, nil
-
-	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
-		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource := &networkExt{}
-		getResult := networkClient.GetNetwork(ctx, *orcObject.Spec.Import.ID)
-		err := getResult.ExtractInto(osResource)
-		if err != nil {
-			if orcerrors.IsNotFound(err) {
-				// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
-				return nil, false, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "referenced resource does not exist in OpenStack")
-			}
-			return nil, false, err
-		}
-		return osResource, false, nil
-
-	case orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil:
-		log.V(4).Info("Importing existing OpenStack resource by filter")
-		listOpts := listOptsFromImportFilter(orcObject.Spec.Import.Filter)
-		osResource, err := getResourceFromList(ctx, listOpts, networkClient)
-		if err != nil {
-			return nil, false, err
-		}
-		if osResource == nil {
-			return nil, true, nil
-		}
-		return osResource, false, nil
-
-	default:
-		log.V(4).Info("Checking for previously created OpenStack resource")
-		listOpts := listOptsFromCreation(orcObject)
-		osResource, err := getResourceFromList(ctx, listOpts, networkClient)
-		if err != nil {
-			return nil, false, nil
-		}
-		return osResource, false, nil
-	}
 }
 
 func (r *orcNetworkReconciler) reconcileDelete(ctx context.Context, orcObject *orcv1alpha1.Network) (_ ctrl.Result, err error) {

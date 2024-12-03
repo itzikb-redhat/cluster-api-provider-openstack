@@ -36,7 +36,7 @@ type ResourceActuator[osResourceT any] interface {
 	CreateResource(ctx context.Context) (osResourceT, error)
 }
 
-func GetOSResourceFromObject[osResourcePT *osResourceT, osResourceT any](ctx context.Context, log logr.Logger, actuator ResourceActuator[osResourcePT]) (osResourcePT, error) {
+func GetOrCreateOSResource[osResourcePT *osResourceT, osResourceT any](ctx context.Context, log logr.Logger, actuator ResourceActuator[osResourcePT]) (osResourcePT, error) {
 	var osResource osResourcePT
 	var err error
 

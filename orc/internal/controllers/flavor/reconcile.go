@@ -109,7 +109,7 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 		osClient: osClient,
 	}
 
-	osResource, err := generic.GetOSResourceFromObject(ctx, log, adapter)
+	osResource, err := generic.GetOrCreateOSResource(ctx, log, adapter)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
