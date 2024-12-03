@@ -110,8 +110,6 @@ type SubnetStatus struct {
 	// Resource contains the observed state of the OpenStack resource.
 	// +optional
 	Resource *SubnetResourceStatus `json:"resource,omitempty"`
-
-	SubnetStatusExtra `json:",inline"`
 }
 
 var _ ObjectWithConditions = &Subnet{}

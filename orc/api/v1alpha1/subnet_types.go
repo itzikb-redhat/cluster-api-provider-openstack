@@ -111,11 +111,6 @@ type SubnetResourceSpec struct {
 	// TODO: Support subnet pools
 }
 
-type SubnetStatusExtra struct {
-	// NetworkID is the UUID of the parent network.
-	NetworkID *string `json:"networkID,omitempty"`
-}
-
 type AllocationPoolStatus struct {
 	Start string `json:"start"`
 	End   string `json:"end"`

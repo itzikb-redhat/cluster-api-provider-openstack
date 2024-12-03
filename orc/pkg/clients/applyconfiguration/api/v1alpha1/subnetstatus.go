@@ -25,10 +25,9 @@ import (
 // SubnetStatusApplyConfiguration represents a declarative configuration of the SubnetStatus type for use
 // with apply.
 type SubnetStatusApplyConfiguration struct {
-	Conditions                          []v1.ConditionApplyConfiguration        `json:"conditions,omitempty"`
-	ID                                  *string                                 `json:"id,omitempty"`
-	Resource                            *SubnetResourceStatusApplyConfiguration `json:"resource,omitempty"`
-	SubnetStatusExtraApplyConfiguration `json:",inline"`
+	Conditions []v1.ConditionApplyConfiguration        `json:"conditions,omitempty"`
+	ID         *string                                 `json:"id,omitempty"`
+	Resource   *SubnetResourceStatusApplyConfiguration `json:"resource,omitempty"`
 }
 
 // SubnetStatusApplyConfiguration constructs a declarative configuration of the SubnetStatus type for use with
@@ -63,13 +62,5 @@ func (b *SubnetStatusApplyConfiguration) WithID(value string) *SubnetStatusApply
 // If called multiple times, the Resource field is set to the value of the last call.
 func (b *SubnetStatusApplyConfiguration) WithResource(value *SubnetResourceStatusApplyConfiguration) *SubnetStatusApplyConfiguration {
 	b.Resource = value
-	return b
-}
-
-// WithNetworkID sets the NetworkID field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the NetworkID field is set to the value of the last call.
-func (b *SubnetStatusApplyConfiguration) WithNetworkID(value string) *SubnetStatusApplyConfiguration {
-	b.NetworkID = &value
 	return b
 }

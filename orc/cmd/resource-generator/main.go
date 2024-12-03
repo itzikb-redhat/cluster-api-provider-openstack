@@ -50,17 +50,15 @@ var allResources []templateFields = []templateFields{
 		APIVersion: "v1alpha1",
 	},
 	{
-		Name:            "Subnet",
-		SpecExtraType:   "SubnetRefs",
-		StatusExtraType: "SubnetStatusExtra",
+		Name:          "Subnet",
+		SpecExtraType: "SubnetRefs",
 	},
 	{
 		Name: "Router",
 	},
 	{
-		Name:            "Port",
-		SpecExtraType:   "PortRefs",
-		StatusExtraType: "PortStatusExtra",
+		Name:          "Port",
+		SpecExtraType: "PortRefs",
 	},
 	{
 		Name: "SecurityGroup",

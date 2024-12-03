@@ -48,8 +48,6 @@ const (
 	SSAStatusTxn = "status"
 	// Field owner of persistent id field.
 	SSAIDTxn = "id"
-	// Field owner of persistent network id field.
-	SSANetworkIDTxn = "networkID"
 )
 
 // ssaFieldOwner returns the field owner for a specific named SSA transaction.

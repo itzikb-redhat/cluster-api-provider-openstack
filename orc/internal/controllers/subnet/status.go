@@ -41,16 +41,6 @@ func (r *orcSubnetReconciler) setStatusID(ctx context.Context, obj client.Object
 	return r.client.Status().Patch(ctx, obj, applyconfigs.Patch(types.ApplyPatchType, applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
 }
 
-// setStatusNetworkID sets status.NetworkID in its own SSA transaction.
-func (r *orcSubnetReconciler) setStatusNetworkID(ctx context.Context, obj client.Object, id string) error {
-	applyConfig := orcapplyconfigv1alpha1.Subnet(obj.GetName(), obj.GetNamespace()).
-		WithUID(obj.GetUID()).
-		WithStatus(orcapplyconfigv1alpha1.SubnetStatus().
-			WithNetworkID(id))
-
-	return r.client.Status().Patch(ctx, obj, applyconfigs.Patch(types.ApplyPatchType, applyConfig), client.ForceOwnership, ssaFieldOwner(SSANetworkIDTxn))
-}
-
 type updateStatusOpts struct {
 	resource        *subnets.Subnet
 	routerInterface *orcv1alpha1.RouterInterface

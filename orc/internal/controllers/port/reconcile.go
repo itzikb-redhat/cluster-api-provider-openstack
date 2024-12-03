@@ -115,14 +115,6 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 	}
 	networkID := orcv1alpha1.UUID(*orcNetwork.Status.ID)
 
-	if orcObject.Status.NetworkID == nil {
-		return ctrl.Result{}, r.setStatusNetworkID(ctx, orcObject, networkID)
-	}
-
-	if *orcObject.Status.NetworkID != networkID {
-		return ctrl.Result{}, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "Parent network ID has changed")
-	}
-
 	// Wait for all subnets to be available
 	subnetsMapping := make(map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID)
 	for _, address := range orcObject.Spec.Resource.Addresses {

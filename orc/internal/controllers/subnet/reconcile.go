@@ -116,14 +116,6 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 		return ctrl.Result{}, fmt.Errorf("network %s is available but status.ID is not set", orcNetwork.Name)
 	}
 
-	if orcObject.Status.NetworkID == nil {
-		return ctrl.Result{}, r.setStatusNetworkID(ctx, orcObject, *orcNetwork.Status.ID)
-	}
-
-	if *orcObject.Status.NetworkID != *orcNetwork.Status.ID {
-		return ctrl.Result{}, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "Parent network ID has changed")
-	}
-
 	// Don't add finalizer until parent network is available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
 		patch := common.SetFinalizerPatch(orcObject, Finalizer)

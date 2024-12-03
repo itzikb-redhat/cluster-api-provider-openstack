@@ -110,8 +110,6 @@ type PortStatus struct {
 	// Resource contains the observed state of the OpenStack resource.
 	// +optional
 	Resource *PortResourceStatus `json:"resource,omitempty"`
-
-	PortStatusExtra `json:",inline"`
 }
 
 var _ ObjectWithConditions = &Port{}

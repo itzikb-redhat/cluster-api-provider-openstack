@@ -41,16 +41,6 @@ func (r *orcPortReconciler) setStatusID(ctx context.Context, obj client.Object, 
 	return r.client.Status().Patch(ctx, obj, applyconfigs.Patch(types.MergePatchType, applyConfig))
 }
 
-// setStatusNetworkID sets status.NetworkID in its own SSA transaction.
-func (r *orcPortReconciler) setStatusNetworkID(ctx context.Context, obj client.Object, id orcv1alpha1.UUID) error {
-	applyConfig := orcapplyconfigv1alpha1.Port(obj.GetName(), obj.GetNamespace()).
-		WithUID(obj.GetUID()).
-		WithStatus(orcapplyconfigv1alpha1.PortStatus().
-			WithNetworkID(id))
-
-	return r.client.Status().Patch(ctx, obj, applyconfigs.Patch(types.ApplyPatchType, applyConfig), client.ForceOwnership, ssaFieldOwner(SSANetworkIDTxn))
-}
-
 type updateStatusOpts struct {
 	resource        *ports.Port
 	progressMessage *string

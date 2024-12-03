@@ -155,8 +155,3 @@ type PortResourceStatus struct {
 
 	NeutronStatusMetadata `json:",inline"`
 }
-
-type PortStatusExtra struct {
-	// NetworkID is the UUID of the parent network.
-	NetworkID *UUID `json:"networkID,omitempty"`
-}

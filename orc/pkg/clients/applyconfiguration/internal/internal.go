@@ -896,9 +896,6 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: id
       type:
         scalar: string
-    - name: networkID
-      type:
-        scalar: string
     - name: resource
       type:
         namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.PortResourceStatus
@@ -1752,9 +1749,6 @@ var schemaYAML = typed.YAMLObject(`types:
           keys:
           - type
     - name: id
-      type:
-        scalar: string
-    - name: networkID
       type:
         scalar: string
     - name: resource
