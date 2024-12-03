@@ -463,9 +463,8 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID 
 		}
 	}
 
-	// TODO(mandre) Force the creation of a IP-less port if no address is
-	// specified, as OpenStack will create an IP for us anyway when the
-	// network has a subnet
+	// We explicitly disable creation of IP addresses by passing an empty
+	// value whenever the user does not specifies addresses
 	if len(resource.Addresses) > 0 {
 		fixedIPs := make([]ports.IP, len(resource.Addresses))
 		for i := range resource.Addresses {
@@ -482,6 +481,8 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID 
 			}
 		}
 		createOpts.FixedIPs = fixedIPs
+	} else {
+		createOpts.FixedIPs = []string{}
 	}
 
 	// We explicitly disable default security groups by passing an empty
