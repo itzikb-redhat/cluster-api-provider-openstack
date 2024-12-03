@@ -346,8 +346,6 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager, caCerts []byte) {
 	orcFactory := orccontrollers.NewScopeFactory(scopeCacheMaxSize, caCerts)
 
 	if err := orccontrollers.ImageController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-image-controller"),
 		orcFactory,
 	).SetupWithManager(ctx, mgr, concurrency(openStackMachineConcurrency)); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ORCImage")
@@ -355,8 +353,6 @@ func setupReconcilers(ctx context.Context, mgr ctrl.Manager, caCerts []byte) {
 	}
 
 	if err := orccontrollers.NetworkController(
-		mgr.GetClient(),
-		mgr.GetEventRecorderFor("orc-network-controller"),
 		orcFactory,
 	).SetupWithManager(ctx, mgr, concurrency(openStackMachineConcurrency)); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ORCNetwork")
