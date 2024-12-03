@@ -149,11 +149,45 @@ func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctr
 		return portList.Items, nil
 	}
 
+	getSecurityGroupRefsForPort := func(obj client.Object) []string {
+		port, ok := obj.(*orcv1alpha1.Port)
+		if !ok {
+			return nil
+		}
+		securityGroups := make([]string, len(port.Spec.Resource.SecurityGroupRefs))
+		for i := range port.Spec.Resource.SecurityGroupRefs {
+			securityGroups[i] = string(port.Spec.Resource.SecurityGroupRefs[i])
+		}
+		return securityGroups
+	}
+
+	// Index ports by referenced security groups
+	const securityGroupRefPath = "spec.resource.securityGroupRefs"
+
+	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Port{}, securityGroupRefPath, func(obj client.Object) []string {
+		return getSecurityGroupRefsForPort(obj)
+	}); err != nil {
+		return fmt.Errorf("adding ports by security group index: %w", err)
+	}
+
+	getPortsForSecurityGroup := func(ctx context.Context, k8sClient client.Client, obj *orcv1alpha1.SecurityGroup) ([]orcv1alpha1.Port, error) {
+		portList := &orcv1alpha1.PortList{}
+		if err := k8sClient.List(ctx, portList, client.InNamespace(obj.Namespace), client.MatchingFields{securityGroupRefPath: obj.Name}); err != nil {
+			return nil, err
+		}
+
+		return portList.Items, nil
+	}
+
 	err := ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getNetworkRefsForPort, getPortsForNetwork)
 	if err != nil {
 		return err
 	}
 	err = ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getSubnetRefsForPort, getPortsForSubnet)
+	if err != nil {
+		return err
+	}
+	err = ctrlcommon.AddDeletionGuard(mgr, Finalizer, FieldOwner, getSecurityGroupRefsForPort, getPortsForSecurityGroup)
 	if err != nil {
 		return err
 	}
@@ -213,6 +247,33 @@ func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctr
 				return requests
 			}),
 			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.Subnet{})),
+		).
+		Watches(&orcv1alpha1.SecurityGroup{},
+			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, obj client.Object) []reconcile.Request {
+				log := log.WithValues("watch", "SecurityGroup", "name", obj.GetName(), "namespace", obj.GetNamespace())
+
+				securityGroup, ok := obj.(*orcv1alpha1.SecurityGroup)
+				if !ok {
+					log.Info("Watch got unexpected object type", "type", fmt.Sprintf("%T", obj))
+					return nil
+				}
+
+				ports, err := getPortsForSecurityGroup(ctx, mgr.GetClient(), securityGroup)
+				if err != nil {
+					log.Error(err, "listing Ports")
+					return nil
+				}
+				requests := make([]reconcile.Request, len(ports))
+				for i := range ports {
+					port := &ports[i]
+					request := &requests[i]
+
+					request.Name = port.Name
+					request.Namespace = port.Namespace
+				}
+				return requests
+			}),
+			builder.WithPredicates(predicates.NewBecameAvailable(log, &orcv1alpha1.SecurityGroup{})),
 		).
 		WithOptions(options).
 		Complete(&reconciler)

@@ -20,3 +20,5 @@ spec:
       - subnetRef: orc-managed-subnet
       - ip: 192.168.0.8
         subnetRef: orc-managed-subnet
+    securityGroupRefs:
+      - orc-managed-sg

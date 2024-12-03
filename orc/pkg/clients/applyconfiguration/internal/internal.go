@@ -784,6 +784,12 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: projectID
       type:
         scalar: string
+    - name: securityGroupRefs
+      type:
+        list:
+          elementType:
+            scalar: string
+          elementRelationship: atomic
     - name: tags
       type:
         list:

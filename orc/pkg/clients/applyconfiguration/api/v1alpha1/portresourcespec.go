@@ -31,6 +31,7 @@ type PortResourceSpecApplyConfiguration struct {
 	ProjectID           *v1alpha1.UUID                         `json:"projectID,omitempty"`
 	AllowedAddressPairs []AllowedAddressPairApplyConfiguration `json:"allowedAddressPairs,omitempty"`
 	Addresses           []AddressApplyConfiguration            `json:"addresses,omitempty"`
+	SecurityGroupRefs   []v1alpha1.OpenStackName               `json:"securityGroupRefs,omitempty"`
 }
 
 // PortResourceSpecApplyConfiguration constructs a declarative configuration of the PortResourceSpec type for use with
@@ -95,6 +96,16 @@ func (b *PortResourceSpecApplyConfiguration) WithAddresses(values ...*AddressApp
 			panic("nil value passed to WithAddresses")
 		}
 		b.Addresses = append(b.Addresses, *values[i])
+	}
+	return b
+}
+
+// WithSecurityGroupRefs adds the given value to the SecurityGroupRefs field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the SecurityGroupRefs field.
+func (b *PortResourceSpecApplyConfiguration) WithSecurityGroupRefs(values ...v1alpha1.OpenStackName) *PortResourceSpecApplyConfiguration {
+	for i := range values {
+		b.SecurityGroupRefs = append(b.SecurityGroupRefs, values[i])
 	}
 	return b
 }

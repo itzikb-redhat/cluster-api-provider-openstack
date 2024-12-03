@@ -83,6 +83,11 @@ type PortResourceSpec struct {
 	// +listType=atomic
 	// +optional
 	Addresses []Address `json:"addresses,omitempty"`
+
+	// SecurityGroupRefs are the names of the security groups associated
+	// with this port.
+	// +listType=atomic
+	SecurityGroupRefs []OpenStackName `json:"securityGroupRefs,omitempty"`
 }
 
 type PortResourceStatus struct {

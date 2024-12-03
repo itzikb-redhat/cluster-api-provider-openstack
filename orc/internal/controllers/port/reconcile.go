@@ -147,7 +147,30 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 		subnetsMapping[subnetName] = orcv1alpha1.UUID(*orcSubnet.Status.ID)
 	}
 
-	// Don't add finalizer until parent network and subnets are available to avoid unnecessary reconcile on delete
+	// Wait for all security groups to be available
+	securityGroupsMapping := make(map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID)
+	for _, securityGroupName := range orcObject.Spec.Resource.SecurityGroupRefs {
+		orcSecurityGroup := &orcv1alpha1.SecurityGroup{}
+		if err := r.client.Get(ctx, client.ObjectKey{Name: string(securityGroupName), Namespace: orcObject.Namespace}, orcSecurityGroup); err != nil {
+			if apierrors.IsNotFound(err) {
+				addStatus(withProgressMessage(fmt.Sprintf("waiting for security group object %s to be created", securityGroupName)))
+				return ctrl.Result{}, nil
+			}
+			return ctrl.Result{}, err
+		}
+
+		if !orcv1alpha1.IsAvailable(orcSecurityGroup) {
+			addStatus(withProgressMessage(fmt.Sprintf("waiting for security group object %s to be available", securityGroupName)))
+			return ctrl.Result{}, nil
+		}
+
+		if orcSecurityGroup.Status.ID == nil {
+			return ctrl.Result{}, fmt.Errorf("security group %s is available but status.ID is not set", orcSecurityGroup.Name)
+		}
+		securityGroupsMapping[securityGroupName] = orcv1alpha1.UUID(*orcSecurityGroup.Status.ID)
+	}
+
+	// Don't add finalizer until parent dependent resources are available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
 		patch := common.SetFinalizerPatch(orcObject, Finalizer)
 		return ctrl.Result{}, r.client.Patch(ctx, orcObject, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
@@ -170,7 +193,7 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 
 	if osResource == nil {
 		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-			osResource, err = createResource(ctx, orcObject, networkID, subnetsMapping, networkClient)
+			osResource, err = createResource(ctx, orcObject, networkID, subnetsMapping, securityGroupsMapping, networkClient)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
@@ -405,7 +428,10 @@ func getResourceFromList(ctx context.Context, listOpts ports.ListOptsBuilder, ne
 }
 
 // createResource creates an OpenStack resource for an ORC object.
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID, subnetsMapping map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*ports.Port, error) {
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID,
+	subnetsMapping map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID,
+	securityGroupsMapping map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID,
+	networkClient osclients.NetworkClient) (*ports.Port, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
@@ -456,6 +482,24 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID 
 			}
 		}
 		createOpts.FixedIPs = fixedIPs
+	}
+
+	// We explicitly disable default security groups by passing an empty
+	// value whenever the user does not specifies security groups
+	if len(resource.SecurityGroupRefs) > 0 {
+		securityGroups := make([]string, len(resource.SecurityGroupRefs))
+		for i := range resource.SecurityGroupRefs {
+			securityGroupName := resource.SecurityGroupRefs[i]
+			if securityGroupID, ok := securityGroupsMapping[securityGroupName]; !ok {
+				return nil, fmt.Errorf("missing security group ID for %s", securityGroupName)
+
+			} else {
+				securityGroups[i] = string(securityGroupID)
+			}
+		}
+		createOpts.SecurityGroups = &securityGroups
+	} else {
+		createOpts.SecurityGroups = &[]string{}
 	}
 
 	osResource, err := networkClient.CreatePort(ctx, &createOpts)

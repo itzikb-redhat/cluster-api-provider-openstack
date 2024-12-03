@@ -23,6 +23,11 @@ nameReference:
   - path: spec/networkRef
     kind: Port
 
+- kind: SecurityGroup
+  fieldSpecs:
+  - path: spec/resource/securityGroupRefs[]
+    kind: Port
+
 - kind: Subnet
   fieldSpecs:
   - path: spec/resource/addresses[]/subnetRef
