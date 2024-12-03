@@ -70,7 +70,7 @@ func withProgressMessage(message string) updateStatusOpt {
 	}
 }
 
-func getOSResourceStatus(log logr.Logger, osResource *groups.SecGroup) *orcapplyconfigv1alpha1.SecurityGroupResourceStatusApplyConfiguration {
+func getOSResourceStatus(_ logr.Logger, osResource *groups.SecGroup) *orcapplyconfigv1alpha1.SecurityGroupResourceStatusApplyConfiguration {
 	securitygroupResourceStatus := (&orcapplyconfigv1alpha1.SecurityGroupResourceStatusApplyConfiguration{}).
 		WithName(osResource.Name).
 		WithDescription(osResource.Description).

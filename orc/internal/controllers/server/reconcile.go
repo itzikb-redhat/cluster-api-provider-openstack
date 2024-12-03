@@ -294,14 +294,6 @@ func getResourceName(orcObject *v1alpha1.Server) v1alpha1.OpenStackName {
 	return v1alpha1.OpenStackName(orcObject.Name)
 }
 
-func waitingOnCreationMsg(kind string, name v1alpha1.KubernetesNameRef) string {
-	return fmt.Sprintf("Waiting for %s/%s to exist", kind, name)
-}
-
-func waitingOnAvailableMsg(kind string, name v1alpha1.KubernetesNameRef) string {
-	return fmt.Sprintf("Waiting for %s/%s to be available", kind, name)
-}
-
 // createResource creates an OpenStack resource from an ORC object
 func createResource(ctx context.Context, orcObject *v1alpha1.Server, computeClient osclients.ComputeClient, flavorID, imageID string) (*servers.Server, error) {
 	if orcObject.Spec.ManagementPolicy == v1alpha1.ManagementPolicyUnmanaged {
@@ -340,6 +332,6 @@ func createResource(ctx context.Context, orcObject *v1alpha1.Server, computeClie
 // needsUpdate returns a slice of functions that call the OpenStack API to
 // align the OpenStack resource to its representation in the ORC spec object.
 // For server, updates are not implemented.
-func needsUpdate(computeClient osclients.ComputeClient, orcObject *v1alpha1.Server, osResource *servers.Server) (updateFuncs []func(context.Context) error) {
+func needsUpdate(_ osclients.ComputeClient, _ *v1alpha1.Server, _ *servers.Server) (updateFuncs []func(context.Context) error) {
 	return nil
 }

@@ -294,6 +294,6 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Flavor, osClient
 // needsUpdate returns a slice of functions that call the OpenStack API to
 // align the OpenStack resoruce to its representation in the ORC spec object.
 // Flavor does not support update yet.
-func needsUpdate(osClient osclients.ComputeClient, orcObject *orcv1alpha1.Flavor, osResource *flavors.Flavor) (updateFuncs []func(context.Context) error) {
+func needsUpdate(_ osclients.ComputeClient, _ *orcv1alpha1.Flavor, _ *flavors.Flavor) (updateFuncs []func(context.Context) error) {
 	return nil
 }

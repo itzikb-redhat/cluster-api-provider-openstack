@@ -73,7 +73,7 @@ func withProgressMessage(message string) updateStatusOpt {
 }
 
 func getOSResourceStatus(osResource *servers.Server) *applyconfigv1alpha1.ServerResourceStatusApplyConfiguration {
-	//TODO: Add the rest of the OpenStack data to Status
+	// TODO: Add the rest of the OpenStack data to Status
 	status := applyconfigv1alpha1.ServerResourceStatus().
 		WithName(osResource.Name).
 		WithStatus(osResource.Status).
