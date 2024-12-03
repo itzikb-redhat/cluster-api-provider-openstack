@@ -25,11 +25,12 @@ import (
 // SecurityGroupResourceStatusApplyConfiguration represents a declarative configuration of the SecurityGroupResourceStatus type for use
 // with apply.
 type SecurityGroupResourceStatusApplyConfiguration struct {
-	Name                                    *string  `json:"name,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	ProjectID                               *string  `json:"projectID,omitempty"`
-	Tags                                    []string `json:"tags,omitempty"`
-	Stateful                                *bool    `json:"stateful,omitempty"`
+	Name                                    *string                                     `json:"name,omitempty"`
+	Description                             *string                                     `json:"description,omitempty"`
+	ProjectID                               *string                                     `json:"projectID,omitempty"`
+	Tags                                    []string                                    `json:"tags,omitempty"`
+	Stateful                                *bool                                       `json:"stateful,omitempty"`
+	Rules                                   []SecurityGroupRuleStatusApplyConfiguration `json:"rules,omitempty"`
 	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
@@ -78,6 +79,19 @@ func (b *SecurityGroupResourceStatusApplyConfiguration) WithTags(values ...strin
 // If called multiple times, the Stateful field is set to the value of the last call.
 func (b *SecurityGroupResourceStatusApplyConfiguration) WithStateful(value bool) *SecurityGroupResourceStatusApplyConfiguration {
 	b.Stateful = &value
+	return b
+}
+
+// WithRules adds the given value to the Rules field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Rules field.
+func (b *SecurityGroupResourceStatusApplyConfiguration) WithRules(values ...*SecurityGroupRuleStatusApplyConfiguration) *SecurityGroupResourceStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithRules")
+		}
+		b.Rules = append(b.Rules, *values[i])
+	}
 	return b
 }
 

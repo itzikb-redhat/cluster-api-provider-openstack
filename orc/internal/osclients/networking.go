@@ -70,10 +70,10 @@ type NetworkClient interface {
 	GetSecGroup(ctx context.Context, id string) (*groups.SecGroup, error)
 	UpdateSecGroup(ctx context.Context, id string, opts groups.UpdateOptsBuilder) (*groups.SecGroup, error)
 
-	ListSecGroupRule(opts rules.ListOpts) ([]rules.SecGroupRule, error)
-	CreateSecGroupRule(opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error)
-	DeleteSecGroupRule(id string) error
-	GetSecGroupRule(id string) (*rules.SecGroupRule, error)
+	ListSecGroupRule(ctx context.Context, opts rules.ListOpts) ([]rules.SecGroupRule, error)
+	CreateSecGroupRule(ctx context.Context, opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error)
+	DeleteSecGroupRule(ctx context.Context, id string) error
+	GetSecGroupRule(ctx context.Context, id string) (*rules.SecGroupRule, error)
 
 	ListNetwork(opts networks.ListOptsBuilder) pagination.Pager
 	CreateNetwork(ctx context.Context, opts networks.CreateOptsBuilder) networks.CreateResult
@@ -248,24 +248,24 @@ func (c networkClient) UpdateSecGroup(ctx context.Context, id string, opts group
 	return groups.Update(ctx, c.serviceClient, id, opts).Extract()
 }
 
-func (c networkClient) ListSecGroupRule(opts rules.ListOpts) ([]rules.SecGroupRule, error) {
-	allPages, err := rules.List(c.serviceClient, opts).AllPages(context.TODO())
+func (c networkClient) ListSecGroupRule(ctx context.Context, opts rules.ListOpts) ([]rules.SecGroupRule, error) {
+	allPages, err := rules.List(c.serviceClient, opts).AllPages(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return rules.ExtractRules(allPages)
 }
 
-func (c networkClient) CreateSecGroupRule(opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error) {
-	return rules.Create(context.TODO(), c.serviceClient, opts).Extract()
+func (c networkClient) CreateSecGroupRule(ctx context.Context, opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error) {
+	return rules.Create(ctx, c.serviceClient, opts).Extract()
 }
 
-func (c networkClient) DeleteSecGroupRule(id string) error {
-	return rules.Delete(context.TODO(), c.serviceClient, id).ExtractErr()
+func (c networkClient) DeleteSecGroupRule(ctx context.Context, id string) error {
+	return rules.Delete(ctx, c.serviceClient, id).ExtractErr()
 }
 
-func (c networkClient) GetSecGroupRule(id string) (*rules.SecGroupRule, error) {
-	return rules.Get(context.TODO(), c.serviceClient, id).Extract()
+func (c networkClient) GetSecGroupRule(ctx context.Context, id string) (*rules.SecGroupRule, error) {
+	return rules.Get(ctx, c.serviceClient, id).Extract()
 }
 
 func (c networkClient) ListNetwork(opts networks.ListOptsBuilder) pagination.Pager {

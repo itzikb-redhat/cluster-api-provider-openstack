@@ -166,6 +166,10 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.SecurityGroupResourceSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupResourceStatus"):
 		return &apiv1alpha1.SecurityGroupResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupRule"):
+		return &apiv1alpha1.SecurityGroupRuleApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupRuleStatus"):
+		return &apiv1alpha1.SecurityGroupRuleStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupSpec"):
 		return &apiv1alpha1.SecurityGroupSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupStatus"):
