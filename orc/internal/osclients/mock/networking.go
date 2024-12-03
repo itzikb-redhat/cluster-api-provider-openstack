@@ -155,18 +155,18 @@ func (mr *MockNetworkClientMockRecorder) CreateSecGroup(ctx, opts any) *gomock.C
 }
 
 // CreateSecGroupRule mocks base method.
-func (m *MockNetworkClient) CreateSecGroupRule(opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error) {
+func (m *MockNetworkClient) CreateSecGroupRule(ctx context.Context, opts rules.CreateOptsBuilder) (*rules.SecGroupRule, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSecGroupRule", opts)
+	ret := m.ctrl.Call(m, "CreateSecGroupRule", ctx, opts)
 	ret0, _ := ret[0].(*rules.SecGroupRule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateSecGroupRule indicates an expected call of CreateSecGroupRule.
-func (mr *MockNetworkClientMockRecorder) CreateSecGroupRule(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) CreateSecGroupRule(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).CreateSecGroupRule), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).CreateSecGroupRule), ctx, opts)
 }
 
 // CreateSubnet mocks base method.
@@ -270,17 +270,17 @@ func (mr *MockNetworkClientMockRecorder) DeleteSecGroup(ctx, id any) *gomock.Cal
 }
 
 // DeleteSecGroupRule mocks base method.
-func (m *MockNetworkClient) DeleteSecGroupRule(id string) error {
+func (m *MockNetworkClient) DeleteSecGroupRule(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSecGroupRule", id)
+	ret := m.ctrl.Call(m, "DeleteSecGroupRule", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteSecGroupRule indicates an expected call of DeleteSecGroupRule.
-func (mr *MockNetworkClientMockRecorder) DeleteSecGroupRule(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) DeleteSecGroupRule(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).DeleteSecGroupRule), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).DeleteSecGroupRule), ctx, id)
 }
 
 // DeleteSubnet mocks base method.
@@ -386,18 +386,18 @@ func (mr *MockNetworkClientMockRecorder) GetSecGroup(ctx, id any) *gomock.Call {
 }
 
 // GetSecGroupRule mocks base method.
-func (m *MockNetworkClient) GetSecGroupRule(id string) (*rules.SecGroupRule, error) {
+func (m *MockNetworkClient) GetSecGroupRule(ctx context.Context, id string) (*rules.SecGroupRule, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSecGroupRule", id)
+	ret := m.ctrl.Call(m, "GetSecGroupRule", ctx, id)
 	ret0, _ := ret[0].(*rules.SecGroupRule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSecGroupRule indicates an expected call of GetSecGroupRule.
-func (mr *MockNetworkClientMockRecorder) GetSecGroupRule(id any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) GetSecGroupRule(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).GetSecGroupRule), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).GetSecGroupRule), ctx, id)
 }
 
 // GetSubnet mocks base method.
@@ -505,18 +505,18 @@ func (mr *MockNetworkClientMockRecorder) ListSecGroup(ctx, opts any) *gomock.Cal
 }
 
 // ListSecGroupRule mocks base method.
-func (m *MockNetworkClient) ListSecGroupRule(opts rules.ListOpts) ([]rules.SecGroupRule, error) {
+func (m *MockNetworkClient) ListSecGroupRule(ctx context.Context, opts rules.ListOpts) ([]rules.SecGroupRule, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListSecGroupRule", opts)
+	ret := m.ctrl.Call(m, "ListSecGroupRule", ctx, opts)
 	ret0, _ := ret[0].([]rules.SecGroupRule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListSecGroupRule indicates an expected call of ListSecGroupRule.
-func (mr *MockNetworkClientMockRecorder) ListSecGroupRule(opts any) *gomock.Call {
+func (mr *MockNetworkClientMockRecorder) ListSecGroupRule(ctx, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).ListSecGroupRule), opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSecGroupRule", reflect.TypeOf((*MockNetworkClient)(nil).ListSecGroupRule), ctx, opts)
 }
 
 // ListSubnet mocks base method.

@@ -104,6 +104,8 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupList":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupList(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceSpec":   schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupResourceStatus": schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResourceStatus(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRule":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupRule(ref),
+		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRuleStatus":     schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupRuleStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupSpec":           schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupSpec(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupStatus":         schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupStatus(ref),
 		"github.com/k-orc/openstack-resource-controller/api/v1alpha1.Server":                      schema_k_orc_openstack_resource_controller_api_v1alpha1_Server(ref),
@@ -4166,9 +4168,30 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResour
 							Format:      "",
 						},
 					},
+					"rules": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Rules is a list of security group rules belonging to this SG.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRule"),
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
+		Dependencies: []string{
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRule"},
 	}
 }
 
@@ -4227,6 +4250,25 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResour
 							Format:      "",
 						},
 					},
+					"rules": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Rules is a list of security group rules belonging to this SG.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRuleStatus"),
+									},
+								},
+							},
+						},
+					},
 					"createdAt": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
@@ -4248,7 +4290,147 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupResour
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/k-orc/openstack-resource-controller/api/v1alpha1.SecurityGroupRuleStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupRule(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecurityGroupRule defines a Security Group rule",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"direction": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Direction represents the direction in which the security group rule is applied. Can be ingress or egress.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"remoteGroupID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RemoteGroupID",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"remoteIPPrefix": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RemoteIPPrefix",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"protocol": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Protocol is the IP protocol can be represented by a string, an integer, or null",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ethertype": {
+						SchemaProps: spec.SchemaProps{
+							Description: "EtherType must be IPv4 or IPv6, and addresses represented in CIDR must match the ingress or egress rules.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"portRangeMin": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"portRangeMax": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_k_orc_openstack_resource_controller_api_v1alpha1_SecurityGroupRuleStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the ID of the security group rule.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description of the existing resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"direction": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Direction represents the direction in which the security group rule is applied. Can be ingress or egress.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"remoteGroupID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RemoteGroupID",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"remoteIPPrefix": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RemoteIPPrefix",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"protocol": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Protocol is the IP protocol can be represented by a string, an integer, or null",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ethertype": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Ethertype must be IPv4 or IPv6, and addresses represented in CIDR must match the ingress or egress rules.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"portRangeMin": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+					"portRangeMax": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int32",
+						},
+					},
+				},
+			},
+		},
 	}
 }
 

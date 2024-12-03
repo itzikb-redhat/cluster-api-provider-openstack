@@ -1213,6 +1213,12 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: name
       type:
         scalar: string
+    - name: rules
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupRule
+          elementRelationship: atomic
     - name: stateful
       type:
         scalar: boolean
@@ -1240,6 +1246,12 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: revisionNumber
       type:
         scalar: numeric
+    - name: rules
+      type:
+        list:
+          elementType:
+            namedType: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupRuleStatus
+          elementRelationship: atomic
     - name: stateful
       type:
         scalar: boolean
@@ -1252,6 +1264,63 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: updatedAt
       type:
         namedType: io.k8s.apimachinery.pkg.apis.meta.v1.Time
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupRule
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: direction
+      type:
+        scalar: string
+    - name: ethertype
+      type:
+        scalar: string
+    - name: portRangeMax
+      type:
+        scalar: numeric
+    - name: portRangeMin
+      type:
+        scalar: numeric
+    - name: protocol
+      type:
+        scalar: string
+    - name: remoteGroupID
+      type:
+        scalar: string
+    - name: remoteIPPrefix
+      type:
+        scalar: string
+- name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupRuleStatus
+  map:
+    fields:
+    - name: description
+      type:
+        scalar: string
+    - name: direction
+      type:
+        scalar: string
+    - name: ethertype
+      type:
+        scalar: string
+    - name: id
+      type:
+        scalar: string
+    - name: portRangeMax
+      type:
+        scalar: numeric
+    - name: portRangeMin
+      type:
+        scalar: numeric
+    - name: protocol
+      type:
+        scalar: string
+    - name: remoteGroupID
+      type:
+        scalar: string
+    - name: remoteIPPrefix
+      type:
+        scalar: string
 - name: com.github.k-orc.openstack-resource-controller.api.v1alpha1.SecurityGroupSpec
   map:
     fields:

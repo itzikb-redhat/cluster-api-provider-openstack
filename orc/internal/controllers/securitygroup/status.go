@@ -79,6 +79,23 @@ func getOSResourceStatus(log logr.Logger, osResource *groups.SecGroup) *orcapply
 		WithCreatedAt(metav1.NewTime(osResource.CreatedAt)).
 		WithUpdatedAt(metav1.NewTime(osResource.UpdatedAt))
 
+	if len(osResource.Rules) > 0 {
+		rules := make([]*orcapplyconfigv1alpha1.SecurityGroupRuleStatusApplyConfiguration, len(osResource.Rules))
+		for i := range osResource.Rules {
+			rules[i] = orcapplyconfigv1alpha1.SecurityGroupRuleStatus().
+				WithID(osResource.Rules[i].ID).
+				WithDescription(osResource.Rules[i].Description).
+				WithDirection(osResource.Rules[i].Direction).
+				WithRemoteGroupID(osResource.Rules[i].RemoteGroupID).
+				WithRemoteIPPrefix(osResource.Rules[i].RemoteIPPrefix).
+				WithProtocol(osResource.Rules[i].Protocol).
+				WithEthertype(osResource.Rules[i].EtherType).
+				WithPortRangeMin(osResource.Rules[i].PortRangeMin).
+				WithPortRangeMax(osResource.Rules[i].PortRangeMax)
+		}
+		securitygroupResourceStatus.WithRules(rules...)
+	}
+
 	return securitygroupResourceStatus
 }
 
@@ -105,6 +122,7 @@ func createStatusUpdate(ctx context.Context, orcSecurityGroup *orcv1alpha1.Secur
 		applyConfigStatus.WithResource(resourceStatus)
 	}
 
+	// FIXME(mandre) Don't return available unless all security group rules are created
 	available := osResource != nil
 	common.SetCommonConditions(orcSecurityGroup, applyConfigStatus, available, available, statusOpts.progressMessage, statusOpts.err, now)
 

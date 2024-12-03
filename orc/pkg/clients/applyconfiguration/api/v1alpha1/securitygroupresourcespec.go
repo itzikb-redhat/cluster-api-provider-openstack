@@ -25,10 +25,11 @@ import (
 // SecurityGroupResourceSpecApplyConfiguration represents a declarative configuration of the SecurityGroupResourceSpec type for use
 // with apply.
 type SecurityGroupResourceSpecApplyConfiguration struct {
-	Name        *v1alpha1.OpenStackName        `json:"name,omitempty"`
-	Description *v1alpha1.OpenStackDescription `json:"description,omitempty"`
-	Tags        []v1alpha1.NeutronTag          `json:"tags,omitempty"`
-	Stateful    *bool                          `json:"stateful,omitempty"`
+	Name        *v1alpha1.OpenStackName               `json:"name,omitempty"`
+	Description *v1alpha1.OpenStackDescription        `json:"description,omitempty"`
+	Tags        []v1alpha1.NeutronTag                 `json:"tags,omitempty"`
+	Stateful    *bool                                 `json:"stateful,omitempty"`
+	Rules       []SecurityGroupRuleApplyConfiguration `json:"rules,omitempty"`
 }
 
 // SecurityGroupResourceSpecApplyConfiguration constructs a declarative configuration of the SecurityGroupResourceSpec type for use with
@@ -68,5 +69,18 @@ func (b *SecurityGroupResourceSpecApplyConfiguration) WithTags(values ...v1alpha
 // If called multiple times, the Stateful field is set to the value of the last call.
 func (b *SecurityGroupResourceSpecApplyConfiguration) WithStateful(value bool) *SecurityGroupResourceSpecApplyConfiguration {
 	b.Stateful = &value
+	return b
+}
+
+// WithRules adds the given value to the Rules field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Rules field.
+func (b *SecurityGroupResourceSpecApplyConfiguration) WithRules(values ...*SecurityGroupRuleApplyConfiguration) *SecurityGroupResourceSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithRules")
+		}
+		b.Rules = append(b.Rules, *values[i])
+	}
 	return b
 }

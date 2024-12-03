@@ -25,6 +25,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/groups"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/security/rules"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/ptr"
 	"k8s.io/utils/set"
@@ -372,6 +373,9 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.SecurityGroup, n
 		Stateful:    resource.Stateful,
 	}
 
+	// FIXME(mandre) The security group inherits the default security group
+	// rules. This could be a problem when we implement `update` if ORC
+	// does not takes these rules into account.
 	osResource, err := networkClient.CreateSecGroup(ctx, &createOpts)
 	if err != nil {
 		// We should require the spec to be updated before retrying a create which returned a conflict
@@ -379,6 +383,31 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.SecurityGroup, n
 			err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
 		}
 		return nil, err
+	}
+
+	// TODO(mandre) bulk create security group rules.
+	// Need to implement it in gophercloud first
+	for _, rule := range resource.Rules {
+		createOpts := rules.CreateOpts{
+			SecGroupID:     osResource.ID,
+			Description:    string(ptr.Deref(rule.Description, "")),
+			Direction:      rules.RuleDirection(ptr.Deref(rule.Direction, "")),
+			RemoteGroupID:  string(ptr.Deref(rule.RemoteGroupID, "")),
+			RemoteIPPrefix: string(ptr.Deref(rule.RemoteIPPrefix, "")),
+			Protocol:       rules.RuleProtocol(ptr.Deref(rule.Protocol, "")),
+			EtherType:      rules.RuleEtherType(ptr.Deref(rule.Ethertype, "")),
+			PortRangeMin:   int(*rule.PortRangeMin),
+			PortRangeMax:   int(*rule.PortRangeMax),
+		}
+
+		_, err := networkClient.CreateSecGroupRule(ctx, &createOpts)
+		if err != nil {
+			// We should require the spec to be updated before retrying a create which returned a conflict
+			if orcerrors.IsConflict(err) {
+				err = orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "invalid configuration creating resource: "+err.Error(), err)
+			}
+			return nil, err
+		}
 	}
 
 	return osResource, nil
