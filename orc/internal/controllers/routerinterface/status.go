@@ -22,12 +22,13 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
-	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
+	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
 
@@ -89,5 +90,5 @@ func (r *orcRouterInterfaceReconciler) updateStatus(ctx context.Context, orcObje
 	now := metav1.NewTime(time.Now())
 
 	statusUpdate := createStatusUpdate(orcObject, now, opts)
-	return r.client.Status().Patch(ctx, orcObject, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
+	return r.client.Status().Patch(ctx, orcObject, applyconfigs.Patch(types.ApplyPatchType, statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
 }

@@ -16,10 +16,11 @@ limitations under the License.
 package common
 
 import (
+	"k8s.io/apimachinery/pkg/types"
 	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
+	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 )
 
 type metaApplyConfig struct {
@@ -50,11 +51,11 @@ func metaApplyConfigFromObject(obj client.Object) metaApplyConfig {
 func SetFinalizerPatch(obj client.Object, finalizer string) client.Patch {
 	applyConfig := metaApplyConfigFromObject(obj)
 	applyConfig.WithFinalizers(finalizer)
-	return ssa.ApplyConfigPatch(applyConfig)
+	return applyconfigs.Patch(types.ApplyPatchType, applyConfig)
 }
 
 // RemoveFinalizerPatch returns an apply configuration which removes a finalizer
 func RemoveFinalizerPatch(obj client.Object) client.Patch {
 	applyConfig := metaApplyConfigFromObject(obj)
-	return ssa.ApplyConfigPatch(applyConfig)
+	return applyconfigs.Patch(types.ApplyPatchType, applyConfig)
 }

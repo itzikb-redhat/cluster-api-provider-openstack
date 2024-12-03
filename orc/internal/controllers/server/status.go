@@ -22,11 +22,12 @@ import (
 
 	"github.com/gophercloud/gophercloud/v2/openstack/compute/v2/servers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
-	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
+	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	applyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
 
@@ -41,7 +42,7 @@ func (r *orcServerReconciler) setStatusID(ctx context.Context, obj client.Object
 		WithStatus(applyconfigv1alpha1.ServerStatus().
 			WithID(id))
 
-	return r.client.Status().Patch(ctx, obj, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
+	return r.client.Status().Patch(ctx, obj, applyconfigs.Patch(types.ApplyPatchType, applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
 }
 
 type updateStatusOpts struct {
@@ -120,5 +121,5 @@ func (r *orcServerReconciler) updateStatus(ctx context.Context, orcObject *v1alp
 
 	statusUpdate := createStatusUpdate(orcObject, now, opts...)
 
-	return r.client.Status().Patch(ctx, orcObject, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
+	return r.client.Status().Patch(ctx, orcObject, applyconfigs.Patch(types.ApplyPatchType, statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
 }

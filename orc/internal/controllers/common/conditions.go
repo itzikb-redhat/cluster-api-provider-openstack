@@ -24,8 +24,8 @@ import (
 	"k8s.io/utils/ptr"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
-	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
 )
 
 type WithConditionsApplyConfiguration[T any] interface {
@@ -84,7 +84,7 @@ func SetCommonConditions[T any](orcObject orcv1alpha1.ObjectWithConditions, appl
 	// This also ensures that we don't generate an update event if nothing has changed
 	for _, condition := range []*applyconfigv1.ConditionApplyConfiguration{availableCondition, progressingCondition} {
 		previous := meta.FindStatusCondition(orcObject.GetConditions(), *condition.Type)
-		if previous != nil && ssa.ConditionsEqual(previous, condition) {
+		if previous != nil && applyconfigs.ConditionsEqual(previous, condition) {
 			condition.WithLastTransitionTime(previous.LastTransitionTime)
 		} else {
 			condition.WithLastTransitionTime(now)

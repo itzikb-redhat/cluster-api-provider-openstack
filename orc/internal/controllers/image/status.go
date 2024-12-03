@@ -25,14 +25,15 @@ import (
 	"github.com/gophercloud/gophercloud/v2/openstack/image/v2/images"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	applyconfigv1 "k8s.io/client-go/applyconfigurations/meta/v1"
 	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
+	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
-	"github.com/k-orc/openstack-resource-controller/internal/util/ssa"
 	orcapplyconfigv1alpha1 "github.com/k-orc/openstack-resource-controller/pkg/clients/applyconfiguration/api/v1alpha1"
 )
 
@@ -48,7 +49,7 @@ func (r *orcImageReconciler) setStatusID(ctx context.Context, orcImage *orcv1alp
 		WithStatus(orcapplyconfigv1alpha1.ImageStatus().
 			WithID(id))
 
-	return r.client.Status().Patch(ctx, orcImage, ssa.ApplyConfigPatch(applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
+	return r.client.Status().Patch(ctx, orcImage, applyconfigs.Patch(types.ApplyPatchType, applyConfig), client.ForceOwnership, ssaFieldOwner(SSAIDTxn))
 }
 
 type updateStatusOpts struct {
@@ -202,7 +203,7 @@ func createStatusUpdate(ctx context.Context, orcImage *orcv1alpha1.Image, now me
 	// This also ensures that we don't generate an update event if nothing has changed
 	for _, condition := range []*applyconfigv1.ConditionApplyConfiguration{availableCondition, progressingCondition} {
 		previous := meta.FindStatusCondition(orcImage.Status.Conditions, *condition.Type)
-		if previous != nil && ssa.ConditionsEqual(previous, condition) {
+		if previous != nil && applyconfigs.ConditionsEqual(previous, condition) {
 			condition.WithLastTransitionTime(previous.LastTransitionTime)
 		} else {
 			condition.WithLastTransitionTime(now)
@@ -245,5 +246,5 @@ func (r *orcImageReconciler) updateStatus(ctx context.Context, orcImage *orcv1al
 
 	statusUpdate := createStatusUpdate(ctx, orcImage, now, opts...)
 
-	return r.client.Status().Patch(ctx, orcImage, ssa.ApplyConfigPatch(statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
+	return r.client.Status().Patch(ctx, orcImage, applyconfigs.Patch(types.ApplyPatchType, statusUpdate), client.ForceOwnership, ssaFieldOwner(SSAStatusTxn))
 }
