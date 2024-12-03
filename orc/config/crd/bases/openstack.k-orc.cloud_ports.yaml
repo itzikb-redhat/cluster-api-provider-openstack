@@ -223,12 +223,12 @@ spec:
                           maxLength: 45
                           minLength: 1
                           type: string
-                        subnet:
+                        subnetRef:
                           maxLength: 1024
                           minLength: 1
                           type: string
                       required:
-                      - subnet
+                      - subnetRef
                       type: object
                     maxItems: 32
                     type: array

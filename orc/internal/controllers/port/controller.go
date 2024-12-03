@@ -126,13 +126,13 @@ func (c portReconcilerConstructor) SetupWithManager(ctx context.Context, mgr ctr
 		}
 		subnets := make([]string, len(port.Spec.Resource.Addresses))
 		for i := range port.Spec.Resource.Addresses {
-			subnets[i] = string(*port.Spec.Resource.Addresses[i].Subnet)
+			subnets[i] = string(*port.Spec.Resource.Addresses[i].SubnetRef)
 		}
 		return subnets
 	}
 
 	// Index ports by referenced subnet
-	const subnetRefPath = "spec.resource.addresses[].subnet"
+	const subnetRefPath = "spec.resource.addresses[].subnetRef"
 
 	if err := mgr.GetFieldIndexer().IndexField(ctx, &orcv1alpha1.Port{}, subnetRefPath, func(obj client.Object) []string {
 		return getSubnetRefsForPort(obj)

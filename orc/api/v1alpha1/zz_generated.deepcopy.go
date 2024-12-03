@@ -33,8 +33,8 @@ func (in *Address) DeepCopyInto(out *Address) {
 		*out = new(IPvAny)
 		**out = **in
 	}
-	if in.Subnet != nil {
-		in, out := &in.Subnet, &out.Subnet
+	if in.SubnetRef != nil {
+		in, out := &in.SubnetRef, &out.SubnetRef
 		*out = new(OpenStackName)
 		**out = **in
 	}

@@ -43,8 +43,8 @@ type AllowedAddressPairStatus struct {
 }
 
 type Address struct {
-	IP     *IPvAny        `json:"ip,omitempty"`
-	Subnet *OpenStackName `json:"subnet"`
+	IP        *IPvAny        `json:"ip,omitempty"`
+	SubnetRef *OpenStackName `json:"subnetRef"`
 }
 
 type FixedIPStatus struct {
