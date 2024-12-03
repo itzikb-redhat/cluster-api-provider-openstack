@@ -33,6 +33,7 @@ import (
 
 	orcv1alpha1 "github.com/k-orc/openstack-resource-controller/api/v1alpha1"
 	"github.com/k-orc/openstack-resource-controller/internal/controllers/common"
+	"github.com/k-orc/openstack-resource-controller/internal/controllers/generic"
 	osclients "github.com/k-orc/openstack-resource-controller/internal/osclients"
 	"github.com/k-orc/openstack-resource-controller/internal/util/applyconfigs"
 	orcerrors "github.com/k-orc/openstack-resource-controller/internal/util/errors"
@@ -103,12 +104,17 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 		return ctrl.Result{}, err
 	}
 
-	osResource, err := getOSResourceFromObject(ctx, log, orcObject, osClient)
+	adapter := flavorActuator{
+		Flavor:   orcObject,
+		osClient: osClient,
+	}
+
+	osResource, err := generic.GetOSResourceFromObject(ctx, log, adapter)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 
-	if osResource == nil && orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil {
+	if osResource == nil {
 		log.V(3).Info("OpenStack resource does not yet exist")
 		addStatus(withProgressMessage("Waiting for OpenStack resource to be created externally"))
 		return ctrl.Result{RequeueAfter: externalUpdatePollingPeriod}, err
@@ -136,47 +142,6 @@ func (r *orcFlavorReconciler) reconcileNormal(ctx context.Context, orcObject *or
 	}
 
 	return ctrl.Result{}, nil
-}
-
-func getOSResourceFromObject(ctx context.Context, log logr.Logger, orcObject *orcv1alpha1.Flavor, osClient osclients.ComputeClient) (*flavors.Flavor, error) {
-	switch {
-	case orcObject.Status.ID != nil:
-		log.V(4).Info("Fetching existing OpenStack resource", "ID", *orcObject.Status.ID)
-		osResource, err := osClient.GetFlavor(ctx, *orcObject.Status.ID)
-		if err != nil {
-			if orcerrors.IsNotFound(err) {
-				// An OpenStack resource we previously referenced has been deleted unexpectedly. We can't recover from this.
-				return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "resource has been deleted from OpenStack")
-			}
-			return nil, err
-		}
-		return osResource, nil
-
-	case orcObject.Spec.Import != nil && orcObject.Spec.Import.ID != nil:
-		log.V(4).Info("Importing existing OpenStack resource by ID")
-		osResource, err := osClient.GetFlavor(ctx, *orcObject.Spec.Import.ID)
-		if orcerrors.IsNotFound(err) {
-			// We assume that a resource imported by ID must already exist. It's a terminal error if it doesn't.
-			return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "referenced resource does not exist in OpenStack")
-		}
-		return osResource, err
-
-	case orcObject.Spec.Import != nil && orcObject.Spec.Import.Filter != nil:
-		log.V(4).Info("Importing existing OpenStack resource by filter")
-		return GetByFilter(ctx, osClient, *orcObject.Spec.Import.Filter)
-
-	default:
-		log.V(4).Info("Checking for previously created OpenStack resource")
-		osResource, err := GetByFilter(ctx, osClient, specToFilter(*orcObject.Spec.Resource))
-		if err != nil {
-			return nil, err
-		}
-
-		if osResource == nil {
-			return createResource(ctx, orcObject, osClient)
-		}
-		return osResource, nil
-	}
 }
 
 func (r *orcFlavorReconciler) reconcileDelete(ctx context.Context, orcObject *orcv1alpha1.Flavor) (_ ctrl.Result, err error) {
