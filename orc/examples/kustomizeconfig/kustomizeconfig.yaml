@@ -25,7 +25,7 @@ nameReference:
 
 - kind: Subnet
   fieldSpecs:
-  - path: spec/resource/addresses[]/subnet
+  - path: spec/resource/addresses[]/subnetRef
     kind: Port
 
 - kind: Router

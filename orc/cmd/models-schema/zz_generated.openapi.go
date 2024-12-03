@@ -424,14 +424,14 @@ func schema_k_orc_openstack_resource_controller_api_v1alpha1_Address(ref common.
 							Format: "",
 						},
 					},
-					"subnet": {
+					"subnetRef": {
 						SchemaProps: spec.SchemaProps{
 							Type:   []string{"string"},
 							Format: "",
 						},
 					},
 				},
-				Required: []string{"subnet"},
+				Required: []string{"subnetRef"},
 			},
 		},
 	}

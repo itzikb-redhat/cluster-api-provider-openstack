@@ -126,7 +126,7 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 	// Wait for all subnets to be available
 	subnetsMapping := make(map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID)
 	for _, address := range orcObject.Spec.Resource.Addresses {
-		subnetName := *address.Subnet
+		subnetName := *address.SubnetRef
 		orcSubnet := &orcv1alpha1.Subnet{}
 		if err := r.client.Get(ctx, client.ObjectKey{Name: string(subnetName), Namespace: orcObject.Namespace}, orcSubnet); err != nil {
 			if apierrors.IsNotFound(err) {
@@ -443,7 +443,7 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID 
 	if len(resource.Addresses) > 0 {
 		fixedIPs := make([]ports.IP, len(resource.Addresses))
 		for i := range resource.Addresses {
-			subnetName := *resource.Addresses[i].Subnet
+			subnetName := *resource.Addresses[i].SubnetRef
 			if subnetID, ok := subnetsMapping[subnetName]; !ok {
 				return nil, fmt.Errorf("missing subnet ID for %s", subnetName)
 
