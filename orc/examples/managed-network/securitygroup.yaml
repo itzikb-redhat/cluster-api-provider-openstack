@@ -1,0 +1,14 @@
+apiVersion: openstack.k-orc.cloud/v1alpha1
+kind: SecurityGroup
+metadata:
+  name: orc-managed-sg
+spec:
+  cloudCredentialsRef:
+    cloudName: openstack
+    secretName: dev-test-cloud-config
+  managementPolicy: managed
+  resource:
+    description: Blah blah blah
+    stateful: true
+    tags:
+      - orc-test

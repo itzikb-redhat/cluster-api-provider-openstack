@@ -25,12 +25,19 @@ import (
 // PortResourceStatusApplyConfiguration represents a declarative configuration of the PortResourceStatus type for use
 // with apply.
 type PortResourceStatusApplyConfiguration struct {
-	Name                                    *string  `json:"name,omitempty"`
-	Description                             *string  `json:"description,omitempty"`
-	ProjectID                               *string  `json:"projectID,omitempty"`
-	Status                                  *string  `json:"status,omitempty"`
-	Tags                                    []string `json:"tags,omitempty"`
-	AdminStateUp                            *bool    `json:"adminStateUp,omitempty"`
+	Name                                    *string                                      `json:"name,omitempty"`
+	Description                             *string                                      `json:"description,omitempty"`
+	ProjectID                               *string                                      `json:"projectID,omitempty"`
+	Status                                  *string                                      `json:"status,omitempty"`
+	Tags                                    []string                                     `json:"tags,omitempty"`
+	AdminStateUp                            *bool                                        `json:"adminStateUp,omitempty"`
+	MACAddress                              *string                                      `json:"macAddress,omitempty"`
+	DeviceID                                *string                                      `json:"deviceID,omitempty"`
+	DeviceOwner                             *string                                      `json:"deviceOwner,omitempty"`
+	AllowedAddressPairs                     []AllowedAddressPairStatusApplyConfiguration `json:"allowedAddressPairs,omitempty"`
+	FixedIPs                                []FixedIPStatusApplyConfiguration            `json:"fixedIPs,omitempty"`
+	SecurityGroups                          []string                                     `json:"securityGroups,omitempty"`
+	PropagateUplinkStatus                   *bool                                        `json:"propagateUplinkStatus,omitempty"`
 	NeutronStatusMetadataApplyConfiguration `json:",inline"`
 }
 
@@ -87,6 +94,74 @@ func (b *PortResourceStatusApplyConfiguration) WithTags(values ...string) *PortR
 // If called multiple times, the AdminStateUp field is set to the value of the last call.
 func (b *PortResourceStatusApplyConfiguration) WithAdminStateUp(value bool) *PortResourceStatusApplyConfiguration {
 	b.AdminStateUp = &value
+	return b
+}
+
+// WithMACAddress sets the MACAddress field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MACAddress field is set to the value of the last call.
+func (b *PortResourceStatusApplyConfiguration) WithMACAddress(value string) *PortResourceStatusApplyConfiguration {
+	b.MACAddress = &value
+	return b
+}
+
+// WithDeviceID sets the DeviceID field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the DeviceID field is set to the value of the last call.
+func (b *PortResourceStatusApplyConfiguration) WithDeviceID(value string) *PortResourceStatusApplyConfiguration {
+	b.DeviceID = &value
+	return b
+}
+
+// WithDeviceOwner sets the DeviceOwner field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the DeviceOwner field is set to the value of the last call.
+func (b *PortResourceStatusApplyConfiguration) WithDeviceOwner(value string) *PortResourceStatusApplyConfiguration {
+	b.DeviceOwner = &value
+	return b
+}
+
+// WithAllowedAddressPairs adds the given value to the AllowedAddressPairs field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AllowedAddressPairs field.
+func (b *PortResourceStatusApplyConfiguration) WithAllowedAddressPairs(values ...*AllowedAddressPairStatusApplyConfiguration) *PortResourceStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAllowedAddressPairs")
+		}
+		b.AllowedAddressPairs = append(b.AllowedAddressPairs, *values[i])
+	}
+	return b
+}
+
+// WithFixedIPs adds the given value to the FixedIPs field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the FixedIPs field.
+func (b *PortResourceStatusApplyConfiguration) WithFixedIPs(values ...*FixedIPStatusApplyConfiguration) *PortResourceStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithFixedIPs")
+		}
+		b.FixedIPs = append(b.FixedIPs, *values[i])
+	}
+	return b
+}
+
+// WithSecurityGroups adds the given value to the SecurityGroups field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the SecurityGroups field.
+func (b *PortResourceStatusApplyConfiguration) WithSecurityGroups(values ...string) *PortResourceStatusApplyConfiguration {
+	for i := range values {
+		b.SecurityGroups = append(b.SecurityGroups, values[i])
+	}
+	return b
+}
+
+// WithPropagateUplinkStatus sets the PropagateUplinkStatus field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PropagateUplinkStatus field is set to the value of the last call.
+func (b *PortResourceStatusApplyConfiguration) WithPropagateUplinkStatus(value bool) *PortResourceStatusApplyConfiguration {
+	b.PropagateUplinkStatus = &value
 	return b
 }
 

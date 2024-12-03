@@ -9,6 +9,10 @@ nameReference:
     kind: Router
   - path: spec/cloudCredentialsRef/secretName
     kind: Port
+  - path: spec/cloudCredentialsRef/secretName
+    kind: Flavor
+  - path: spec/cloudCredentialsRef/secretName
+    kind: SecurityGroup
 
 - kind: Network
   fieldSpecs:
@@ -17,6 +21,11 @@ nameReference:
   - path: spec/resource/externalGateways/networkRef
     kind: Router
   - path: spec/networkRef
+    kind: Port
+
+- kind: Subnet
+  fieldSpecs:
+  - path: spec/resource/addresses[]/subnet
     kind: Port
 
 - kind: Router

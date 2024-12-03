@@ -42,6 +42,10 @@ var allResources []templateFields = []templateFields{
 		StatusExtraType: "ImageStatusExtra",
 	},
 	{
+		Name:       "Flavor",
+		APIVersion: "v1alpha1",
+	},
+	{
 		Name:       "Network",
 		APIVersion: "v1alpha1",
 	},
@@ -57,6 +61,12 @@ var allResources []templateFields = []templateFields{
 		Name:            "Port",
 		SpecExtraType:   "PortRefs",
 		StatusExtraType: "PortStatusExtra",
+	},
+	{
+		Name: "SecurityGroup",
+	},
+	{
+		Name: "Server",
 	},
 }
 

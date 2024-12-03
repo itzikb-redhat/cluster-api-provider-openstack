@@ -215,6 +215,43 @@ spec:
 
                   Resource must be specified if the management policy is `managed`.
                 properties:
+                  addresses:
+                    description: Addresses are the IP addresses for the port.
+                    items:
+                      properties:
+                        ip:
+                          maxLength: 45
+                          minLength: 1
+                          type: string
+                        subnet:
+                          maxLength: 1024
+                          minLength: 1
+                          type: string
+                      required:
+                      - subnet
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  allowedAddressPairs:
+                    description: AllowedAddressPairs are allowed addresses associated
+                      with this port.
+                    items:
+                      properties:
+                        ip:
+                          maxLength: 45
+                          minLength: 1
+                          type: string
+                        mac:
+                          maxLength: 17
+                          minLength: 1
+                          type: string
+                      required:
+                      - ip
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-type: atomic
                   description:
                     description: Description of the port.
                     maxLength: 1024
@@ -355,13 +392,57 @@ spec:
                   resource.
                 properties:
                   adminStateUp:
+                    description: |-
+                      AdminStateUp is the administrative state of the port,
+                      which is up (true) or down (false).
                     type: boolean
+                  allowedAddressPairs:
+                    description: |-
+                      AllowedAddressPairs is a set of zero or more allowed address pair
+                      objects each where address pair object contains an IP address and
+                      MAC address.
+                    items:
+                      properties:
+                        ip:
+                          type: string
+                        mac:
+                          type: string
+                      required:
+                      - ip
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
                   createdAt:
                     format: date-time
                     type: string
                   description:
                     description: Description is a human-readable description for the
                       resource.
+                    type: string
+                  deviceID:
+                    description: DeviceID is the ID of the device that uses this port.
+                    type: string
+                  deviceOwner:
+                    description: DeviceOwner is the entity type that uses this port.
+                    type: string
+                  fixedIPs:
+                    description: |-
+                      FixedIPs is a set of zero or more fixed IP objects each where fixed
+                      IP object contains an IP address and subnet ID from which the IP
+                      address is assigned.
+                    items:
+                      properties:
+                        ip:
+                          type: string
+                        subnetID:
+                          type: string
+                      required:
+                      - ip
+                      type: object
+                    type: array
+                    x-kubernetes-list-type: atomic
+                  macAddress:
+                    description: MACAddress is the MAC address of the port.
                     type: string
                   name:
                     description: Name is the human-readable name of the resource.
@@ -370,10 +451,22 @@ spec:
                   projectID:
                     description: ProjectID is the project owner of the resource.
                     type: string
+                  propagateUplinkStatus:
+                    description: |-
+                      PropagateUplinkStatus represents the uplink status propagation of
+                      the port.
+                    type: boolean
                   revisionNumber:
                     description: RevisionNumber optionally set via extensions/standard-attr-revisions
                     format: int64
                     type: integer
+                  securityGroups:
+                    description: SecurityGroups contains the IDs of security groups
+                      applied to the port.
+                    items:
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: atomic
                   status:
                     description: Status indicates the current status of the resource.
                     type: string
@@ -386,8 +479,6 @@ spec:
                   updatedAt:
                     format: date-time
                     type: string
-                required:
-                - adminStateUp
                 type: object
             type: object
         type: object

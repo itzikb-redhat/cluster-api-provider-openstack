@@ -69,6 +69,10 @@ type CIDR string
 // +kubebuilder:validation:MaxLength:=45
 type IPvAny string
 
+// +kubebuilder:validation:MinLength:=1
+// +kubebuilder:validation:MaxLength:=17
+type MAC string
+
 // XXX: AvailabilityZoneHint MaxLength is made up
 
 // +kubebuilder:validation:MinLength:=1

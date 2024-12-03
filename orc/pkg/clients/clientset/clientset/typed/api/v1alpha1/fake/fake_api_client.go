@@ -28,6 +28,10 @@ type FakeOpenstackV1alpha1 struct {
 	*testing.Fake
 }
 
+func (c *FakeOpenstackV1alpha1) Flavors(namespace string) v1alpha1.FlavorInterface {
+	return &FakeFlavors{c, namespace}
+}
+
 func (c *FakeOpenstackV1alpha1) Images(namespace string) v1alpha1.ImageInterface {
 	return &FakeImages{c, namespace}
 }
@@ -46,6 +50,14 @@ func (c *FakeOpenstackV1alpha1) Routers(namespace string) v1alpha1.RouterInterfa
 
 func (c *FakeOpenstackV1alpha1) RouterInterfaces(namespace string) v1alpha1.RouterInterfaceInterface {
 	return &FakeRouterInterfaces{c, namespace}
+}
+
+func (c *FakeOpenstackV1alpha1) SecurityGroups(namespace string) v1alpha1.SecurityGroupInterface {
+	return &FakeSecurityGroups{c, namespace}
+}
+
+func (c *FakeOpenstackV1alpha1) Servers(namespace string) v1alpha1.ServerInterface {
+	return &FakeServers{c, namespace}
 }
 
 func (c *FakeOpenstackV1alpha1) Subnets(namespace string) v1alpha1.SubnetInterface {

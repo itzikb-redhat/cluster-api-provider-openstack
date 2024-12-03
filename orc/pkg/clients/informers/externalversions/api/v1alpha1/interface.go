@@ -24,6 +24,8 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
+	// Flavors returns a FlavorInformer.
+	Flavors() FlavorInformer
 	// Images returns a ImageInformer.
 	Images() ImageInformer
 	// Networks returns a NetworkInformer.
@@ -34,6 +36,10 @@ type Interface interface {
 	Routers() RouterInformer
 	// RouterInterfaces returns a RouterInterfaceInformer.
 	RouterInterfaces() RouterInterfaceInformer
+	// SecurityGroups returns a SecurityGroupInformer.
+	SecurityGroups() SecurityGroupInformer
+	// Servers returns a ServerInformer.
+	Servers() ServerInformer
 	// Subnets returns a SubnetInformer.
 	Subnets() SubnetInformer
 }
@@ -47,6 +53,11 @@ type version struct {
 // New returns a new Interface.
 func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakListOptions internalinterfaces.TweakListOptionsFunc) Interface {
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
+}
+
+// Flavors returns a FlavorInformer.
+func (v *version) Flavors() FlavorInformer {
+	return &flavorInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Images returns a ImageInformer.
@@ -72,6 +83,16 @@ func (v *version) Routers() RouterInformer {
 // RouterInterfaces returns a RouterInterfaceInformer.
 func (v *version) RouterInterfaces() RouterInterfaceInformer {
 	return &routerInterfaceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// SecurityGroups returns a SecurityGroupInformer.
+func (v *version) SecurityGroups() SecurityGroupInformer {
+	return &securityGroupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// Servers returns a ServerInformer.
+func (v *version) Servers() ServerInformer {
+	return &serverInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Subnets returns a SubnetInformer.

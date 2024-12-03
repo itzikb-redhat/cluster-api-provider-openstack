@@ -75,6 +75,9 @@ func main() {
 		orccontrollers.RouterController(scopeFactory),
 		orccontrollers.RouterInterfaceController(scopeFactory),
 		orccontrollers.PortController(scopeFactory),
+		orccontrollers.FlavorController(scopeFactory),
+		orccontrollers.SecurityGroupController(scopeFactory),
+		orccontrollers.ServerController(scopeFactory),
 	}
 
 	restConfig := ctrl.GetConfigOrDie()

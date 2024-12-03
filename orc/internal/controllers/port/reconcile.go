@@ -122,7 +122,34 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 		return ctrl.Result{}, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonUnrecoverableError, "Parent network ID has changed")
 	}
 
-	// Don't add finalizer until parent network is available to avoid unnecessary reconcile on delete
+	// Wait for all subnets to be available
+	subnetsMapping := make(map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID)
+	for _, address := range orcObject.Spec.Resource.Addresses {
+		subnetName := *address.Subnet
+		orcSubnet := &orcv1alpha1.Subnet{}
+		if err := r.client.Get(ctx, client.ObjectKey{Name: string(subnetName), Namespace: orcObject.Namespace}, orcSubnet); err != nil {
+			if apierrors.IsNotFound(err) {
+				addStatus(withProgressMessage(fmt.Sprintf("waiting for subnet object %s to be created", subnetName)))
+				return ctrl.Result{}, nil
+			}
+			return ctrl.Result{}, err
+		}
+
+		if !orcv1alpha1.IsAvailable(orcSubnet) {
+			addStatus(withProgressMessage(fmt.Sprintf("waiting for subnet object %s to be available", subnetName)))
+			return ctrl.Result{}, nil
+		}
+
+		if orcSubnet.Status.ID == nil {
+			// FIXME(mandre) This throws a lot of errors during
+			// creation, when waiting for the subnet ID to be set.
+			// We'll need to fix it.
+			return ctrl.Result{}, fmt.Errorf("subnet %s is available but status.ID is not set", orcSubnet.Name)
+		}
+		subnetsMapping[subnetName] = orcv1alpha1.UUID(*orcSubnet.Status.ID)
+	}
+
+	// Don't add finalizer until parent network and subnets are available to avoid unnecessary reconcile on delete
 	if !controllerutil.ContainsFinalizer(orcObject, Finalizer) {
 		patch := common.SetFinalizerPatch(orcObject, Finalizer)
 		return ctrl.Result{}, r.client.Patch(ctx, orcObject, patch, client.ForceOwnership, ssaFieldOwner(SSAFinalizerTxn))
@@ -145,9 +172,9 @@ func (r *orcPortReconciler) reconcileNormal(ctx context.Context, orcObject *orcv
 
 	if osResource == nil {
 		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
-			osResource, err = createResource(ctx, orcObject, networkID, networkClient)
+			osResource, err = createResource(ctx, orcObject, networkID, subnetsMapping, networkClient)
 			if err != nil {
-				return ctrl.Result{}, nil
+				return ctrl.Result{}, err
 			}
 		} else {
 			// Programming error
@@ -380,7 +407,7 @@ func getResourceFromList(ctx context.Context, listOpts ports.ListOptsBuilder, ne
 }
 
 // createResource creates an OpenStack resource for an ORC object.
-func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*ports.Port, error) {
+func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID orcv1alpha1.UUID, subnetsMapping map[orcv1alpha1.OpenStackName]orcv1alpha1.UUID, networkClient osclients.NetworkClient) (*ports.Port, error) {
 	if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyUnmanaged {
 		// Should have been caught by API validation
 		return nil, orcerrors.Terminal(orcv1alpha1.OpenStackConditionReasonInvalidConfiguration, "Not creating unmanaged resource")
@@ -400,6 +427,37 @@ func createResource(ctx context.Context, orcObject *orcv1alpha1.Port, networkID 
 		NetworkID:   string(networkID),
 		Name:        string(getResourceName(orcObject)),
 		Description: string(ptr.Deref(resource.Description, "")),
+	}
+
+	if len(resource.AllowedAddressPairs) > 0 {
+		createOpts.AllowedAddressPairs = make([]ports.AddressPair, len(resource.AllowedAddressPairs))
+		for i := range resource.AllowedAddressPairs {
+			createOpts.AllowedAddressPairs[i].IPAddress = string(*resource.AllowedAddressPairs[i].IP)
+			if resource.AllowedAddressPairs[i].MAC != nil {
+				createOpts.AllowedAddressPairs[i].MACAddress = string(*resource.AllowedAddressPairs[i].MAC)
+			}
+		}
+	}
+
+	// TODO(mandre) Force the creation of a IP-less port if no address is
+	// specified, as OpenStack will create an IP for us anyway when the
+	// network has a subnet
+	if len(resource.Addresses) > 0 {
+		fixedIPs := make([]ports.IP, len(resource.Addresses))
+		for i := range resource.Addresses {
+			subnetName := *resource.Addresses[i].Subnet
+			if subnetID, ok := subnetsMapping[subnetName]; !ok {
+				return nil, fmt.Errorf("missing subnet ID for %s", subnetName)
+
+			} else {
+				fixedIPs[i].SubnetID = string(subnetID)
+			}
+
+			if resource.Addresses[i].IP != nil {
+				fixedIPs[i].IPAddress = string(*resource.Addresses[i].IP)
+			}
+		}
+		createOpts.FixedIPs = fixedIPs
 	}
 
 	osResource, err := networkClient.CreatePort(ctx, &createOpts)

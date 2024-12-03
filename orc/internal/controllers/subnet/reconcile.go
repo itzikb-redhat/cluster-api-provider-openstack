@@ -151,7 +151,7 @@ func (r *orcSubnetReconciler) reconcileNormal(ctx context.Context, orcObject *or
 		if orcObject.Spec.ManagementPolicy == orcv1alpha1.ManagementPolicyManaged {
 			osResource, err = createResource(ctx, orcObject, networkID, networkClient)
 			if err != nil {
-				return ctrl.Result{}, nil
+				return ctrl.Result{}, err
 			}
 		} else {
 			// Programming error

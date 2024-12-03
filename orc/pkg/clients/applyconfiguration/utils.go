@@ -32,10 +32,16 @@ import (
 func ForKind(kind schema.GroupVersionKind) interface{} {
 	switch kind {
 	// Group=openstack.k-orc.cloud, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithKind("Address"):
+		return &apiv1alpha1.AddressApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPool"):
 		return &apiv1alpha1.AllocationPoolApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("AllocationPoolStatus"):
 		return &apiv1alpha1.AllocationPoolStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AllowedAddressPair"):
+		return &apiv1alpha1.AllowedAddressPairApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("AllowedAddressPairStatus"):
+		return &apiv1alpha1.AllowedAddressPairStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("CloudCredentialsReference"):
 		return &apiv1alpha1.CloudCredentialsReferenceApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("ExternalGateway"):
@@ -44,6 +50,22 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.ExternalGatewayStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("FilterByNeutronTags"):
 		return &apiv1alpha1.FilterByNeutronTagsApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FixedIPStatus"):
+		return &apiv1alpha1.FixedIPStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Flavor"):
+		return &apiv1alpha1.FlavorApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorFilter"):
+		return &apiv1alpha1.FlavorFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorImport"):
+		return &apiv1alpha1.FlavorImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorResourceSpec"):
+		return &apiv1alpha1.FlavorResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorResourceStatus"):
+		return &apiv1alpha1.FlavorResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorSpec"):
+		return &apiv1alpha1.FlavorSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("FlavorStatus"):
+		return &apiv1alpha1.FlavorStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRoute"):
 		return &apiv1alpha1.HostRouteApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("HostRouteStatus"):
@@ -134,6 +156,34 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1alpha1.RouterSpecApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("RouterStatus"):
 		return &apiv1alpha1.RouterStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroup"):
+		return &apiv1alpha1.SecurityGroupApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupFilter"):
+		return &apiv1alpha1.SecurityGroupFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupImport"):
+		return &apiv1alpha1.SecurityGroupImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupResourceSpec"):
+		return &apiv1alpha1.SecurityGroupResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupResourceStatus"):
+		return &apiv1alpha1.SecurityGroupResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupSpec"):
+		return &apiv1alpha1.SecurityGroupSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("SecurityGroupStatus"):
+		return &apiv1alpha1.SecurityGroupStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("Server"):
+		return &apiv1alpha1.ServerApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerFilter"):
+		return &apiv1alpha1.ServerFilterApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerImport"):
+		return &apiv1alpha1.ServerImportApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerResourceSpec"):
+		return &apiv1alpha1.ServerResourceSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerResourceStatus"):
+		return &apiv1alpha1.ServerResourceStatusApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerSpec"):
+		return &apiv1alpha1.ServerSpecApplyConfiguration{}
+	case v1alpha1.SchemeGroupVersion.WithKind("ServerStatus"):
+		return &apiv1alpha1.ServerStatusApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("Subnet"):
 		return &apiv1alpha1.SubnetApplyConfiguration{}
 	case v1alpha1.SchemeGroupVersion.WithKind("SubnetFilter"):

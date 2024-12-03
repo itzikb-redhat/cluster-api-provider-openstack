@@ -82,12 +82,37 @@ func getOSResourceStatus(osResource *ports.Port) *orcapplyconfigv1alpha1.PortRes
 		WithName(osResource.Name).
 		WithDescription(osResource.Description).
 		WithAdminStateUp(osResource.AdminStateUp).
+		WithMACAddress(osResource.MACAddress).
+		WithDeviceID(osResource.DeviceID).
+		WithDeviceOwner(osResource.DeviceOwner).
 		WithStatus(osResource.Status).
 		WithProjectID(osResource.ProjectID).
 		WithTags(osResource.Tags...).
+		WithSecurityGroups(osResource.SecurityGroups...).
+		WithPropagateUplinkStatus(osResource.PropagateUplinkStatus).
 		WithRevisionNumber(int64(osResource.RevisionNumber)).
 		WithCreatedAt(metav1.NewTime(osResource.CreatedAt)).
 		WithUpdatedAt(metav1.NewTime(osResource.UpdatedAt))
+
+	if len(osResource.AllowedAddressPairs) > 0 {
+		allowedAddressPairs := make([]*orcapplyconfigv1alpha1.AllowedAddressPairStatusApplyConfiguration, len(osResource.AllowedAddressPairs))
+		for i := range osResource.AllowedAddressPairs {
+			allowedAddressPairs[i] = orcapplyconfigv1alpha1.AllowedAddressPairStatus().
+				WithIP(osResource.AllowedAddressPairs[i].IPAddress).
+				WithMAC(osResource.AllowedAddressPairs[i].MACAddress)
+		}
+		status.WithAllowedAddressPairs(allowedAddressPairs...)
+	}
+
+	if len(osResource.FixedIPs) > 0 {
+		fixedIPs := make([]*orcapplyconfigv1alpha1.FixedIPStatusApplyConfiguration, len(osResource.FixedIPs))
+		for i := range osResource.FixedIPs {
+			fixedIPs[i] = orcapplyconfigv1alpha1.FixedIPStatus().
+				WithIP(osResource.FixedIPs[i].IPAddress).
+				WithSubnetID(osResource.FixedIPs[i].SubnetID)
+		}
+		status.WithFixedIPs(fixedIPs...)
+	}
 
 	return status
 }
